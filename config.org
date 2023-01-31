@@ -1,17 +1,10 @@
 #+STARUP: hidestars
-* Personal information                         :commented:
-:info:
-#+BEGIN_SRC emacs-lisp :results silent
-  ;; (setq user-full-name "Saul SL"
-        ;; user-mail-address "ssl@example.com")
-#+END_SRC
-:END:
 * Setup custom file
 - Customizations can become too long thus, it is better to set up the customize file to a separate file  and keep the  =init.el= file less cluttered.
 :setup-custom:
 #+BEGIN_SRC emacs-lisp :results silent
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-  (load custom-file)
+  (load custom-file t)
 #+END_SRC
 :END:
 * Session defaults
@@ -123,8 +116,8 @@
 ** Packages without configuration
 :install-packages:
 #+begin_src emacs-lisp :results silent
-  (setq ipackages '(magit ox-gfm org auctex ebib ess helm-R olivetti unfill format-all))
-  ;; install themes 
+  (setq ipackages '(magit ox-gfm org auctex ebib ess helm-R olivetti unfill format-all poly-R poly-markdown))
+  ;; install packages 
   (dolist (package ipackages)
     (unless (package-installed-p package)
       (package-install package)))
@@ -135,7 +128,8 @@
 ** Install themes
 :install-themes:
 #+begin_src emacs-lisp :results silent
-  (setq ithemes '(leuven-theme darktooth-theme chyla-theme))
+  ;;leuven-theme darktooth-theme autumn-light-theme avk-emacs-theme chyla-theme
+  (setq ithemes '(darktooth-theme modus-themes))
   ;; install themes 
   (dolist (package ithemes)
     (unless (package-installed-p package)
@@ -553,12 +547,12 @@ Define Keybindings to move between windows
 *** Setup fonts
 :Font-faces:
 #+begin_src emacs-lisp :results silent
-  ;; Set for heading levels
-  (dolist (face '((org-level-1 . 1.2)
-                  (org-level-2 . 1.0)
-                  (org-level-3 . 1.0)
-                  (org-level-4 . 1.0)
-                  (org-level-5 . 1.1)
+  ;;Size for heading levels
+  (dolist (face '((org-level-1 . 1.6)
+                  (org-level-2 . 1.5)
+                  (org-level-3 . 1.4)
+                  (org-level-4 . 1.3)
+                  (org-level-5 . 1.2)
                   (org-level-6 . 1.1)
                   (org-level-7 . 1.1)
                   (org-level-8 . 1.1)))
@@ -588,7 +582,11 @@ Change the aspect of the bullets used in headings
     :config
     (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
     :custom
-    (org-bullets-bullet-list '("◉" "●" "▷" "▶" "●" "✸"))
+    ;; Other styles
+    ;; (org-bullets-bullet-list '("◉" "●" "▷" "▶" "●" "✸"))
+    ;; (org-bullets-bullet-list '("㊀" "㊁" "㊂" "㊃" "㊄" "㊅"))
+    ;; (org-bullets-bullet-list '("➀" "➁" "➂" "➃" "➄" "➅"))
+    (org-bullets-bullet-list '("🅐" "🅑" "🅒" "🅓" "🅔" "🅕"))
     )
 #+end_src
 :END:
@@ -712,7 +710,7 @@ It is necessary to load [[https://superuser.com/questions/896741/how-do-i-config
       (add-to-list 'org-export-before-parsing-hook #'my/org-ref-process-buffer--html))
 
     :config
-    (setq bibtex-completion-bibliography '("~/Documents/Referencias/JabRef/Working.bib")
+    (setq bibtex-completion-bibliography '("~/Documents/Referencias/Bibtex/Working.bib")
      bibtex-completion-library-path '("~/Documents/Articulos_y_Libros/")
      bibtex-completion-notes-path "~/Documents/Articulos_y_Libros/Resumenes"
      bibtex-completion-notes-template-multiple-files "* ${author-or-editor}, ${title}, ${journal}, (${year}) :${=type=}: \n\nSee [[cite:&${=key=}]]\n"
@@ -1047,21 +1045,6 @@ Change the path for the anaconda (miniconda) installation accordingly
   (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+r-mode))
 #+end_src
 :END:
-*** Arrow underscore                         :commented:
-- To the following would insert ~<-~ whenever ~_~ is pressed
-:arrow-ess:
-#+begin_src emacs-lisp :results silent
-  ;; (use-package ess-r-mode
-  ;;   :bind
-  ;;   (:map ess-r-mode-map
-  ;; 	     ("_" . ess-insert-assign))
-  ;;   (:map inferior-ess-r-mode-map
-  ;; 	     ("_" . ess-insert-assign)))
-  ;; (require 'ess-r-mode)
-  ;; (define-key ess-r-mode-map "_" 'ess-insert-assign)
-  ;; (define-key inferior-ess-r-mode-map "_" 'ess-insert-assign)
-#+end_src   
-:END:
 ** Html
 :web-beautify:
 #+begin_src emacs-lisp :results silent
@@ -1148,6 +1131,14 @@ Change the path for the anaconda (miniconda) installation accordingly
           magic-latex-enable-inline-image    nil
           magic-latex-enable-minibuffer-echo nil)
     )
+#+end_src
+:END:
+*** Helm-bibtex
+:helm-bibtex:
+#+begin_src emacs-lisp :results silent
+  (use-package helm-bibtex
+    :ensure t
+    :after helm)
 #+end_src
 :END:
 *** Auctex and Reftex
@@ -1298,15 +1289,6 @@ Setup terminal emulators, [[https://www.emacswiki.org/emacs/AnsiTermHints][ansi-
 #+END_SRC
 :END:
 * PDF
-** PDF viewer                                  :commented:
-[[https://stackoverflow.com/questions/8834633/how-do-i-make-org-mode-open-pdf-files-in-evince/8836108#8836108][Source]]
-#+begin_src emacs-lisp
-  ;; PDFs visited in Org-mode are opened in Evince (and not in the default choice) https://stackoverflow.com/a/8836108/789593
-  ;; (add-hook 'org-mode-hook
-  ;; 	  '(lambda ()
-  ;; 	     (delete '("\\.pdf\\'" . default) org-file-apps)
-  ;; 	     (add-to-list 'org-file-apps '("\\.pdf\\'" . "atril %s"))))
-#+end_src
 ** PDF tools
 Use pdf-tools as default pdf viewer in emacs. Customize navigation and highlighting
 #+begin_src emacs-lisp :results silent
