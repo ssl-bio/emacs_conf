@@ -43,6 +43,9 @@
   ;; Just one space is needed.
   (setq sentence-end-double-space nil)
 
+  ;; Space between lines
+  (setq-default line-spacing 4)
+
   ;; Make buffer's names unique by adding a path
   (setq uniquify-buffer-name-style 'forward)
   (put 'dired-find-alternate-file 'disabled nil)
@@ -53,21 +56,42 @@
     (server-start)
     ;; (setq server-socket-dir "~/.emacs.d/server")
     )
+
+  ;;  Load shell conf (.bashrc)
+  ;; (use-package exec-path-from-shell
+  ;;   :ensure t
+  ;;   :defer t
+  ;;   :init
+  ;;   (when (memq window-system '(mac ns x))
+  ;;     (exec-path-from-shell-initialize)))
 #+END_SRC
 :END:
 ** Custom variables
+Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* Org-ref][Org-ref bibtex-path]] [[* Org-reveal][Org-reveal]] [[* Ansi-term][Ansi-term]]
 :custom-vars:
 #+begin_src emacs-lisp :results silent
   (defvar essl/default-font-size 120)
   (defvar essl/default-variable-font-size 120)
-  (setq-default line-spacing 4)
 
-  ;;  Load shell conf (.bashrc)
-  (use-package exec-path-from-shell
-    :ensure t
-    :init
-    (when (memq window-system '(mac ns x))
-      (exec-path-from-shell-initialize)))
+  ;; Path to anaconda installation 
+  (defvar essl/anaconda-home "~/.local/bin/miniconda3")
+  (defvar essl/anaconda-venv "~/.local/bin/miniconda3/envs/")
+
+  ;; Bibtex paths and files
+  (setq
+   bibtex-completion-bibliography '("~/Documents/Refs/Bibtex/Working.bib")
+   bibtex-completion-library-path '("~/Documents/Papers/")
+   bibtex-completion-notes-path "~/Documents/Papers/Notes")
+
+  ;; org-reveal-path
+  (setq org-reveal-root "file:///run/media/shared/Cloned/reveal.js")
+
+  ;; Path to bash (ansi term)
+  (defvar essl/my-term "/bin/bash")
+
+  ;; Fonts
+  (defvar essl/mono-font "Courier New")
+  (defvar essl/sans-font "Verdana")
   #+end_src
 :END:
 :ox-hugo:
@@ -116,7 +140,7 @@
 ** Packages without configuration
 :install-packages:
 #+begin_src emacs-lisp :results silent
-  (setq ipackages '(magit ox-gfm org auctex ebib ess helm-R olivetti unfill format-all poly-R poly-markdown))
+  (setq ipackages '(magit ox-gfm org auctex ebib ess helm-R olivetti unfill format-all org poly-R poly-markdown))
   ;; install packages 
   (dolist (package ipackages)
     (unless (package-installed-p package)
@@ -158,13 +182,13 @@
 *** Default font 
 :font:
 #+begin_src emacs-lisp :results silent
-  (set-face-attribute 'default nil :font "Courier New" :height essl/default-font-size)
+  (set-face-attribute 'default nil :font essl/mono-font :height essl/default-font-size)
 
   ;; Set the fixed pitch face
-  (set-face-attribute 'fixed-pitch nil :font "Courier New" :height essl/default-font-size)
+  (set-face-attribute 'fixed-pitch nil :font essl/mono-font :height essl/default-font-size)
 
   ;; Set the variable pitch face
-  (set-face-attribute 'variable-pitch nil :font "Verdana" :height essl/default-variable-font-size)
+  (set-face-attribute 'variable-pitch nil :font essl/sans-font :height essl/default-variable-font-size)
 #+end_src
 :END:
 *** Font scaling
@@ -556,7 +580,7 @@ Define Keybindings to move between windows
                   (org-level-6 . 1.1)
                   (org-level-7 . 1.1)
                   (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil :font "Courier New" :weight 'regular :height (cdr face))
+    (set-face-attribute (car face) nil :font essl/mono-font :weight 'regular :height (cdr face))
     )
 
   ;; Ensure that anything that should be fixed-pitch in Org files appears that way
@@ -659,7 +683,9 @@ Pandoc converts between a huge number of different file formats.
 Source: http://tex.stackexchange.com/a/161619.
 #+BEGIN_SRC emacs-lisp
   (setq org-latex-pdf-process (list "latexmk -xelatex %f"))
-                                          ;(setq org-latex-pdf-process (list "arara %f"))
+  (setq org-latex-listings 'minted
+      org-latex-packages-alist '(("" "minted")))
+  ;;(setq org-latex-pdf-process (list "arara %f"))
 #+END_SRC
 Latex export configuration [[https://orgmode.org/worg/org-tutorials/org-latex-export.html][Org-tutorials]]
 It is necessary to load [[https://superuser.com/questions/896741/how-do-i-configure-org-latex-classes-in-emacs][Ox-latex]]
@@ -710,12 +736,11 @@ It is necessary to load [[https://superuser.com/questions/896741/how-do-i-config
       (add-to-list 'org-export-before-parsing-hook #'my/org-ref-process-buffer--html))
 
     :config
-    (setq bibtex-completion-bibliography '("~/Documents/Referencias/Bibtex/Working.bib")
-     bibtex-completion-library-path '("~/Documents/Articulos_y_Libros/")
-     bibtex-completion-notes-path "~/Documents/Articulos_y_Libros/Resumenes"
+    (setq 
      bibtex-completion-notes-template-multiple-files "* ${author-or-editor}, ${title}, ${journal}, (${year}) :${=type=}: \n\nSee [[cite:&${=key=}]]\n"
 
      bibtex-completion-additional-search-fields '(keywords)
+     bibtex-completion-pdf-field "File"
      bibtex-completion-display-formats
      '((article       . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} ${journal:40}")
        (inbook        . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} Chapter ${chapter:32}")
@@ -727,7 +752,7 @@ It is necessary to load [[https://superuser.com/questions/896741/how-do-i-config
        (call-process "open" nil 0 nil fpath))
      )
 
-    ;;Keybindings for inserting reference
+    ;Keybindings for inserting reference
     (define-key bibtex-mode-map (kbd "H-b") 'org-ref-bibtex-hydra/body)
     (define-key org-mode-map (kbd "C-c ]") 'org-ref-insert-link)
     (define-key org-mode-map (kbd "s-[") 'org-ref-insert-link-hydra/body)
@@ -754,7 +779,6 @@ It is necessary to load [[https://superuser.com/questions/896741/how-do-i-config
   ;;   :ensure t
   ;;   :defer t
   ;;   :config
-  ;;   (setq org-reveal-root "file:///<path-to-reveal>/reveal.js")
   ;;   )
 #+end_src
 :END:
@@ -908,6 +932,7 @@ Autocompletion
 :general-options:
 #+begin_src emacs-lisp
   (electric-pair-mode 1)
+  (add-hook 'prog-mode-hook 'linum-mode 1)
 #+end_src
 :END:
 *** Hideshow
@@ -919,6 +944,7 @@ Autocompletion
      (or column
          (unless selective-display
            (1+ (current-column))))))
+
   (defun toggle-hiding (column)
     (interactive "P")
     (if hs-minor-mode
@@ -968,51 +994,53 @@ Autocompletion
 ** Python (Anaconda)
 Change the path for the anaconda (miniconda) installation accordingly
 :config:
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :results silent
+  ;; Install and configure Conda
   (use-package conda
     :ensure t
     ;; :defer t
     :init
-    ;; (add-to-list 'exec-path "~/.local/bin/miniconda3/bin")
+    ;; (add-to-list 'exec-path "/media/discs/shared/miniconda3/bin/")
+    (setq conda-anaconda-home essl/anaconda-home)
+    (setq conda-env-home-directory essl/anaconda-venv)
     :config
-    (setq conda-anaconda-home (expand-file-name "~/.local/bin/miniconda3"))
-    (setq conda-env-home-directory (expand-file-name "~/.local/bin/miniconda3"))
-    ;; (conda-env-initialize-interactive-shells)
-    ;; (conda-env-initialize-eshell)
-    ;; (conda-env-autoactivate-mode t)
+    (conda-env-initialize-interactive-shells)
+    (conda-env-initialize-eshell)
+    (conda-env-autoactivate-mode t)
     )
 
-  (use-package anaconda-mode
+  ;; Set up Elpy with Conda integration
+  (use-package elpy
     :ensure t
-    :hook
-    ((python-mode . anaconda-mode)
-     (python-mode . anaconda-eldoc-mode)
-     (python-mode . yas-minor-mode)
-     )
+    :init
+    (elpy-enable)
+
+    (setq python-shell-interpreter "python"
+          elpy-rpc-virtualenv-path  'current
+          python-shell-virtualenv-root essl/anaconda-venv
+          elpy-rpc-virtualenv-path  essl/anaconda-venv)
     )
 
   (use-package company-anaconda
     :ensure t
     :config
     (eval-after-load "company"
-      '(add-to-list 'company-backends '(company-anaconda))))
+      '(add-to-list 'company-backends '(company-anaconda)))
+    :hook
+    (python-mode . anaconda-mode)
+    (python-mode . anaconda-eldoc-mode)
+    )
 
   (use-package python-black
     :demand t
     :after python
-    :hook (python-mode . python-black-on-save-mode-enable-dwim))
-
-  (use-package elpy
-    :ensure t
-    :init
-    (elpy-enable)
-    ;; workon home
-    (setenv "WORKON_HOME" "/home/saul/.local/bin/miniconda3/envs/")
-    (setq python-shell-virtualenv-path
-          "/home/saul/.local/bin/miniconda3/envs/"
-          elpy-rpc-virtualenv-path
-          "/home/saul/.local/bin/miniconda3/envs/"
-          elpy-rpc-python-command "python"))
+    :hook
+    (python-mode . python-black-on-save-mode-enable-dwim)
+    (python-mode . yas-minor-mode)
+    (python-mode . linum-mode)
+    (python-mode . yafolding-mode)
+    (python-mode . my-set-python-interpreter)
+    )
 #+end_src
 :END:
 ** R
@@ -1032,9 +1060,17 @@ Change the path for the anaconda (miniconda) installation accordingly
     (add-hook 'ess-r-mode-hook #'my-ess-hook)
     :bind
     ("_" . ess-insert-assign)
-    :config
-
+    :hook
+    (ess-r-mode . linum-mode)
     )
+
+  (use-package format-all
+  :ensure t
+  :hook (ess-mode . format-all-mode)
+  :config
+  (setq-default format-all-formatters
+                '(("formatR" format-all-r-format-buffer))))
+
  #+end_src
 :END:
 *** Rmd
@@ -1096,8 +1132,9 @@ Change the path for the anaconda (miniconda) installation accordingly
 #+BEGIN_SRC emacs-lisp :results silent
   (use-package flycheck
   :ensure t
-  :config
-  (add-hook 'sh-mode-hook 'flycheck-mode)
+  :hook
+  (python-mode . flycheck-mode)
+  (sh-mode . flycheck-mode)
   ;; (setq flycheck-shellcheck-follow-sources nil)
   )
 #+END_SRC
@@ -1108,7 +1145,7 @@ Change the path for the anaconda (miniconda) installation accordingly
   (setq TeX-auto-save t); Enable parse on save.
   (setq TeX-parse-self t)
   (setq-default TeX-master nil)
-  ;; (add-hook 'LaTeX-mode-hook 'visual-line-mode) ;auto-fill-mode
+  (add-hook 'LaTeX-mode-hook 'visual-line-mode) ;auto-fill-mode
   (add-hook 'LaTeX-mode-hook #'flyspell-mode)
   (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
   (add-hook 'LaTeX-mode-hook #'yas-minor-mode)
@@ -1189,9 +1226,8 @@ Change the path for the anaconda (miniconda) installation accordingly
 Setup terminal emulators, [[https://www.emacswiki.org/emacs/AnsiTermHints][ansi-term]] and [[https://www.gnu.org/software/emacs/manual/html_mono/eshell.html][eshell]]
 *** Ansi-term
 #+begin_src emacs-lisp :results silent
-  (defvar my-term "/bin/bash")
   (defadvice ansi-term (before force-bash)
-    (interactive (list my-term)))
+    (interactive (list essl/my-term)))
   (ad-activate 'ansi-term)
   (eval-after-load "term"
     '(define-key term-raw-map (kbd "s-y") 'term-paste))
