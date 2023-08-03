@@ -1039,7 +1039,6 @@ Change the path for the anaconda (miniconda) installation accordingly
     (python-mode . yas-minor-mode)
     (python-mode . linum-mode)
     (python-mode . yafolding-mode)
-    (python-mode . my-set-python-interpreter)
     )
 #+end_src
 :END:
