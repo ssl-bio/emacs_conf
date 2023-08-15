@@ -152,20 +152,54 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
 ** Install themes
 :install-themes:
 #+begin_src emacs-lisp :results silent
-  ;;leuven-theme darktooth-theme autumn-light-theme avk-emacs-theme chyla-theme
-  (setq ithemes '(darktooth-theme modus-themes))
+  ;;leuven-theme darktooth-theme autumn-light-theme darktooth-theme modus-themes
+  (setq ithemes '(base16-theme))
   ;; install themes 
   (dolist (package ithemes)
     (unless (package-installed-p package)
       (package-install package)))
 #+end_src
 :END:
-** Default  theme
-:load-darktooth:
-#+begin_src emacs-lisp
-  (use-package darktooth-theme
-    :ensure t
-    :init (load-theme 'darktooth t))
+** Preferred themes
+:cycle-through-themes:
+#+begin_src emacs-lisp :results silent
+  (setq my-dark-themes '("base16-da-one-sea" "base16-tokyo-night-storm"
+         		       "base16-everforest" "base16-railscasts"
+         		       "base16-sandcastle"))
+  (setq my-light-themes '("base16-grayscale-light"
+      			"dichromacy"
+      			"base16-gruvbox-material-light-soft"
+      			"base16-rose-pine-dawn" "base16-dirtysea"
+  			"base16-equilibrium-gray-light"))
+  ;; Cycle through themes
+  (defun rotate-dark-themes ()
+    (interactive)
+    (dolist (theme custom-enabled-themes)
+    (disable-theme theme))
+    (setq my-dark-themes (append (cdr my-dark-themes) (list (car my-dark-themes))))
+    (let ((theme (car my-dark-themes))
+        	(command (format "(load-theme '%s t)" (car my-dark-themes))))
+      (message "Loading theme: %s" theme)
+      ;; (message "Command: %s" command)
+      (eval (read command))))
+
+  (defun rotate-light-themes ()
+    (interactive)
+    (dolist (theme custom-enabled-themes)
+    (disable-theme theme))
+    (setq my-light-themes (append (cdr my-light-themes) (list (car my-light-themes))))
+    (let ((theme (car my-light-themes))
+        	(command (format "(load-theme '%s t)" (car my-light-themes))))
+      (message "Loading theme: %s" theme)
+      ;; (message "Command: %s" command)
+      (eval (read command))))
+
+  ;; Asign key
+  (global-set-key (kbd "<f12>") 'rotate-dark-themes)
+  (global-set-key (kbd "<f9>") 'rotate-light-themes)
+
+  ;; Default theme
+  (load-theme 'base16-everforest t)
 #+end_src
 :END:
 ** Window size
@@ -211,23 +245,50 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
 #+end_src
 :END:   
 ** Modeline
-=Modeline= is the region on a window where the file name and the active modes (among other information) are displayed. These packages help organizing
-*** Doom-modeline
+=Modeline= is the region on a window where the file name and the active modes (among other information) are displayed. Available modelines [[https://github.com/seagle0128/doom-modeline][Doom-modeline]], [[https://github.com/TheBB/spaceline][Spaceline]], [[https://github.com/gexplorer/simple-modeline][Simple modeline]]
+*** Doom-modeline                            :commented:
 :doom-modeline:
 #+begin_src emacs-lisp :results silent
   ;; Customize modeline
-  (use-package doom-modeline
-    :ensure t
-    :init (doom-modeline-mode 1)
-    :custom (
-             (doom-modeline-height 15)
-             (setq doom-modeline-window-width-limit 65)
-             (setq doom-modeline-buffer-file-name-style 'auto)
-             (setq doom-modeline-buffer-name t)
-             )
-    )
+  ;; (use-package doom-modeline
+  ;;   :ensure t
+  ;;   :init (doom-modeline-mode 1)
+  ;;   :custom (
+  ;;            (doom-modeline-height 20)
+  ;;            (setq doom-modeline-window-width-limit 65)
+  ;;            (setq doom-modeline-buffer-file-name-style 'auto)
+  ;;            (setq doom-modeline-buffer-name t)
+  ;;            )
+  ;;   )
 #+end_src
 :END:
+*** spaceline                                                     :commented:
+:spaceline:
+#+begin_src emacs-lisp :results silent
+  ;; (use-package spaceline
+  ;;   :ensure t
+  ;;   :config
+  ;;   (require 'spaceline-config)
+  ;;   (setq spaceline-buffer-encoding-abbrev-p nil)
+  ;;   (setq spaceline-line-column-p nil)
+  ;;   (setq spaceline-line-p nil)
+  ;;   (setq powerline-default-separator (quote arrow))
+  ;;   (spaceline-spacemacs-theme))
+
+ ;; (require 'spaceline-config)
+  ;; (spaceline-spacemacs-theme)
+#+end_src
+:END:
+*** simple modeline
+#+begin_src emacs-lisp :results silent
+  (use-package simple-modeline
+    :ensure t
+    :hook (after-init . simple-modeline-mode))
+#+end_src
+
+#+RESULTS:
+| simple-modeline-mode | bm-repository-load | debian-ispell-set-default-dictionary | debian-ispell-set-startup-menu | x-wm-set-size-hint | tramp-register-archive-file-name-handler | magit-maybe-define-global-key-bindings | table--make-cell-map |
+
 * Windows
 ** Resize
 - Keybindings to resize windows.
@@ -534,6 +595,326 @@ Define Keybindings to move between windows
     )
 #+end_src
 :END:
+* Coding
+** General
+:general-options:
+#+begin_src emacs-lisp
+  (electric-pair-mode 1)
+  (add-hook 'prog-mode-hook 'linum-mode 1)
+#+end_src
+:END:
+*** Hideshow
+:hideshow-minormode:
+#+begin_src emacs-lisp :results silent
+  (defun toggle-selective-display (column)
+    (interactive "P")
+    (set-selective-display
+     (or column
+         (unless selective-display
+           (1+ (current-column))))))
+
+  (defun toggle-hiding (column)
+    (interactive "P")
+    (if hs-minor-mode
+        (if (condition-case nil
+                (hs-toggle-hiding)
+              (error t))
+            (hs-show-all))
+      (toggle-selective-display column)))
+
+  ;;Define Keybindings for hiding/showing code
+  (global-set-key (kbd "C-+") 'toggle-hiding)
+  (global-set-key (kbd "C-\\") 'toggle-selective-display)
+  ;; (add-hook 'web-mode-hook (lambda () (hs-minor-mode 1)))
+  (add-hook 'ess-r-mode-hook (lambda () (hs-minor-mode 1)))
+#+end_src
+:END:
+** LSP                                        :commented:
+#+begin_src emacs-lisp :results silent
+    ;; (defun ssl/lsp-mode-setup ()
+    ;;   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+    ;;   (lsp-headerline-breadcrumb-mode))
+
+  ;; (use-package lsp-mode
+  ;;   :ensure t
+  ;;   :init
+  ;;   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  ;;   (setq lsp-keymap-prefix "C-c l")
+  ;;   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+  ;;          (sh-mode . lsp-deferred)
+  ;;          ;; if you want which-key integration
+  ;;          (lsp-mode . lsp-enable-which-key-integration))
+  ;;   :commands lsp)
+
+  ;; ;; optionally
+  ;; (use-package lsp-ui
+  ;;   :ensure t
+  ;;   :after lsp-mode
+  ;;   :commands lsp-ui-mode)
+  ;; ;; if you are helm user
+  ;; (use-package helm-lsp
+  ;;   :ensure t
+  ;;   :after lsp-mode
+  ;;   :commands helm-lsp-workspace-symbol)
+
+#+end_src
+
+** Python (Anaconda)
+Change the path for the anaconda (miniconda) installation accordingly
+:config:
+#+begin_src emacs-lisp :results silent
+  ;; Install and configure Conda
+  (use-package conda
+    :ensure t
+    ;; :defer t
+    :init
+    ;; (add-to-list 'exec-path "/media/discs/shared/miniconda3/bin/")
+    (setq conda-anaconda-home essl/anaconda-home)
+    (setq conda-env-home-directory essl/anaconda-venv)
+    :config
+    (conda-env-initialize-interactive-shells)
+    (conda-env-initialize-eshell)
+    (conda-env-autoactivate-mode t)
+    )
+
+  ;; Set up Elpy with Conda integration
+  (use-package elpy
+    :ensure t
+    :init
+    (elpy-enable)
+
+    (setq python-shell-interpreter "python"
+          elpy-rpc-virtualenv-path  'current
+          python-shell-virtualenv-root essl/anaconda-venv
+          elpy-rpc-virtualenv-path  essl/anaconda-venv)
+    )
+
+  (use-package company-anaconda
+    :ensure t
+    :config
+    (eval-after-load "company"
+      '(add-to-list 'company-backends '(company-anaconda)))
+    :hook
+    (python-mode . anaconda-mode)
+    (python-mode . anaconda-eldoc-mode)
+    )
+
+  (use-package python-black
+    :demand t
+    :after python
+    :hook
+    (python-mode . python-black-on-save-mode-enable-dwim)
+    (python-mode . yas-minor-mode)
+    (python-mode . linum-mode)
+    (python-mode . yafolding-mode)
+    )
+#+end_src
+:END:
+** R
+*** ESS
+:configuration:
+#+begin_src emacs-lisp :results silent
+  (defun my-ess-hook ()
+    ;; ensure company-R-library is in ESS backends
+    (make-local-variable 'company-backends)
+    (cl-delete-if (lambda (x) (and (eq (car-safe x) 'company-R-args))) company-backends)
+    (push (list 'company-R-args 'company-R-objects 'company-R-library :separate)
+          company-backends))
+  (use-package ess
+    :ensure t
+    :init
+    (add-hook 'ess-r-mode-hook #'hs-minor-mode)
+    (add-hook 'ess-r-mode-hook #'my-ess-hook)
+    :bind
+    ("_" . ess-insert-assign)
+    :hook
+    (ess-r-mode . linum-mode)
+    )
+
+  (use-package format-all
+  :ensure t
+  :hook (ess-mode . format-all-mode)
+  :config
+  (setq-default format-all-formatters
+                '(("formatR" format-all-r-format-buffer))))
+
+ #+end_src
+:END:
+*** Rmd
+:Rmarkdown:
+#+begin_src emacs-lisp
+  (require 'poly-R)
+  (require 'poly-markdown)
+  (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+r-mode))
+#+end_src
+:END:
+** Html
+:web-beautify:
+#+begin_src emacs-lisp :results silent
+  (use-package web-beautify
+    :ensure t
+    :config
+    (eval-after-load 'js2-mode
+      '(define-key js2-mode-map (kbd "C-c b") 'web-beautify-js))
+    ;; Or if you're using 'js-mode' (a.k.a 'javascript-mode')
+    (eval-after-load 'js
+      '(define-key js-mode-map (kbd "C-c b") 'web-beautify-js))
+
+    (eval-after-load 'json-mode
+      '(define-key json-mode-map (kbd "C-c b") 'web-beautify-js))
+
+    (eval-after-load 'sgml-mode
+      '(define-key html-mode-map (kbd "C-c b") 'web-beautify-html))
+
+    (eval-after-load 'web-mode
+      '(define-key web-mode-map (kbd "C-c b") 'web-beautify-html))
+
+    (eval-after-load 'css-mode
+      '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
+    )
+#+end_src
+:END:
+- [[https://web-mode.org/][Webmode]]: Major mode for editing web templates
+:webmode:
+#+begin_src emacs-lisp :results silent
+  (use-package web-mode
+    :ensure t
+    :config
+    (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+    (setq web-mode-enable-current-column-highlight t)
+    (add-hook 'web-mode-hook #'yas-minor-mode)
+    )
+
+#+end_src
+:END:
+** Flycheck
+:bash:
+#+BEGIN_SRC emacs-lisp :results silent
+  (use-package flycheck
+  :ensure t
+  :hook
+  (python-mode . flycheck-mode)
+  (sh-mode . flycheck-mode)
+  ;; (setq flycheck-shellcheck-follow-sources nil)
+  )
+#+END_SRC
+** Latex
+*** General
+:General-options:
+#+begin_src emacs-lisp :results silent
+  (setq TeX-auto-save t); Enable parse on save.
+  (setq TeX-parse-self t)
+  (setq-default TeX-master nil)
+  (add-hook 'LaTeX-mode-hook 'visual-line-mode) ;auto-fill-mode
+  (add-hook 'LaTeX-mode-hook #'flyspell-mode)
+  (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
+  (add-hook 'LaTeX-mode-hook #'yas-minor-mode)
+#+end_src
+:END:
+*** Aspect
+:editing-customizations:
+#+begin_src emacs-lisp :results silent
+  (use-package magic-latex-buffer
+    :ensure t
+    :init
+    (add-hook 'LaTeX-mode-hook 'magic-latex-buffer)
+    (add-hook 'LaTeX-mode-hook 'olivetti-mode)
+    ;;(add-hook 'LaTeX-mode-hook 'fuente-variable)
+    (add-hook 'LaTeX-mode-hook 'variable-pitch-mode)
+    (setq magic-latex-enable-block-highlight nil
+          magic-latex-enable-suscript        t
+          magic-latex-enable-pretty-symbols  t
+          magic-latex-enable-block-align     nil
+          magic-latex-enable-inline-image    nil
+          magic-latex-enable-minibuffer-echo nil)
+    )
+#+end_src
+:END:
+*** Helm-bibtex
+:helm-bibtex:
+#+begin_src emacs-lisp :results silent
+  (use-package helm-bibtex
+    :ensure t
+    :after helm)
+#+end_src
+:END:
+*** Auctex and Reftex
+:auctex-reftex-conf:
+#+begin_src emacs-lisp :results silent
+  (require 'reftex)
+  (add-hook 'LaTeX-mode-hook 'turn-on-reftex); with AUCTeX LaTeX mode
+  (add-hook 'latex-mode-hook 'turn-on-reftex)   ; with Emacs latex mode
+  (setq reftex-plug-into-AUCTeX t) ; Integrate RefTeX with AUCTeX
+
+  ;;Keybinding for folding sections
+  (add-hook 'LaTeX-mode-hook
+            (lambda ()
+              (define-key LaTeX-mode-map (kbd "<C-tab>") 'outline-toggle-children)))
+#+end_src
+:END:
+*** Synctex
+:synctex:
+#+begin_src emacs-lisp :results silent
+  (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
+  (setq TeX-source-correlate-method 'synctex)
+  (setq TeX-source-correlate-start-server t)
+  (setq TeX-parse-self t); Enable parse on load.
+  (add-hook 'TeX-mode-hook
+            (lambda () (TeX-fold-mode 1)));
+
+#+end_src
+:END:
+*** View output (pdf)
+:pdf-settings:
+#+begin_src emacs-lisp
+  ;; Use pdf-tools to open PDF files
+  (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
+        TeX-source-correlate-start-server t)
+
+  ;; Update PDF buffers after successful LaTeX runs
+  (add-hook 'TeX-after-compilation-finished-functions
+            'TeX-revert-document-buffer)
+#+end_src
+:END:
+** Polymode
+:polymode:
+#+begin_src emacs-lisp :results silent
+  (add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
+#+end_src
+:END:
+** Terminal
+Setup terminal emulators, [[https://www.emacswiki.org/emacs/AnsiTermHints][ansi-term]] and [[https://www.gnu.org/software/emacs/manual/html_mono/eshell.html][eshell]]
+*** Ansi-term
+#+begin_src emacs-lisp :results silent
+  (defadvice ansi-term (before force-bash)
+    (interactive (list essl/my-term)))
+  (ad-activate 'ansi-term)
+  (eval-after-load "term"
+    '(define-key term-raw-map (kbd "s-y") 'term-paste))
+#+end_src
+*** eshell
+:eshell-config: 
+#+begin_src emacs-lisp :results silent
+  (setq eshell-prompt-regexp "^[^#$\n]*[#$] "
+        eshell-prompt-function
+        (lambda nil
+          (concat
+           "[" (user-login-name) "@" (system-name) " "
+           (if (string= (eshell/pwd) (getenv "HOME"))
+               "~" (eshell/basename (eshell/pwd)))
+           "]"
+           (if (= (user-uid) 0) "# " "$ "))))
+    (global-set-key (kbd "<s-return>") 'eshell)
+#+end_src
+:END:
+
 * Org-mode
 ** Aspect
 *** General setup
@@ -927,326 +1308,6 @@ Autocompletion
     (yas-reload-all))
 #+end_src
 :END:
-* Coding
-** General
-:general-options:
-#+begin_src emacs-lisp
-  (electric-pair-mode 1)
-  (add-hook 'prog-mode-hook 'linum-mode 1)
-#+end_src
-:END:
-*** Hideshow
-:hideshow-minormode:
-#+begin_src emacs-lisp :results silent
-  (defun toggle-selective-display (column)
-    (interactive "P")
-    (set-selective-display
-     (or column
-         (unless selective-display
-           (1+ (current-column))))))
-
-  (defun toggle-hiding (column)
-    (interactive "P")
-    (if hs-minor-mode
-        (if (condition-case nil
-                (hs-toggle-hiding)
-              (error t))
-            (hs-show-all))
-      (toggle-selective-display column)))
-
-  ;;Define Keybindings for hiding/showing code
-  (global-set-key (kbd "C-+") 'toggle-hiding)
-  (global-set-key (kbd "C-\\") 'toggle-selective-display)
-  ;; (add-hook 'web-mode-hook (lambda () (hs-minor-mode 1)))
-  (add-hook 'ess-r-mode-hook (lambda () (hs-minor-mode 1)))
-#+end_src
-:END:
-** LSP                                        :commented:
-#+begin_src emacs-lisp :results silent
-    ;; (defun ssl/lsp-mode-setup ()
-    ;;   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-    ;;   (lsp-headerline-breadcrumb-mode))
-
-  ;; (use-package lsp-mode
-  ;;   :ensure t
-  ;;   :init
-  ;;   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-  ;;   (setq lsp-keymap-prefix "C-c l")
-  ;;   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-  ;;          (sh-mode . lsp-deferred)
-  ;;          ;; if you want which-key integration
-  ;;          (lsp-mode . lsp-enable-which-key-integration))
-  ;;   :commands lsp)
-
-  ;; ;; optionally
-  ;; (use-package lsp-ui
-  ;;   :ensure t
-  ;;   :after lsp-mode
-  ;;   :commands lsp-ui-mode)
-  ;; ;; if you are helm user
-  ;; (use-package helm-lsp
-  ;;   :ensure t
-  ;;   :after lsp-mode
-  ;;   :commands helm-lsp-workspace-symbol)
-
-#+end_src
-
-** Python (Anaconda)
-Change the path for the anaconda (miniconda) installation accordingly
-:config:
-#+begin_src emacs-lisp :results silent
-  ;; Install and configure Conda
-  (use-package conda
-    :ensure t
-    ;; :defer t
-    :init
-    ;; (add-to-list 'exec-path "/media/discs/shared/miniconda3/bin/")
-    (setq conda-anaconda-home essl/anaconda-home)
-    (setq conda-env-home-directory essl/anaconda-venv)
-    :config
-    (conda-env-initialize-interactive-shells)
-    (conda-env-initialize-eshell)
-    (conda-env-autoactivate-mode t)
-    )
-
-  ;; Set up Elpy with Conda integration
-  (use-package elpy
-    :ensure t
-    :init
-    (elpy-enable)
-
-    (setq python-shell-interpreter "python"
-          elpy-rpc-virtualenv-path  'current
-          python-shell-virtualenv-root essl/anaconda-venv
-          elpy-rpc-virtualenv-path  essl/anaconda-venv)
-    )
-
-  (use-package company-anaconda
-    :ensure t
-    :config
-    (eval-after-load "company"
-      '(add-to-list 'company-backends '(company-anaconda)))
-    :hook
-    (python-mode . anaconda-mode)
-    (python-mode . anaconda-eldoc-mode)
-    )
-
-  (use-package python-black
-    :demand t
-    :after python
-    :hook
-    (python-mode . python-black-on-save-mode-enable-dwim)
-    (python-mode . yas-minor-mode)
-    (python-mode . linum-mode)
-    (python-mode . yafolding-mode)
-    )
-#+end_src
-:END:
-** R
-*** ESS
-:configuration:
-#+begin_src emacs-lisp :results silent
-  (defun my-ess-hook ()
-    ;; ensure company-R-library is in ESS backends
-    (make-local-variable 'company-backends)
-    (cl-delete-if (lambda (x) (and (eq (car-safe x) 'company-R-args))) company-backends)
-    (push (list 'company-R-args 'company-R-objects 'company-R-library :separate)
-          company-backends))
-  (use-package ess
-    :ensure t
-    :init
-    (add-hook 'ess-r-mode-hook #'hs-minor-mode)
-    (add-hook 'ess-r-mode-hook #'my-ess-hook)
-    :bind
-    ("_" . ess-insert-assign)
-    :hook
-    (ess-r-mode . linum-mode)
-    )
-
-  (use-package format-all
-  :ensure t
-  :hook (ess-mode . format-all-mode)
-  :config
-  (setq-default format-all-formatters
-                '(("formatR" format-all-r-format-buffer))))
-
- #+end_src
-:END:
-*** Rmd
-:Rmarkdown:
-#+begin_src emacs-lisp
-  (require 'poly-R)
-  (require 'poly-markdown)
-  (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+r-mode))
-#+end_src
-:END:
-** Html
-:web-beautify:
-#+begin_src emacs-lisp :results silent
-  (use-package web-beautify
-    :ensure t
-    :config
-    (eval-after-load 'js2-mode
-      '(define-key js2-mode-map (kbd "C-c b") 'web-beautify-js))
-    ;; Or if you're using 'js-mode' (a.k.a 'javascript-mode')
-    (eval-after-load 'js
-      '(define-key js-mode-map (kbd "C-c b") 'web-beautify-js))
-
-    (eval-after-load 'json-mode
-      '(define-key json-mode-map (kbd "C-c b") 'web-beautify-js))
-
-    (eval-after-load 'sgml-mode
-      '(define-key html-mode-map (kbd "C-c b") 'web-beautify-html))
-
-    (eval-after-load 'web-mode
-      '(define-key web-mode-map (kbd "C-c b") 'web-beautify-html))
-
-    (eval-after-load 'css-mode
-      '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
-    )
-#+end_src
-:END:
-- [[https://web-mode.org/][Webmode]]: Major mode for editing web templates
-:webmode:
-#+begin_src emacs-lisp :results silent
-  (use-package web-mode
-    :ensure t
-    :config
-    (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
-    (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
-    (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
-    (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
-    (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
-    (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
-    (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
-    (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-    (setq web-mode-enable-current-column-highlight t)
-    (add-hook 'web-mode-hook #'yas-minor-mode)
-    )
-
-#+end_src
-:END:
-** Flycheck
-:bash:
-#+BEGIN_SRC emacs-lisp :results silent
-  (use-package flycheck
-  :ensure t
-  :hook
-  (python-mode . flycheck-mode)
-  (sh-mode . flycheck-mode)
-  ;; (setq flycheck-shellcheck-follow-sources nil)
-  )
-#+END_SRC
-** Latex
-*** General
-:General-options:
-#+begin_src emacs-lisp :results silent
-  (setq TeX-auto-save t); Enable parse on save.
-  (setq TeX-parse-self t)
-  (setq-default TeX-master nil)
-  (add-hook 'LaTeX-mode-hook 'visual-line-mode) ;auto-fill-mode
-  (add-hook 'LaTeX-mode-hook #'flyspell-mode)
-  (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
-  (add-hook 'LaTeX-mode-hook #'yas-minor-mode)
-#+end_src
-:END:
-*** Aspect
-:editing-customizations:
-#+begin_src emacs-lisp :results silent
-  (use-package magic-latex-buffer
-    :ensure t
-    :init
-    (add-hook 'LaTeX-mode-hook 'magic-latex-buffer)
-    (add-hook 'LaTeX-mode-hook 'olivetti-mode)
-    ;;(add-hook 'LaTeX-mode-hook 'fuente-variable)
-    (add-hook 'LaTeX-mode-hook 'variable-pitch-mode)
-    (setq magic-latex-enable-block-highlight nil
-          magic-latex-enable-suscript        t
-          magic-latex-enable-pretty-symbols  t
-          magic-latex-enable-block-align     nil
-          magic-latex-enable-inline-image    nil
-          magic-latex-enable-minibuffer-echo nil)
-    )
-#+end_src
-:END:
-*** Helm-bibtex
-:helm-bibtex:
-#+begin_src emacs-lisp :results silent
-  (use-package helm-bibtex
-    :ensure t
-    :after helm)
-#+end_src
-:END:
-*** Auctex and Reftex
-:auctex-reftex-conf:
-#+begin_src emacs-lisp :results silent
-  (require 'reftex)
-  (add-hook 'LaTeX-mode-hook 'turn-on-reftex); with AUCTeX LaTeX mode
-  (add-hook 'latex-mode-hook 'turn-on-reftex)   ; with Emacs latex mode
-  (setq reftex-plug-into-AUCTeX t) ; Integrate RefTeX with AUCTeX
-
-  ;;Keybinding for folding sections
-  (add-hook 'LaTeX-mode-hook
-            (lambda ()
-              (define-key LaTeX-mode-map (kbd "<C-tab>") 'outline-toggle-children)))
-#+end_src
-:END:
-*** Synctex
-:synctex:
-#+begin_src emacs-lisp :results silent
-  (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
-  (setq TeX-source-correlate-method 'synctex)
-  (setq TeX-source-correlate-start-server t)
-  (setq TeX-parse-self t); Enable parse on load.
-  (add-hook 'TeX-mode-hook
-            (lambda () (TeX-fold-mode 1)));
-
-#+end_src
-:END:
-*** View output (pdf)
-:pdf-settings:
-#+begin_src emacs-lisp
-  ;; Use pdf-tools to open PDF files
-  (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
-        TeX-source-correlate-start-server t)
-
-  ;; Update PDF buffers after successful LaTeX runs
-  (add-hook 'TeX-after-compilation-finished-functions
-            'TeX-revert-document-buffer)
-#+end_src
-:END:
-** Polymode
-:polymode:
-#+begin_src emacs-lisp :results silent
-  (add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
-#+end_src
-:END:
-** Terminal
-Setup terminal emulators, [[https://www.emacswiki.org/emacs/AnsiTermHints][ansi-term]] and [[https://www.gnu.org/software/emacs/manual/html_mono/eshell.html][eshell]]
-*** Ansi-term
-#+begin_src emacs-lisp :results silent
-  (defadvice ansi-term (before force-bash)
-    (interactive (list essl/my-term)))
-  (ad-activate 'ansi-term)
-  (eval-after-load "term"
-    '(define-key term-raw-map (kbd "s-y") 'term-paste))
-#+end_src
-*** eshell
-:eshell-config: 
-#+begin_src emacs-lisp :results silent
-  (setq eshell-prompt-regexp "^[^#$\n]*[#$] "
-        eshell-prompt-function
-        (lambda nil
-          (concat
-           "[" (user-login-name) "@" (system-name) " "
-           (if (string= (eshell/pwd) (getenv "HOME"))
-               "~" (eshell/basename (eshell/pwd)))
-           "]"
-           (if (= (user-uid) 0) "# " "$ "))))
-    (global-set-key (kbd "<s-return>") 'eshell)
-#+end_src
-:END:
-
 * Dired
 ** Configuration
 :dired-config:
@@ -1377,3 +1438,36 @@ Use pdf-tools as default pdf viewer in emacs. Customize navigation and highlight
   (setq tramp-default-method "ssh")
 #+end_src
 :END:
+* Others
+** yequake-frames
+"This package provides configurable, drop-down Emacs frames" ([[https://github.com/alphapapa/yequake][Official GitHub repository]])
+To work from outside emacs (although emacs needs to be running) a shortcut for the following command should be created  ~emacsclient -n -e '(yequake-toggle "tmp-notes")'~
+#+begin_src emacs-lisp :result silent
+  (use-package yequake
+    :ensure t
+    :init
+    (get-buffer-create "tmp-notes")
+    :config
+    (setq yequake-frames
+          '(("tmp-notes" .
+             ((width . 0.45)
+              (height . 0.45)
+              (alpha . 0.85)
+              (buffer-fns . ("tmp-notes"))
+              (frame-parameters . ((undecorated . t)
+                                   (menu-bar-lines . 0)
+                                   ))
+              ))))
+    )
+  ;; (require 'yequake)
+  ;; (setq yequake-frames
+  ;;       '(("notes" .
+  ;;          ((width . 0.45)
+  ;;           (height . 0.35)
+  ;;           (alpha . 0.95)
+  ;;           ;; (buffer-fns . ("~/src/emacs/yequake/yequake.el"
+  ;;           ;;                split-window-horizontally
+  ;;           ;;                "*scratch*"))
+  ;;           (buffer-fns . ("*scratch*"))
+  ;;           (frame-parameters . ((undecorated . t)))))))
+#+end_src
