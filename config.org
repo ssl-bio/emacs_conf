@@ -42,9 +42,6 @@
   ;; Just one space is needed.
   (setq sentence-end-double-space nil)
 
-  ;; Space between lines
-  (setq-default line-spacing 4)
-
   ;; Make buffer's names unique by adding a path
   (setq uniquify-buffer-name-style 'forward)
   (put 'dired-find-alternate-file 'disabled nil)
@@ -55,6 +52,8 @@
     (server-start)
     ;; (setq server-socket-dir "~/.emacs.d/server")
     )
+  ;; Line spacing 
+  (setq-default line-spacing 4)
 
   ;;  Load shell conf (.bashrc)
   ;; (use-package exec-path-from-shell
@@ -114,7 +113,7 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
 ** Packages without configuration
 :install-packages:
 #+begin_src emacs-lisp :results silent
-  (setq ipackages '(magit ox-gfm org auctex ebib ess helm-R olivetti unfill format-all org poly-R poly-markdown))
+  (setq ipackages '(magit ox-gfm org auctex ebib ess helm-R olivetti unfill format-all org poly-R poly-markdown crux))
   ;; install packages 
   (dolist (package ipackages)
       (straight-use-package package))
@@ -126,7 +125,7 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
 :install-themes:
 #+begin_src emacs-lisp :results silent
   ;;modus-themes
-  (setq ithemes '(base16-theme))
+  (setq ithemes '(base16-theme modus-themes doom-themes))
 
   ;; install themes 
   (dolist (theme ithemes)
@@ -134,22 +133,34 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
 #+end_src
 :END:
 ** Preferred themes
+*** Built-in
+- light: "dichromacy"
+*** base16 themes
+- dark: "base16-da-one-sea" "base16-tokyo-night-storm" "base16-everforest" "base16-railscasts" "base16-sandcastle"
+- light: "base16-github" "base16-dirtysea" "base16-equilibrium-gray-light"
+- write: "base16-grayscale-light" "base16-gruvbox-material-light-soft" "base16-rose-pine-dawn" "base16-tokyo-city-terminal-light"
+*** modus
+-light: "modus-operandi"
+*** Functions to cycle over preferred themes
 :cycle-through-themes:
 #+begin_src emacs-lisp :results silent
   ;; List of favorite themes
   (setq my-dark-themes '("base16-da-one-sea" "base16-tokyo-night-storm"
-         		       "base16-everforest" "base16-railscasts"
-         		       "base16-sandcastle"))
-  (setq my-light-themes '("base16-grayscale-light"
-      			"dichromacy"
-      			"base16-gruvbox-material-light-soft"
-      			"base16-rose-pine-dawn" "base16-dirtysea"
-  			"base16-equilibrium-gray-light"))
+           	       "base16-everforest" "base16-railscasts"
+           	       "base16-sandcastle"))
+  (setq my-light-themes '("base16-github"
+        			"dichromacy"
+        			"modus-operandi" "base16-dirtysea"
+    			"base16-equilibrium-gray-light"))
+  (setq my-write-themes '("base16-grayscale-light"
+        			"base16-gruvbox-material-light-soft"
+        			"base16-rose-pine-dawn"
+    			"base16-tokyo-city-terminal-light"))
   ;; Cycle through themes
   (defun rotate-dark-themes ()
     (interactive)
     (dolist (theme custom-enabled-themes)
-    (disable-theme theme))
+      (disable-theme theme))
     (setq my-dark-themes (append (cdr my-dark-themes) (list (car my-dark-themes))))
     (let ((theme (car my-dark-themes))
         	(command (format "(load-theme '%s t)" (car my-dark-themes))))
@@ -163,7 +174,18 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
     (disable-theme theme))
     (setq my-light-themes (append (cdr my-light-themes) (list (car my-light-themes))))
     (let ((theme (car my-light-themes))
-        	(command (format "(load-theme '%s t)" (car my-light-themes))))
+          (command (format "(load-theme '%s t)" (car my-light-themes))))
+      (message "Loading theme: %s" theme)
+      ;; (message "Command: %s" command)
+      (eval (read command))))
+
+  (defun rotate-write-themes ()
+    (interactive)
+    (dolist (theme custom-enabled-themes)
+      (disable-theme theme))
+    (setq my-write-themes (append (cdr my-write-themes) (list (car my-write-themes))))
+    (let ((theme (car my-write-themes))
+          (command (format "(load-theme '%s t)" (car my-write-themes))))
       (message "Loading theme: %s" theme)
       ;; (message "Command: %s" command)
       (eval (read command))))
@@ -171,9 +193,10 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
   ;; Asign key
   (global-set-key (kbd "<f12>") 'rotate-dark-themes)
   (global-set-key (kbd "<f9>") 'rotate-light-themes)
+  (global-set-key (kbd "<f7>") 'rotate-write-themes)
 
   ;; Default theme
-  (load-theme 'base16-everforest t)
+  (load-theme 'base16-railscasts t)
 #+end_src
 :END:
 ** Window size
@@ -219,13 +242,26 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
 :all-the-icons:
 #+begin_src emacs-lisp :results silent
   ;;Install icons for files and folders
-  (use-package all-the-icons 
-    :straight (all-the-icons :type git 
-   			   :flavor melpa 
-   			   :files (
-   				   :defaults "data" "all-the-icons-pkg.el") 
-   			   :host github 
-    			   :repo "domtronn/all-the-icons.el"))
+  ;; (use-package all-the-icons 
+  ;;   :straight (all-the-icons :type git 
+  ;;  			   :flavor melpa 
+  ;;  			   :files (
+  ;;  				   :defaults "data" "all-the-icons-pkg.el") 
+  ;;  			   :host github 
+  ;;   			   :repo "domtronn/all-the-icons.el"))
+#+end_src
+:END:
+:nerd-icons:
+#+begin_src emacs-lisp
+  (use-package nerd-icons
+    :straight (nerd-icons :type git 
+  			:flavor melpa 
+  			:files (
+  				:defaults "data" "nerd-icons-pkg.el") 
+  			:host github 
+  			:repo "rainstormstudio/nerd-icons.el")
+    
+    )
 #+end_src
 :END:   
 ** Modeline
@@ -266,15 +302,34 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
   ;; (spaceline-spacemacs-theme)
 #+end_src
 :END:
-*** simple modeline
+*** simple modeline                          :commented:
 #+begin_src emacs-lisp :results silent
-  (use-package simple-modeline
-    :straight (simple-modeline :type git 
-  			     :flavor melpa 
-  			     :host github 
-  			     :repo "gexplorer/simple-modeline")
-    :hook (after-init . simple-modeline-mode))
+  ;; (use-package simple-modeline
+  ;;   :straight (simple-modeline :type git 
+  ;; 			     :flavor melpa 
+  ;; 			     :host github 
+  ;; 			     :repo "gexplorer/simple-modeline")
+  ;;   :hook (after-init . simple-modeline-mode))
 #+end_src
+*** Telephone line
+:telephone-line:
+#+begin_src emacs-lisp
+  (use-package telephone-line
+    :straight (telephone-line :type git
+  			    :flavor melpa
+  			    :host github
+  			    :repo "dbordak/telephone-line")
+    :init
+    (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
+  	telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
+  	telephone-line-primary-right-separator 'telephone-line-cubed-right
+  	telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
+    :config
+    (telephone-line-mode 1)
+
+    )
+#+end_src
+:END:
 * Windows
 ** Resize
 - Keybindings to resize windows.
@@ -424,6 +479,23 @@ Define Keybindings to move between windows
       (global-set-key "\C-x\ \C-r" 'recentf-open-files))
   #+END_SRC
   :END:
+** Neotree
+:neotree:
+#+begin_src emacs-lisp
+  (use-package neotree
+    :straight (neotree :type git 
+  		     :flavor melpa 
+  		     :files (
+  			     :defaults "icons" "neotree-pkg.el") 
+  		     :host github 
+  		     :repo "jaypei/emacs-neotree")
+    :bind
+    (:map global-map
+  	([f8] . 'neotree-toggle)
+  	)
+    )
+#+end_src
+:END:
 ** Treemacs
 [[https://github.com/Alexander-Miller/treemacs][Treemacs]] - a tree layout file explorer for Emacs
 :treemacs:
@@ -455,7 +527,7 @@ Define Keybindings to move between windows
       (treemacs-filewatch-mode t))
     :bind
     (:map global-map
-          ([f8]        . treemacs)
+          ([f6]        . treemacs)
           ;; ([f9]        . treemacs-projectile-toggle)
           ;; ("<C-M-tab>" . treemacs-toggle)
           ("M-0"       . treemacs-select-window)
@@ -620,8 +692,8 @@ Define Keybindings to move between windows
 :general-options:
 #+begin_src emacs-lisp :results silent
   (electric-pair-mode 1)
-  (add-hook 'prog-mode-hook 'linum-mode 1)
-  ;; (add-hook 'prog-mode-hook 'outline-minor-mode 1)
+  (add-hook 'prog-mode-hook 'nlinum-mode 1)
+  ;;(add-hook 'prog-mode-hook 'outline-minor-mode 1)
   ;; (setq outline-minor-mode-prefix (kbd "C-c ;"))
 
  #+end_src
@@ -651,7 +723,34 @@ Define Keybindings to move between windows
   ;; (add-hook 'web-mode-hook (lambda () (hs-minor-mode 1)))
   (add-hook 'ess-r-mode-hook (lambda () (hs-minor-mode 1)))
   ;; (add-hook 'python-mode-hook (lambda () (hs-minor-mode 1)))
-  #+end_src
+#+end_src
+:END:
+*** Vimish mode
+:vimish-mode:
+#+begin_src emacs-lisp
+  (use-package vimish-fold
+    :straight (vimish-fold :type git 
+  			 :flavor melpa 
+  			 :host github 
+  			 :repo "matsievskiysv/vimish-fold")
+    :hook
+    (python-mode . vimish-mode)   
+    )
+#+end_src
+:END:
+*** Nlinum
+:nlinum:
+#+begin_src emacs-lisp
+  (use-package nlinum
+    :straight (nlinum :type git 
+  		    :host github      	       
+  		    :repo "emacs-straight/nlinum" 
+  		    :files ("*" (
+  				 :exclude ".git")))
+    )
+
+#+end_src
+
 :END:
 ** LSP                                        :commented:
 #+begin_src emacs-lisp :results silent
@@ -733,22 +832,6 @@ Change the path for the anaconda (miniconda) installation accordingly
     (conda-env-autoactivate-mode t)
     )
 
-  ;; Set up Elpy with Conda integration
-  (use-package elpy
-    :straight (elpy :type git 
-      		  :flavor melpa 
-      		  :files ("*.el" "NEWS.rst" "snippets" "elpy" "elpy-pkg.el") 
-      		  :host github 
-      		  :repo "jorgenschaefer/elpy")
-    :init
-    (elpy-enable)
-
-    (setq python-shell-interpreter "python"
-          elpy-rpc-virtualenv-path  'current
-          python-shell-virtualenv-root essl/anaconda-venv
-          elpy-rpc-virtualenv-path  essl/anaconda-venv)
-    )
-
   (use-package company-anaconda
     :straight (company-anaconda :type git 
     			      :flavor melpa 
@@ -771,8 +854,25 @@ Change the path for the anaconda (miniconda) installation accordingly
     :hook
     (python-mode . python-black-on-save-mode-enable-dwim)
     (python-mode . yas-minor-mode)
-    (python-mode . linum-mode)
-    (python-mode . yafolding-mode)
+    (python-mode . nlinum-mode)
+    ;; (python-mode . yafolding-mode)
+    ;; (python-mode . hs-minor-mode)
+    )
+
+  ;; Set up Elpy with Conda integration
+  (use-package elpy
+    :straight (elpy :type git 
+            	  :flavor melpa 
+            	  :files ("*.el" "NEWS.rst" "snippets" "elpy" "elpy-pkg.el") 
+            	  :host github 
+            	  :repo "jorgenschaefer/elpy")
+    :init
+    (elpy-enable)
+
+    (setq python-shell-interpreter "python"
+          elpy-rpc-virtualenv-path  'current
+          python-shell-virtualenv-root essl/anaconda-venv
+          elpy-rpc-virtualenv-path  essl/anaconda-venv)
     )
 #+end_src
 :END:
@@ -799,7 +899,7 @@ Change the path for the anaconda (miniconda) installation accordingly
     :bind
     ("_" . ess-insert-assign)
     :hook
-    (ess-r-mode . linum-mode)
+    (ess-r-mode . nlinum-mode)
     )
 
   (use-package format-all
@@ -887,6 +987,29 @@ Change the path for the anaconda (miniconda) installation accordingly
     (add-hook 'web-mode-hook #'yas-minor-mode)
     )
 
+#+end_src
+:END:
+:sass:
+#+begin_src emacs-lisp
+  (use-package sass-mode
+    :straight (sass-mode :type git 
+  		       :flavor melpa 
+  		       :host github 
+  		       :repo "nex3/sass-mode")
+    :config
+    ;; (setq exec-path (cons (expand-file-name "") exec-path))
+    )
+#+end_src
+:END:
+:rainbow-mode:
+#+begin_src emacs-lisp
+  (use-package rainbow-mode
+    :straight (rainbow-mode :type git 
+  			  :host github 
+  			  :repo "emacs-straight/rainbow-mode" 
+  			  :files ("*" (
+  				       :exclude ".git")))
+    )
 #+end_src
 :END:
 ** Flycheck
@@ -1286,7 +1409,8 @@ It is necessary to load [[https://superuser.com/questions/896741/how-do-i-config
   		       :flavor melpa 
   		       :host github 
   		       :repo "yjwen/org-reveal")
-    :defer t
+    :init
+    (require 'ox-reveal)
     )
 #+end_src
 :END:
@@ -1307,6 +1431,24 @@ It is necessary to load [[https://superuser.com/questions/896741/how-do-i-config
 :END:
 
 * Editing
+** Smart-Hungry delete
+:smart-hungry:
+#+begin_src emacs-lisp
+  (use-package smart-hungry-delete
+    :straight (smart-hungry-delete :type git
+  				 :flavor melpa
+  				 :host github
+  				 :repo "hrehfeld/emacs-smart-hungry-delete")
+    :bind
+    ;; (:map python-mode-map
+    ([remap backward-delete-char-untabify] . smart-hungry-delete-backward-char)
+    ([remap delete-backward-char] . smart-hungry-delete-backward-char)
+    ([remap delete-char] . smart-hungry-delete-forward-char)
+    ;; )
+    :init
+    (smart-hungry-delete-add-default-hooks))
+#+end_src
+:END:
 ** Smoothscrolling
 This makes it so C-n-ing and C-p-ing won’t make the buffer jump
 around so much.
@@ -1455,35 +1597,51 @@ Autocompletion
 ** Expand region, iedit
 - Gradually expands selected region
 :expand-region:
-   #+begin_src emacs-lisp :results silent
-     (use-package expand-region
-       :straight (expand-region :type git 
-               		   :flavor melpa 
-               		   :host github 
-               		   :repo "magnars/expand-region.el")
-       :config
-       (global-set-key (kbd "C-=") 'er/expand-region))
+#+begin_src emacs-lisp :results silent
+  (use-package expand-region
+    :straight (expand-region :type git 
+                             :flavor melpa 
+                             :host github 
+                             :repo "magnars/expand-region.el")
+    :config
+    (global-set-key (kbd "C-=") 'er/expand-region))
 
-     ;;Mark similar occurences and edit them at the same time
-     (use-package multiple-cursors
-       :straight (multiple-cursors :type git 
-          			      :flavor melpa 
-          			      :host github 
-          			      :repo "magnars/multiple-cursors.el") 
-       :config
-       (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-       (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-       (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-       (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
-       )
+  ;;Mark similar occurences and edit them at the same time
+  (use-package multiple-cursors
+    :straight (multiple-cursors :type git 
+                      	      :flavor melpa 
+                      	      :host github 
+                      	      :repo "magnars/multiple-cursors.el") 
+    :config
+    (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+    (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+    (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+    (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+    )
 
-     (use-package iedit
-       :straight (iedit :type git 
-     		   :flavor melpa 
-     		   :host github 
-     		   :repo "victorhge/iedit"))
-   #+end_src
-   :END:
+  (use-package iedit
+    :straight (iedit :type git 
+                 	   :flavor melpa 
+                 	   :host github 
+                 	   :repo "victorhge/iedit"))
+
+  (use-package wrap-region
+    :straight (wrap-region :type git 
+       			 :flavor melpa 
+       			 :host github 
+       			 :repo "rejeep/wrap-region.el")
+    :hook
+    (org-mode . wrap-region-mode)
+    
+    :config
+    (wrap-region-add-wrapper "=" "=" nil 'org-mode) ; select region, hit = then region -> =region= in org-mode
+    (wrap-region-add-wrapper "*" "*" nil 'org-mode) ; select region, hit * then region -> *region* in org-mode
+    (wrap-region-add-wrapper "/" "/" nil 'org-mode) ; select region, hit / then region -> /region/ in org-mode
+    (wrap-region-add-wrapper "_" "_" nil 'org-mode) ; select region, hit _ then region -> _region_ in org-mode
+    (wrap-region-add-wrapper "+" "+" nil 'org-mode) ; select region, hit + then region -> +region+ in org-mode
+    )
+#+end_src
+:END:
 
 ** Yasnippet
 :yasnippet:
@@ -1507,6 +1665,23 @@ Autocompletion
     (org-mode . yas-minor-mode)
     )
   ;; (define-key yas-minor-mode-map (kbd "M-y") 'yas-expand)
+#+end_src
+:END:
+** Writing
+*** Thesaurus
+For quick access to specific query types, use these commands:
+- =powerthesaurus-lookup-synonyms-dwim=
+- =powerthesaurus-lookup-antonyms-dwim=
+- =powerthesaurus-lookup-related-dwim=
+- =powerthesaurus-lookup-definitions-dwim=
+- =powerthesaurus-lookup-sentences-dwim=
+:power-thesaurus:
+#+begin_src emacs-lisp
+  (use-package powerthesaurus
+   :straight (powerthesaurus :type git
+  		     :flavor melpa
+  		     :host github
+  		     :repo "SavchenkoValeriy/emacs-powerthesaurus"))
 #+end_src
 :END:
 * Dired
@@ -1701,3 +1876,12 @@ Use pdf-tools as default pdf viewer in emacs. Customize navigation and highlight
     )
 #+end_src
 
+** Lorem ipsum
+#+begin_src emacs-lisp
+      (use-package lorem-ipsum
+      :straight (lorem-ipsum :type git
+      		       :flavor melpa
+      		       :host github
+      		       :repo "jschaf/emacs-lorem-ipsum")
+      )
+#+end_src
