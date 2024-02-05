@@ -276,15 +276,15 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
              :default-height 170
              )
             (t
-             :default-family "Roboto Mono"
+             :default-family "Courier New" ;;Roboto Mono
              :default-weight regular
-             :fixed-pitch-family "Source Code Pro"
+             :fixed-pitch-family "Courier New" ;;Source Code Pro
              :fixed-pitch-weight regular
              :fixed-pitch-height 1.0
              :fixed-pitch-serif-family nil ; falls back to :default-family
              :fixed-pitch-serif-weight nil ; falls back to :default-weight
              :fixed-pitch-serif-height 1.0
-             :variable-pitch-family "Nunito"
+             :variable-pitch-family "Verdana" ;;Nunito
              :variable-pitch-weight regular
              :variable-pitch-height 1.0
              :bold-family nil ; use whatever the underlying face has
@@ -472,9 +472,6 @@ When using a split frame, change the size of the windows based on which one is a
      '(zoom-size '(0.618 . 0.618)))
     )
 #+end_src
-
-#+RESULTS:
-
 :END:
 * Navigating
 ** Move between windows

@@ -55,10 +55,6 @@ For some packages user configuration is required, mainly specifying the path for
     
     ;; Path to bash (ansi term)
     (defvar essl/my-term "/bin/bash")
-    
-    ;; Fonts
-    (defvar essl/mono-font "Courier New")
-    (defvar essl/sans-font "Verdana")
     ```
 
 
