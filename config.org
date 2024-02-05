@@ -1,5 +1,5 @@
 * Setup custom file
-- Customizations can become too long thus, it is better to set up the customize file to a separate file  and keep the  =init.el= file less cluttered.
+- Write customizations to a separate file =custom.el=.
 :setup-custom:
 #+BEGIN_SRC emacs-lisp :results silent
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
@@ -52,8 +52,11 @@
     (server-start)
     ;; (setq server-socket-dir "~/.emacs.d/server")
     )
+  ;; Enable variable-pitch mode for text-mode
+  (add-hook 'text-mode-hook #'variable-pitch-mode)
+
   ;; Line spacing 
-  (setq-default line-spacing 4)
+  ;; (setq-default line-spacing 4)
 
   ;;  Load shell conf (.bashrc)
   ;; (use-package exec-path-from-shell
@@ -68,8 +71,8 @@
 Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* Org-ref][Org-ref bibtex-path]] [[* Org-reveal][Org-reveal]] [[* Ansi-term][Ansi-term]]
 :custom-vars:
 #+begin_src emacs-lisp :results silent
-  (defvar essl/default-font-size 120)
-  (defvar essl/default-variable-font-size 120)
+  ;; (defvar essl/default-font-size 120)
+  ;; (defvar essl/default-variable-font-size 120)
 
   ;; Path to anaconda installation 
   (defvar essl/anaconda-home "~/.local/bin/miniconda3")
@@ -124,8 +127,8 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
 ** Install themes
 :install-themes:
 #+begin_src emacs-lisp :results silent
-  ;;modus-themes
-  (setq ithemes '(base16-theme modus-themes doom-themes))
+  ;;modus-themes base16-theme doom-themes
+  (setq ithemes '(ef-themes modus-themes base16-theme))
 
   ;; install themes 
   (dolist (theme ithemes)
@@ -141,17 +144,18 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
 - write: "base16-grayscale-light" "base16-gruvbox-material-light-soft" "base16-rose-pine-dawn" "base16-tokyo-city-terminal-light"
 *** modus
 -light: "modus-operandi"
+*** ef-themes
+- light: "ef-day" "ef-deuteranopia-light" "ef-elea-light" "ef-kassio" "ef-melissa-light" "ef-tritanopia-light"
+- dark: "ef-autumn" "ef-elea-dark" "ef-maris-dark" "ef-tritanopia-dark"
 *** Functions to cycle over preferred themes
 :cycle-through-themes:
 #+begin_src emacs-lisp :results silent
   ;; List of favorite themes
-  (setq my-dark-themes '("base16-da-one-sea" "base16-tokyo-night-storm"
-           	       "base16-everforest" "base16-railscasts"
-           	       "base16-sandcastle"))
-  (setq my-light-themes '("base16-github"
-        			"dichromacy"
-        			"modus-operandi" "base16-dirtysea"
-    			"base16-equilibrium-gray-light"))
+  (setq my-dark-themes '("ef-autumn" "ef-elea-dark" "ef-maris-dark"
+  		       "ef-tritanopia-dark"))
+  (setq my-light-themes '("dichromacy" "modus-operandi" "ef-day"
+  			"ef-deuteranopia-light" "ef-elea-light" "ef-kassio"
+  			"ef-melissa-light" "ef-tritanopia-light"))
   (setq my-write-themes '("base16-grayscale-light"
         			"base16-gruvbox-material-light-soft"
         			"base16-rose-pine-dawn"
@@ -209,19 +213,105 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
 #+end_src
 :END:
 
-** Font
-*** Default font 
-:font:
+** Fonts
+*** Fonts in org-mode
+:Font-faces:
 #+begin_src emacs-lisp :results silent
-  ;; (set-face-attribute 'default nil :font essl/mono-font :height 120)
+  (defun customize-org-faces ()
+    "Customize org-faces"
+    ;;Size for heading levels
+    (dolist (face '((org-level-1 . 1.5)
+                    (org-level-2 . 1.4)
+                    (org-level-3 . 1.3)
+                    (org-level-4 . 1.2)
+                    (org-level-5 . 1.1)
+                    (org-level-6 . 1.0)
+                    (org-level-7 . 1.0)
+                    (org-level-8 . 1.0)))
+      (set-face-attribute (car face) nil
+    			:inherit 'variable-pitch
+    			:height (cdr face))
+      )
 
-  ;; Set the fixed pitch face
-  ;; (set-face-attribute 'fixed-pitch nil :font essl/mono-font :height 120)
+    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+    (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
+    (set-face-attribute 'org-drawer nil    :inherit 'fixed-pitch)
+    (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
+    (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+    (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
+    (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
+    (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch)
+    )
+  (customize-org-faces)
+#+end_src
+:END:
+*** Fontaine
+- Package to customize fonts (faces) written by Protesilaos Stavrou
+  - [[https://protesilaos.com/emacs/fontaine][Manual]]
+  - [[https://www.youtube.com/watch?v=qR8JRYr4BKE][Youtube demo]]
+- =Fontaine-presets= need more work (customize further)
+:fontaine:
+#+begin_src emacs-lisp
+  (use-package fontaine
+    :straight (fontaine
+      	     :type git
+      	     :host github
+      	     :repo "emacs-straight/fontaine"
+      	     :files ("*" (:exclude ".git")))
+    :config
+    (setq fontaine-latest-state-file
+    	(locate-user-emacs-file "fontaine-latest-state.eld"))
+    (setq fontaine-presets
+    	'(
+            (regular
+             :default-height 130)
+            (medium
+             :default-height 150)
+            (large
+             :default-height 170
+             )
+            (t
+             :default-family "Roboto Mono"
+             :default-weight regular
+             :fixed-pitch-family "Source Code Pro"
+             :fixed-pitch-weight regular
+             :fixed-pitch-height 1.0
+             :fixed-pitch-serif-family nil ; falls back to :default-family
+             :fixed-pitch-serif-weight nil ; falls back to :default-weight
+             :fixed-pitch-serif-height 1.0
+             :variable-pitch-family "Nunito"
+             :variable-pitch-weight regular
+             :variable-pitch-height 1.0
+             :bold-family nil ; use whatever the underlying face has
+             :bold-weight bold
+             :italic-family nil
+             :italic-slant italic
+             :line-spacing 4)))
+    )
+  ;; Recover last preset or fall back to desired style from
+  ;; `fontaine-presets'.
+  (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
 
-  ;; Set the variable pitch face
-  ;; (set-face-attribute 'variable-pitch nil :font essl/sans-font :height 120)
-  ;; Nunito
-  ;;:weight 'regular
+  ;; The other side of `fontaine-restore-latest-preset'.
+  (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset)
+
+  (defvar after-enable-theme-hook nil
+    "Normal hook run after enabling a theme.")
+
+  (defun run-after-enable-theme-hook (&rest _args)
+    "Run `after-enable-theme-hook'."
+    (run-hooks 'after-enable-theme-hook))
+
+  (advice-add 'enable-theme :after #'run-after-enable-theme-hook)
+
+  (add-hook 'after-enable-theme-hook #'fontaine-apply-current-preset)
+  (add-hook 'after-enable-theme-hook #'customize-org-faces)
+
 #+end_src
 :END:
 *** Font scaling
@@ -238,7 +328,8 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
   (define-key ctl-x-map [(control ?0)] 'zoom-in/out)
 #+end_src
 :END:
-** All the icons
+** Icons
+*** All the icons                            :commented:
 :all-the-icons:
 #+begin_src emacs-lisp :results silent
   ;;Install icons for files and folders
@@ -251,6 +342,7 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
   ;;   			   :repo "domtronn/all-the-icons.el"))
 #+end_src
 :END:
+*** Nerd Icons
 :nerd-icons:
 #+begin_src emacs-lisp
   (use-package nerd-icons
@@ -271,18 +363,18 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
 #+begin_src emacs-lisp :results silent
   ;; Customize modeline
   ;; ( use-package doom-modeline
-    ;; :straight (doom-modeline :type git 
-    ;; 			   :flavor melpa 
-    ;; 			   :host github 
-    ;; 			   :repo "seagle0128/doom-modeline")
-    ;; :init (doom-modeline-mode 1)
-    ;; :custom (
-    ;;          (doom-modeline-height 20)
-    ;;          (setq doom-modeline-window-width-limit 65)
-    ;;          (setq doom-modeline-buffer-file-name-style 'auto)
-    ;;          (setq doom-modeline-buffer-name t)
-    ;;          )
-    ;; )
+  ;;   :straight (doom-modeline :type git 
+  ;; 			   :flavor melpa 
+  ;; 			   :host github 
+  ;; 			   :repo "seagle0128/doom-modeline")
+  ;;   :init (doom-modeline-mode 1)
+  ;;   :custom (
+  ;;            (doom-modeline-height 30)
+  ;;            (setq doom-modeline-window-width-limit 65)
+  ;;            (setq doom-modeline-buffer-file-name-style 'auto)
+  ;;            (setq doom-modeline-buffer-name t)
+  ;;            )
+  ;;   )
 #+end_src
 :END:
 *** spaceline                                :commented:
@@ -364,6 +456,26 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
 #+END_SRC
 :END:
 
+** Zoom
+When using a split frame, change the size of the windows based on which one is active
+- Documentation ([[https://github.com/cyrus-and/zoom][GitHub]])
+:zoom:
+#+begin_src emacs-lisp
+  (use-package zoom
+    :straight (zoom
+   	     :type git
+   	     :flavor melpa
+   	     :host github
+   	     :repo "cyrus-and/zoom")
+    :init
+    (custom-set-variables
+     '(zoom-size '(0.618 . 0.618)))
+    )
+#+end_src
+
+#+RESULTS:
+
+:END:
 * Navigating
 ** Move between windows
 Define Keybindings to move between windows
@@ -387,16 +499,6 @@ Define Keybindings to move between windows
     (eyebrowse-mode))
 #+END_SRC
 :END:
-** Winner mode                                :commented:
-- Winner mode allows you to undo/redo changes to window changes in Emacs and allows you.
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package winner
-  ;;   :ensure t
-  ;;   :config
-  ;;   (winner-mode t)
-  ;;   :bind (("C-c <left>" . winner-undo)
-  ;;          ("C-c <right>" . winner-redo)))
-#+END_SRC
 ** Bookmarks
 :bookmarks:
 #+begin_src emacs-lisp :results silent
@@ -728,14 +830,14 @@ Define Keybindings to move between windows
 *** Vimish mode
 :vimish-mode:
 #+begin_src emacs-lisp
-  (use-package vimish-fold
-    :straight (vimish-fold :type git 
-  			 :flavor melpa 
-  			 :host github 
-  			 :repo "matsievskiysv/vimish-fold")
-    :hook
-    (python-mode . vimish-mode)   
-    )
+  ;; (use-package vimish-fold
+  ;;   :straight (vimish-fold :type git 
+  ;; 			 :flavor melpa 
+  ;; 			 :host github 
+  ;; 			 :repo "matsievskiysv/vimish-fold")
+  ;;   :hook
+  ;;   (python-mode . vimish-mode)   
+  ;;   )
 #+end_src
 :END:
 *** Nlinum
@@ -752,35 +854,6 @@ Define Keybindings to move between windows
 #+end_src
 
 :END:
-** LSP                                        :commented:
-#+begin_src emacs-lisp :results silent
-    ;; (defun ssl/lsp-mode-setup ()
-    ;;   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-    ;;   (lsp-headerline-breadcrumb-mode))
-
-  ;; (use-package lsp-mode
-  ;;   :ensure t
-  ;;   :init
-  ;;   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-  ;;   (setq lsp-keymap-prefix "C-c l")
-  ;;   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-  ;;          (sh-mode . lsp-deferred)
-  ;;          ;; if you want which-key integration
-  ;;          (lsp-mode . lsp-enable-which-key-integration))
-  ;;   :commands lsp)
-
-  ;; ;; optionally
-  ;; (use-package lsp-ui
-  ;;   :ensure t
-  ;;   :after lsp-mode
-  ;;   :commands lsp-ui-mode)
-  ;; ;; if you are helm user
-  ;; (use-package helm-lsp
-  ;;   :ensure t
-  ;;   :after lsp-mode
-  ;;   :commands helm-lsp-workspace-symbol)
-
-#+end_src
 ** C++
 :config:
 #+begin_src emacs-lisp
@@ -897,7 +970,7 @@ Change the path for the anaconda (miniconda) installation accordingly
     (add-hook 'ess-r-mode-hook #'hs-minor-mode)
     (add-hook 'ess-r-mode-hook #'my-ess-hook)
     :bind
-    ("_" . ess-insert-assign)
+    ("_" . ess-insert-assign) ;; Arrow to when typing underscore
     :hook
     (ess-r-mode . nlinum-mode)
     )
@@ -921,21 +994,6 @@ Change the path for the anaconda (miniconda) installation accordingly
   (require 'poly-markdown)
   (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+r-mode))
 #+end_src
-:END:
-*** Arrow underscore                         :commented:
-- To the following would insert ~<-~ whenever ~_~ is pressed
-:arrow-ess:
-#+begin_src emacs-lisp :results silent
-  ;; (use-package ess-r-mode
-  ;;   :bind
-  ;;   (:map ess-r-mode-map
-  ;; 	     ("_" . ess-insert-assign))
-  ;;   (:map inferior-ess-r-mode-map
-  ;; 	     ("_" . ess-insert-assign)))
-  ;; (require 'ess-r-mode)
-  ;; (define-key ess-r-mode-map "_" 'ess-insert-assign)
-  ;; (define-key inferior-ess-r-mode-map "_" 'ess-insert-assign)
-#+end_src   
 :END:
 ** Html
 :web-beautify:
@@ -1061,6 +1119,16 @@ Change the path for the anaconda (miniconda) installation accordingly
     )
 #+end_src
 :END:
+*** ebib
+#+begin_src emacs-lisp :results silent
+  (use-package ebib
+    :straight (ebib :type git 
+     		  :flavor melpa 
+     		  :host github 
+     		  :repo "joostkremers/ebib")
+    )
+#+end_src
+
 *** Helm-bibtex
 :helm-bibtex:
 #+begin_src emacs-lisp :results silent
@@ -1151,60 +1219,8 @@ Setup terminal emulators, [[https://www.emacswiki.org/emacs/AnsiTermHints][ansi-
     (global-set-key (kbd "<s-return>") 'eshell)
 #+end_src
 :END:
-
-** C3po                                       :commented:chatGPT:
-#+begin_src emacs-lisp
-  ;; (use-package c3po
-  ;;   :straight (:host github :repo "d1egoaz/c3po.el")
-  ;;   :config
-  ;;   (setq c3po-api-key ""))
-#+end_src
-** gptel                                      :chatGPT:commented:
-#+begin_src emacs-lisp :results silent
-  ;; (defun essl/read-openai-key ()
-  ;;   (with-temp-buffer
-  ;;     (insert-file-contents "/media/discs/shared/configuration/Pass/gpt")
-  ;;     (string-trim (buffer-string))))
-
-  ;; (use-package gptel
-  ;;   :ensure t
-  ;;   :init
-  ;;   (setq-default gptel-model "gpt-3.5-turbo"
-  ;;                 gptel-playback t
-  ;;                 gptel-default-mode 'org-mode
-  ;;                 gptel-api-key #'essl/read-openai-key))
-#+end_src
 * Org-mode
 ** Aspect
-*** Setup fonts
-:Font-faces:
-#+begin_src emacs-lisp :results silent
-  ;;Size for heading levels
-  (dolist (face '((org-level-1 . 1.6)
-                  (org-level-2 . 1.5)
-                  (org-level-3 . 1.4)
-                  (org-level-4 . 1.3)
-                  (org-level-5 . 1.2)
-                  (org-level-6 . 1.1)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil :font essl/sans-font :weight 'regular :height (cdr face))
-    )
-
-  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-  ;; (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
-  (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
-  ;; (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
-  (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
-  (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch)
-#+end_src
-:END:
 *** Org-bullets
 Change the aspect of the bullets used in headings
 :bullets:
@@ -1401,6 +1417,21 @@ It is necessary to load [[https://superuser.com/questions/896741/how-do-i-config
           org-ref-cite-onclick-function (lambda (_) (org-ref-citation-hydra/body))))
 #+end_src
 :END:
+** Org-noter
+Take notes from =pdf= documents (books, papers) in org mode
+- Documentation ([[https://github.com/weirdNox/org-noter][GitHub]])
+:org-noter:
+#+begin_src emacs-lisp
+  (use-package org-noter
+    :straight (org-noter
+  	     :type git
+  	     :flavor melpa
+  	     :files ("*.el" "modules" (:exclude "*-test-utils.el" "*-devel.el") "org-noter-pkg.el")
+  	     :host github
+  	     :repo "org-noter/org-noter")
+    )
+#+end_src
+:END:
 ** Org-reveal
 :org-reveal:
 #+begin_src emacs-lisp :results silent
@@ -1414,22 +1445,6 @@ It is necessary to load [[https://superuser.com/questions/896741/how-do-i-config
     )
 #+end_src
 :END:
-** Org-pomodoro                                :commented:
-#+begin_src emacs-lisp
-  ;; (use-package org-pomodoro
-  ;;   :after org
-  ;;   :config
-  ;;   ;; (setq org-pomodoro-start-sound "~/.dotfiles/.emacs.d/sounds/focus_bell.wav")
-  ;;   ;; (setq org-pomodoro-short-break-sound "~/.dotfiles/.emacs.d/sounds/three_beeps.wav")
-  ;;   ;; (setq org-pomodoro-long-break-sound "~/.dotfiles/.emacs.d/sounds/three_beeps.wav")
-  ;;   (setq org-pomodoro-finished-sound "/media/saul/Multimedia/Audio/Sounds/Metal_Gong-Dianakc.wav")
-
-  ;;   ;; (dw/leader-key-def
-  ;;   ;;  "op"  '(org-pomodoro :which-key "pomodoro"))
-  ;;   )
-#+end_src
-:END:
-
 * Editing
 ** Smart-Hungry delete
 :smart-hungry:
@@ -1516,10 +1531,6 @@ Convenient package to create *scratch* buffers that are based on the current buf
     :after flyspell-correct)
   #+end_src
 :END:
-** Aspell                                     :commented:
-#+begin_src emacs-lisp
-  ;; (setq-default  '("--reverse")) ; "Force" the use of aspell
-#+end_src
 ** Company mode
 Autocompletion
 #+BEGIN_SRC emacs-lisp :results silent
@@ -1543,11 +1554,12 @@ Autocompletion
           ("C-p" . company-select-previous)
           )
     :custom
-    (company-tooltip-limit 10) ;The maximum number of candidates
+    (company-tooltip-limit 10) ;; The maximum number of candidates
     (company-minimum-prefix-length 2)
-    (company-idle-delay 0.5)
+    ;; (company-idle-delay 0.5)
+    (company-box-doc-delay 2) ;; show documentation only after 2s
     (company-show-numbers t)
-    (company-tooltip-flip-when-above t)
+    (company-tooltip-flip-when-above t) ;; invert box when necessary
     :config
     (setq company-begin-commands '(self-insert-command))
     (setq company-backends
@@ -1570,19 +1582,6 @@ Autocompletion
     :hook (company-mode . company-box-mode))
 #+END_SRC
 
-*** Company elisp                            :commented:
-#+begin_src emacs-lisp
-  ;; (defun company-elisp-finder-keyword-backend (command
-  ;; 					     &optional arg &rest ign)
-  ;;   "`company-backend' for finder-keywords."
-  ;;   (case command
-  ;;     (prefix
-  ;;      (and (require 'finder nil t)
-  ;; 	  (or (company-grab ":group '\\(\\(\\sw\\|\\s_\\)*\\)" 1)
-  ;; 	      (company-grab "Keywords:.*[ \t]+\\(\\(\\sw\\|\\s_\\)*\\)" 1))))
-  ;;     (candidates (all-completions arg finder-known-keywords))
-  ;;     (meta (cdr (assoc (intern arg) finder-known-keywords)))))
-    #+end_src
 ** Which Key
 #+BEGIN_SRC emacs-lisp :results silent
   (use-package which-key
@@ -1783,15 +1782,6 @@ For quick access to specific query types, use these commands:
 #+END_SRC
 :END:
 * PDF
-** PDF viewer                                  :commented:
-[[https://stackoverflow.com/questions/8834633/how-do-i-make-org-mode-open-pdf-files-in-evince/8836108#8836108][Source]]
-#+begin_src emacs-lisp
-  ;; PDFs visited in Org-mode are opened in Evince (and not in the default choice) https://stackoverflow.com/a/8836108/789593
-  ;; (add-hook 'org-mode-hook
-  ;; 	  '(lambda ()
-  ;; 	     (delete '("\\.pdf\\'" . default) org-file-apps)
-  ;; 	     (add-to-list 'org-file-apps '("\\.pdf\\'" . "atril %s"))))
-#+end_src
 ** PDF tools
 Use pdf-tools as default pdf viewer in emacs. Customize navigation and highlighting
 #+begin_src emacs-lisp :results silent
