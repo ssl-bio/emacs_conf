@@ -1,61 +1,72 @@
-#+STARUP: hidestars
 * Setup custom file
-- Customizations can become too long thus, it is better to set up the customize file to a separate file  and keep the  =init.el= file less cluttered.
+- Write customizations to a separate file =custom.el=.
 :setup-custom:
-#+BEGIN_SRC emacs-lisp :results silent
+#+begin_src emacs-lisp
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
   (load custom-file t)
-#+END_SRC
+#+end_src
 :END:
 * Session defaults
 ** General
 :defaults:
-#+BEGIN_SRC emacs-lisp :results silent
-  ;; Editing options
-  (put 'downcase-region 'disabled nil)
-  (put 'upcase-region 'disabled nil)
-  (put 'narrow-to-region 'disabled nil) ;;select and edit region
-  (delete-selection-mode t) ;; delete the region when typing
-  (cua-mode 0) ;Disable cua mode
+#+begin_src emacs-lisp
+    ;; Make frame transparency overridable
+    ;; (defvar essl/frame-transparency '(90 . 90))
 
-  ;; Use UTF8
-  (setq locale-coding-system 'utf-8) 
-  (set-terminal-coding-system 'utf-8) 
-  (set-keyboard-coding-system 'utf-8) 
-  (set-selection-coding-system 'utf-8)
-  (prefer-coding-system 'utf-8)
+    ;; Default file permissions
+    ;; (set-default-file-modes #o600)
 
-  ;; Answering just 'y' or 'n' will do
-  (defalias 'yes-or-no-p 'y-or-n-p)
+    ;; Editing options
+    (put 'downcase-region 'disabled nil)
+    (put 'upcase-region 'disabled nil)
+    (put 'narrow-to-region 'disabled nil) ;;select and edit region
+    (delete-selection-mode t) ;; delete the region when typing
+    (cua-mode 0) ;Disable cua mode
 
-  ;; Keep all backup and auto-save files in one directory
-  (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+    ;; Use UTF8
+    (setq locale-coding-system 'utf-8) 
+    (set-terminal-coding-system 'utf-8) 
+    (set-keyboard-coding-system 'utf-8) 
+    (set-selection-coding-system 'utf-8)
+    (prefer-coding-system 'utf-8)
 
-  ;; Visual customizations
-  (blink-cursor-mode -1) ;; disable blinking cursor
-  (setq visible-bell nil) ;; disable visible bell
-  ;; (setq-default indent-tabs-mode nil)
-  (setq-default indicate-empty-lines t)
-  (show-paren-mode t) ;; highlight matching parenthesis
-  (column-number-mode t) ;; Show column number
-  (global-visual-line-mode) ;; wrap text (justify)
-  ;; Don't count two spaces after a period as the end of a sentence.
-  ;; Just one space is needed.
-  (setq sentence-end-double-space nil)
+    ;; Answering just 'y' or 'n' will do
+    (defalias 'yes-or-no-p 'y-or-n-p)
 
-  ;; Space between lines
-  (setq-default line-spacing 4)
+    ;; Keep all backup and auto-save files in one directory
+    (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
 
-  ;; Make buffer's names unique by adding a path
-  (setq uniquify-buffer-name-style 'forward)
-  (put 'dired-find-alternate-file 'disabled nil)
+    ;; Visual customizations
+    (blink-cursor-mode -1) ;; disable blinking cursor
+    (setq visible-bell nil) ;; disable visible bell
+    ;; (setq-default indent-tabs-mode nil)
+    (setq-default indicate-empty-lines t)
+    (show-paren-mode t) ;; highlight matching parenthesis
+    (column-number-mode t) ;; Show column number
+    (global-visual-line-mode) ;; wrap text (justify)
+    ;; Don't count two spaces after a period as the end of a sentence.
+    ;; Just one space is needed.
+    (setq sentence-end-double-space nil)
 
-  ;; Server start
-  (load "server")
-  (unless (server-running-p)
-    (server-start)
-    ;; (setq server-socket-dir "~/.emacs.d/server")
-    )
+    ;; Make buffer's names unique by adding a path
+    (setq uniquify-buffer-name-style 'forward)
+    (put 'dired-find-alternate-file 'disabled nil)
+
+    ;; Server start
+    (load "server")
+    (unless (server-running-p)
+      (server-start)
+      ;; (setq server-socket-dir "~/.emacs.d/server")
+      )
+
+  ;; Enable variable-pitch mode for text-mode
+  (add-hook 'text-mode-hook #'variable-pitch-mode)
+
+  ;; Only show high level warnings
+  (setq warning-minimum-level :emergency)
+
+  ;; Line spacing 
+  ;; (setq-default line-spacing 4)
 
   ;;  Load shell conf (.bashrc)
   ;; (use-package exec-path-from-shell
@@ -64,38 +75,107 @@
   ;;   :init
   ;;   (when (memq window-system '(mac ns x))
   ;;     (exec-path-from-shell-initialize)))
-#+END_SRC
+
+    ;;  Load shell conf (.bashrc)
+    ;; (use-package exec-path-from-shell
+    ;;   :ensure t
+    ;;   :defer t
+    ;;   :init
+    ;;   (when (memq window-system '(mac ns x))
+    ;;     (exec-path-from-shell-initialize)))
+
+    ;;Openwith
+    ;; (use-package openwith
+    ;;   :ensure t
+    ;;   :config
+    ;;   (setq openwith-associations '(("\\.pdf\\'" "atril" (file))))
+    ;;   )
+
+    ;; ;; -i gets alias definitions from .bash_profile
+    ;; (setq shell-command-switch "-ic")
+#+end_src
 :END:
 ** Custom variables
-Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* Org-ref][Org-ref bibtex-path]] [[* Org-reveal][Org-reveal]] [[* Ansi-term][Ansi-term]]
+- Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* Org-ref][Org-ref bibtex-path]] [[* Org-reveal][Org-reveal]] [[* Ansi-term][Ansi-term]]
+- If statements are used to set variables for
+  1) Path to anaconda installation
+     - Default: =~/.local/bin/miniconda3=
+     - Custom: =/media/discs/shared/miniconda3=
+  2) Path to bibtex files
+     - One for a Linux installation in Spanish (searches for the folder =Documentos=)
+     - Another for a Linux installation in English (searches for the folder =Documents=)
+  3) Font size
+     - One for a computer with small screen size (15'' searches for the folder =Documents=)
+     - Another for a computer with a large (24'' alternative to the above)
+  4) Path to [[https://revealjs.com/][Reveal.js]] installation (Presentations)
+     - Two different paths
+- Additionally fixed- and variable-width font variables are defined
+  - monotype: Courier-New
+  - sans: Verdana
+  - default: Courier-New
+*Modify these accordingly*    
 :custom-vars:
-#+begin_src emacs-lisp :results silent
-  (defvar essl/default-font-size 120)
-  (defvar essl/default-variable-font-size 120)
-
+#+begin_src emacs-lisp
   ;; Path to anaconda installation 
-  (defvar essl/anaconda-home "~/.local/bin/miniconda3")
-  (defvar essl/anaconda-venv "~/.local/bin/miniconda3/envs/")
+  (defvar conda-dir
+    (if (file-directory-p "/media/discs/shared/miniconda3")
+        "/media/discs/shared/miniconda3"
+      (if (file-directory-p "~/.local/bin/miniconda3")
+          "~/.local/bin/miniconda3"
+        "other")))
+
+  (defvar essl/anaconda-home conda-dir)
+  (defvar essl/anaconda-venv (concat conda-dir "/envs"))
 
   ;; Bibtex paths and files
+  (defvar docs-dir
+    (if (file-directory-p "~/Documents")
+        "~/Documents"
+      (if (file-directory-p "~/Documentos")
+          "~/Documentos"
+        "other")))
   (setq
-   bibtex-completion-bibliography '("~/Documents/Refs/Bibtex/Working.bib")
-   bibtex-completion-library-path '("~/Documents/Papers/")
-   bibtex-completion-notes-path "~/Documents/Papers/Notes")
+   bibtex-completion-bibliography (concat docs-dir "/Referencias/Bibtex/Working.bib")
+   bibtex-completion-library-path (concat docs-dir "/Articulos_y_Libros/")
+   bibtex-completion-notes-path (concat docs-dir "/Articulos_y_Libros/Resumenes"))
+
+  ;; Font sizes
+  (defvar font-regular)
+  (defvar font-medium)
+  (defvar font-large)
+
+  (let ((folder-exists (file-directory-p "~/Documents")))
+    (if folder-exists
+        (progn
+          (setq font-regular 130)
+          (setq font-medium 150)
+          (setq font-large 170))
+      (progn
+        (setq font-regular 105)
+        (setq font-medium 120)
+        (setq font-large 135))))
+
 
   ;; org-reveal-path
-  (setq org-reveal-root "file:///run/media/shared/Cloned/reveal.js")
+  (defvar reveal-path
+    (if (file-directory-p "/media/discs/shared/Cloned/reveal.js")
+        "file:///media/discs/shared/Cloned/reveal.js"
+      (if (file-directory-p "/media/particiones/Cloned/reveal.js")
+          "file:///media/particiones/Cloned/reveal.js"
+        "other")))
+  (setq org-reveal-root reveal-path)
 
   ;; Path to bash (ansi term)
   (defvar essl/my-term "/bin/bash")
 
   ;; Fonts
-  (defvar essl/mono-font "Courier New")
+  (defvar essl/mono-font "Courier-New")
   (defvar essl/sans-font "Verdana")
-  #+end_src
+  (defvar essl/default-font "Courier-New")
+#+end_src
 :END:
 :ox-hugo:
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
   ;; Colored text for ox-hugo
     (defun ssl/code ()
     "Add a 'mark' macro to the current region (for Hugo)"
@@ -120,7 +200,7 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
 :END:
 ** Startup time
 :startup-time:
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
   ;;Tweak garbage collection
   ;; The default is 800 kilobytes.  Measured in bytes.
   ;; (setq gc-cons-threshold (* 50 1000 1000))
@@ -133,52 +213,86 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
              gcs-done))
 
   (add-hook 'emacs-startup-hook #'ssl/display-startup-time)
-
 #+end_src
 :END:
-
 ** Packages without configuration
+*** Description
+- [[https://github.com/magit/magit][magit]]: Git porcelain for Emacs
+- [[https://github.com/larstvei/ox-gfm][ox-gfm]]: Export Org mode files to GitHub Flavored Markdown
+- [[https://code.orgmode.org/bzg/org-mode][org]]: Emacs mode for notes, TODO lists, etc.
+- [[https://github.com/auctex/auctex][auctex]]: Major mode for editing TeX files
+- [[https://github.com/joostkremers/ebib][ebib]]: Emacs BibTeX database manager
+- [[https://github.com/emacs-ess/ESS][ess]]: Emacs Speaks Statistics - for statistical programming
+- [[https://github.com/rnkn/olivetti][olivetti]]: Emacs minor mode for distraction-free writing
+- [[https://github.com/purcell/unfill][unfill]]: Emacs package for removing line breaks from paragraphs
+- [[https://github.com/lassik/emacs-format-all-the-code][format-all]]: Format code in Emacs using external tools
+- [[https://github.com/polymode/poly-R][poly-R]]: Emacs Org mode extension for working with R code
+- [[https://github.com/polymode/poly-markdown][poly-markdown]]: Emacs package for poly-mode in Markdown
+- [[https://github.com/bbatsov/crux][crux]]: Emacs utility functions for getting the most out of Emacs
+- [[https://github.com/djvu-el/djvu.el][djvu]]: DjVu mode for Emacs
+- [[https://github.com/wasamasa/nov.el][nov]]: Emacs package for reading EPUB files
+- [[https://github.com/pythonic-emacs/anaconda-mode][anaconda-mode]]: Emacs minor mode for Python development
+*** Installation
 :install-packages:
-#+begin_src emacs-lisp :results silent
-  (setq ipackages '(magit ox-gfm org auctex ebib ess helm-R olivetti unfill format-all org poly-R poly-markdown))
+#+begin_src emacs-lisp
+  (setq ipackages '(magit ox-gfm org auctex ebib ess olivetti unfill format-all poly-R poly-markdown crux djvu nov anaconda-mode))
   ;; install packages 
   (dolist (package ipackages)
-    (unless (package-installed-p package)
-      (package-install package)))
+      (straight-use-package package))
 #+end_src
 :END:
-* Theme
-[[https://emacsthemes.com/][List of themes]]
-** Install themes
+* Appearance
+** Themes
+[[[https://emacsthemes.com/][Emacs themes]]]
+*** Preferred themes
+**** Dark themes
+- base16: base16-da-one-sea base16-tokyo-night-storm base16-everforest base16-railscasts base16-sandcastle
+- ef-themes: ef-autumn ef-elea-dark ef-maris-dark ef-tritanopia-dark
+- Independent: flatland darktooth-theme timu-spacegrey mellow-theme warm-night-theme
+**** Light themes
+- built-in: dichromacy
+- base16-themes: base16-github base16-dirtysea base16-equilibrium-gray-light
+- modus-themes: modus-operandi
+- ef-themes: ef-day ef-deuteranopia-light ef-elea-light ef-kassio ef-melissa-light ef-tritanopia-light
+**** Write
+- base16-themes: base16-grayscale-light base16-gruvbox-material-light-soft base16-rose-pine-dawn base16-tokyo-city-terminal-light
+- almost-mono-themes: almost-mono-cream almost-mono-gray
+  - Independent: monotropic eink nord poet
+*** Install themes
 :install-themes:
-#+begin_src emacs-lisp :results silent
-  ;;leuven-theme darktooth-theme autumn-light-theme darktooth-theme modus-themes
-  (setq ithemes '(base16-theme))
+#+begin_src emacs-lisp
+  ;;modus-themes base16-theme doom-themes
+  (setq ithemes '(ef-themes
+                  modus-themes nord-theme
+                    darktooth-theme flatland-theme timu-spacegrey-theme
+                    almost-mono-themes monotropic-theme eink-theme poet-theme
+                    suscolors-theme))
+
   ;; install themes 
-  (dolist (package ithemes)
-    (unless (package-installed-p package)
-      (package-install package)))
+  (dolist (theme ithemes)
+    (straight-use-package theme))
 #+end_src
 :END:
-** Preferred themes
+*** Functions to cycle over preferred themes
 :cycle-through-themes:
-#+begin_src emacs-lisp :results silent
-  (setq my-dark-themes '("base16-da-one-sea" "base16-tokyo-night-storm"
-         		       "base16-everforest" "base16-railscasts"
-         		       "base16-sandcastle"))
-  (setq my-light-themes '("base16-grayscale-light"
-      			"dichromacy"
-      			"base16-gruvbox-material-light-soft"
-      			"base16-rose-pine-dawn" "base16-dirtysea"
-  			"base16-equilibrium-gray-light"))
+#+begin_src emacs-lisp
+  ;; List of favorite themes
+  (setq my-dark-themes '("ef-melissa-dark" "ef-elea-dark" "misterioso"
+                         "flatland" "darktooth" "mellow" "suscolors"
+                         "warm-night"))
+  (setq my-light-themes '("dichromacy" "modus-operandi-tinted" "ef-day"
+                          "ef-tritanopia-light" "ef-cyprus"
+                          "ef-melissa-light" "ef-maris-light"))
+  (setq my-write-themes '("almost-mono-cream" "almost-mono-gray"
+                            "monotropic" "eink" "nord" "poet"))
   ;; Cycle through themes
   (defun rotate-dark-themes ()
     (interactive)
     (dolist (theme custom-enabled-themes)
-    (disable-theme theme))
+      (disable-theme theme))
     (setq my-dark-themes (append (cdr my-dark-themes) (list (car my-dark-themes))))
     (let ((theme (car my-dark-themes))
-        	(command (format "(load-theme '%s t)" (car my-dark-themes))))
+          (command (format "(load-theme '%s t)" (car my-dark-themes))))
       (message "Loading theme: %s" theme)
       ;; (message "Command: %s" command)
       (eval (read command))))
@@ -186,125 +300,221 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
   (defun rotate-light-themes ()
     (interactive)
     (dolist (theme custom-enabled-themes)
-    (disable-theme theme))
+      (disable-theme theme))
     (setq my-light-themes (append (cdr my-light-themes) (list (car my-light-themes))))
     (let ((theme (car my-light-themes))
-        	(command (format "(load-theme '%s t)" (car my-light-themes))))
+          (command (format "(load-theme '%s t)" (car my-light-themes))))
       (message "Loading theme: %s" theme)
       ;; (message "Command: %s" command)
       (eval (read command))))
 
-  ;; Asign key
+  (defun rotate-write-themes ()
+    (interactive)
+    (dolist (theme custom-enabled-themes)
+      (disable-theme theme))
+    (setq my-write-themes (append (cdr my-write-themes) (list (car my-write-themes))))
+    (let ((theme (car my-write-themes))
+          (command (format "(load-theme '%s t)" (car my-write-themes))))
+      (message "Loading theme: %s" theme)
+      ;; (message "Command: %s" command)
+      (eval (read command))))
+
+  ;; Asign key to rotate themes
   (global-set-key (kbd "<f12>") 'rotate-dark-themes)
   (global-set-key (kbd "<f9>") 'rotate-light-themes)
+  (global-set-key (kbd "<f7>") 'rotate-write-themes)
 
   ;; Default theme
-  (load-theme 'base16-everforest t)
+  (load-theme 'ef-tritanopia-light t)
 #+end_src
 :END:
 ** Window size
 :window-size:
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
   ;; Window height
-  (add-to-list 'default-frame-alist '(height . 40))
+  (add-to-list 'default-frame-alist '(height . 45))
   ;; Window Width
-  (add-to-list 'default-frame-alist '(width . 70)) 
+  (add-to-list 'default-frame-alist '(width . 90)) 
 #+end_src
 :END:
+** Fonts
+*** Fonts in org-mode
+:Font-faces:
+#+begin_src emacs-lisp
+  (defun customize-org-faces ()
+    "Customize org-faces"
+    ;;Size for heading levels
+    (dolist (face '((org-level-1 . 1.5)
+                    (org-level-2 . 1.4)
+                    (org-level-3 . 1.3)
+                    (org-level-4 . 1.2)
+                    (org-level-5 . 1.1)
+                    (org-level-6 . 1.0)
+                    (org-level-7 . 1.0)
+                    (org-level-8 . 1.0)))
+      (set-face-attribute (car face) nil
+                          :inherit 'variable-pitch
+                          :height (cdr face))
+      )
 
-** Font
-*** Default font 
-:font:
-#+begin_src emacs-lisp :results silent
-  (set-face-attribute 'default nil :font essl/mono-font :height essl/default-font-size)
+    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+    (set-face-attribute 'org-block nil    :foreground 'unspecified :inherit 'fixed-pitch)
+    (set-face-attribute 'org-drawer nil    :inherit 'fixed-pitch)
+    (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
+    (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+    (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
+    (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
+    (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch)
+    )
+  (customize-org-faces)
+#+end_src
+:END:
+*** Fontaine
+[[[https://protesilaos.com/emacs/fontaine][Home]]] [[[https://www.youtube.com/watch?v=qR8JRYr4BKE][Youtube demo]]]
+- Package to customize fonts (faces) written by Protesilaos Stavrou
+- =Fontaine-presets= need more work (customize further)
+:fontaine:
+#+begin_src emacs-lisp
+  (use-package fontaine
+    :straight (fontaine
+               :type git
+               :host github
+               :repo "emacs-straight/fontaine"
+               :files ("*" (:exclude ".git")))
+    :config
+    (setq fontaine-latest-state-file
+          (locate-user-emacs-file "fontaine-latest-state.eld"))
+    (setq fontaine-presets
+          '(
+            (regular
+             :default-height font-regular)
+            (medium
+             :default-height font-medium)
+            (large
+             :default-height font-large)
+            (t
+             :default-family "Courier New" ;;Roboto Mono
+             :default-weight regular
+             :fixed-pitch-family "Courier New" ;;Source Code Pro
+             :fixed-pitch-weight regular
+             :fixed-pitch-height 1.0
+             :fixed-pitch-serif-family nil ; falls back to :default-family
+             :fixed-pitch-serif-weight nil ; falls back to :default-weight
+             :fixed-pitch-serif-height 1.0
+             :variable-pitch-family "Verdana" ;;Nunito
+             :variable-pitch-weight regular
+             :variable-pitch-height 1.0
+             :bold-family nil ; use whatever the underlying face has
+             :bold-weight bold
+             :italic-family nil
+             :italic-slant italic
+             :line-spacing 4)))
+    )
+  ;; Recover last preset or fall back to desired style from
+  ;; `fontaine-presets'.
+  (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
 
-  ;; Set the fixed pitch face
-  (set-face-attribute 'fixed-pitch nil :font essl/mono-font :height essl/default-font-size)
+  ;; The other side of `fontaine-restore-latest-preset'.
+  (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset)
 
-  ;; Set the variable pitch face
-  (set-face-attribute 'variable-pitch nil :font essl/sans-font :height essl/default-variable-font-size)
+  (defvar after-enable-theme-hook nil
+    "Normal hook run after enabling a theme.")
+
+  (defun run-after-enable-theme-hook (&rest _args)
+    "Run `after-enable-theme-hook'."
+    (run-hooks 'after-enable-theme-hook))
+
+  (advice-add 'enable-theme :after #'run-after-enable-theme-hook)
+
+  (add-hook 'after-enable-theme-hook #'fontaine-apply-current-preset)
+  (add-hook 'after-enable-theme-hook #'customize-org-faces)
 #+end_src
 :END:
 *** Font scaling
 :font-scaling:
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
   (use-package default-text-scale
-    :ensure t
+    :straight (default-text-scale :type git 
+              :flavor melpa 
+              :host github 
+              :repo "purcell/default-text-scale")
     :config
     (global-set-key (kbd "C-M-+") 'default-text-scale-increase)
     (global-set-key (kbd "C-M--") 'default-text-scale-decrease))
   (define-key ctl-x-map [(control ?0)] 'zoom-in/out)
 #+end_src
 :END:
-** All the icons
-:all-the-icons:
-#+begin_src emacs-lisp :results silent
-  ;;Install icons for files and folders
-  (use-package all-the-icons 
-    :ensure t)
+** Icons
+*** Nerd Icons
+:nerd-icons:
+#+begin_src emacs-lisp
+  (use-package nerd-icons
+    :straight (nerd-icons :type git 
+                          :flavor melpa 
+                          :files (
+                                  :defaults "data" "nerd-icons-pkg.el") 
+                          :host github 
+                          :repo "rainstormstudio/nerd-icons.el")
+
+    )
 #+end_src
-:END:   
+:END:
 ** Modeline
-=Modeline= is the region on a window where the file name and the active modes (among other information) are displayed. Available modelines [[https://github.com/seagle0128/doom-modeline][Doom-modeline]], [[https://github.com/TheBB/spaceline][Spaceline]], [[https://github.com/gexplorer/simple-modeline][Simple modeline]]
-*** Doom-modeline                            :commented:
+- =Modeline= is the region on a window where the file name and the active modes (among other information) are displayed.
+- Available modelines [[https://github.com/seagle0128/doom-modeline][Doom-modeline]], [[https://github.com/TheBB/spaceline][Spaceline]], [[https://github.com/gexplorer/simple-modeline][Simple modeline]], [[https://github.com/Malabarba/smart-mode-line][Smartmodeline]], [[https://github.com/dbordak/telephone-line][Telephone-Line]]
+*** Doom-modeline
+[[[https://github.com/seagle0128/doom-modeline][GitHub]]]
+**** Requirements
+To show the icons it may be necessary to install =NerdFontsSymbolsOnly= from [[https://github.com/ryanoasis/nerd-fonts][nerd-fonts]]. See this post on [[https://www.reddit.com/r/emacs/comments/v5adgc/comment/kg1yi0i/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button][Reddit]] and this [[https://www.geekbits.io/how-to-install-nerd-fonts-on-linux/][blog post]] on how to install nerd fonts
+#+begin_src bash :eval never-export
+  # Download and install fonts
+  myFont="NerdFontsSymbolsOnly.zip"
+  wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/$myFont
+  unzip $myFont
+  mv $myFont/*ttf ~/.local/share/fonts
+
+  # Update font database
+  fc-cache -fv
+#+end_src
+**** Configuration
 :doom-modeline:
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
   ;; Customize modeline
-  ;; (use-package doom-modeline
-  ;;   :ensure t
-  ;;   :init (doom-modeline-mode 1)
-  ;;   :custom (
-  ;;            (doom-modeline-height 20)
-  ;;            (setq doom-modeline-window-width-limit 65)
-  ;;            (setq doom-modeline-buffer-file-name-style 'auto)
-  ;;            (setq doom-modeline-buffer-name t)
-  ;;            )
-  ;;   )
+  ( use-package doom-modeline
+    :straight (doom-modeline :type git 
+                             :flavor melpa 
+                             :host github 
+                             :repo "seagle0128/doom-modeline")
+    :init (doom-modeline-mode 1)
+    :custom (
+             (doom-modeline-height 33)
+             (setq doom-modeline-window-width-limit 65)
+             (setq doom-modeline-buffer-file-name-style 'auto)
+             (setq doom-modeline-buffer-name t)
+             )
+    )
 #+end_src
 :END:
-*** spaceline                                                     :commented:
-:spaceline:
-#+begin_src emacs-lisp :results silent
-  ;; (use-package spaceline
-  ;;   :ensure t
-  ;;   :config
-  ;;   (require 'spaceline-config)
-  ;;   (setq spaceline-buffer-encoding-abbrev-p nil)
-  ;;   (setq spaceline-line-column-p nil)
-  ;;   (setq spaceline-line-p nil)
-  ;;   (setq powerline-default-separator (quote arrow))
-  ;;   (spaceline-spacemacs-theme))
-
- ;; (require 'spaceline-config)
-  ;; (spaceline-spacemacs-theme)
-#+end_src
-:END:
-*** simple modeline
-#+begin_src emacs-lisp :results silent
-  (use-package simple-modeline
-    :ensure t
-    :hook (after-init . simple-modeline-mode))
-#+end_src
-
-#+RESULTS:
-| simple-modeline-mode | bm-repository-load | debian-ispell-set-default-dictionary | debian-ispell-set-startup-menu | x-wm-set-size-hint | tramp-register-archive-file-name-handler | magit-maybe-define-global-key-bindings | table--make-cell-map |
-
-* Windows
-** Resize
+** Change appearance
+*** Resize windows
 - Keybindings to resize windows.
 :resize-widows:
-#+BEGIN_SRC emacs-lisp :results silent
+#+begin_src emacs-lisp
   (bind-key "s-C-<left>"  'shrink-window-horizontally)
   (bind-key "s-C-<right>" 'enlarge-window-horizontally)
   (bind-key "s-C-<down>"  'shrink-window)
   (bind-key "s-C-<up>" 'enlarge-window)
-#+END_SRC
+#+end_src
 :END:
-
-** Split
+*** Split windows
 - Split windows and switch
 :split-window:
-#+BEGIN_SRC emacs-lisp :results silent
+#+begin_src emacs-lisp
   ;;Define functions to split a window vertically or horizontally
   (defun vsplit-other-window ()
     "Splits the window vertically and switches to that window."
@@ -320,35 +530,64 @@ Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* O
   ;; Define keybindings for using the above functions
   (bind-key "C-x 2" 'vsplit-other-window)
   (bind-key "C-x 3" 'hsplit-other-window)
-#+END_SRC
+#+end_src
 :END:
-
+*** Change size of split windows (Zoom)
+[[[https://github.com/cyrus-and/zoom][Zoom GitHub]]]
+When using a split frame, change the size of the windows based on which one is active
+:zoom:
+#+begin_src emacs-lisp
+  (use-package zoom
+    :straight (zoom
+               :type git
+               :flavor melpa
+               :host github
+               :repo "cyrus-and/zoom")
+    :init
+    (custom-set-variables
+     '(zoom-size '(0.618 . 0.618)))
+    )
+#+end_src
+:END:
 * Navigating
 ** Move between windows
 Define Keybindings to move between windows
 :win-move:
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
+  ;; (windmove-default-keybindings 'super)
+  ;; (add-hook 'org-shiftup-final-hook 'windmove-up)
+  ;; (add-hook 'org-shiftleft-final-hook 'windmove-left)
+  ;; (add-hook 'org-shiftdown-final-hook 'windmove-down)
+  ;; (add-hook 'org-shiftright-final-hook 'windmove-right)
   (global-set-key [s-left] 'windmove-left) ;move to left window
   (global-set-key [s-right] 'windmove-right) ;move to right window
   (global-set-key [s-up] 'windmove-up) ;move to upper window
   (global-set-key [s-down] 'windmove-down) ;move to lower window
 #+end_src
 :END:
-
-** Eyebrowse
-[[https://depp.brause.cc/eyebrowse/][Eyebrowse]], helps manage window configurations. For example one can split a frame into 3 windows (Directory list, terminal and text file) then, create a new configuration ~C-c C-w 2~ and split the frame in a different way, say to only edit a single file. Swiching to the first configuration is done with ~C-c C-w 
+** Manage/Save window configuration (Eyebrowse)
+[[[https://depp.brause.cc/eyebrowse/][Eyebrowse Home]]]
+Helps manage window configurations (Different number of divisions/dimensions).
+- To create a second configuration =C-c C-w 2=. Rearrange the windows as necessary
+- To switch to the first configuration =C-c C-w 1=
 :eyebrowse:
-#+BEGIN_SRC emacs-lisp :results silent
+#+begin_src emacs-lisp
   (use-package eyebrowse
-    :ensure t
+    :straight (eyebrowse :type git
+                          :flavor melpa
+                          :repo "https://depp.brause.cc/eyebrowse.git")
     :config 
     (eyebrowse-mode))
-#+END_SRC
+#+end_src
 :END:
 ** Bookmarks
 :bookmarks:
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
   (use-package bm
+    :straight (bm :type git
+            :flavor melpa
+            :host github
+            :repo "joodland/bm")
     :ensure t
     :demand t
 
@@ -409,30 +648,54 @@ Define Keybindings to move between windows
   ;; (set-face-attribute 'bm-face nil :background "GreenYellow" :foreground 'unspecified)
 #+end_src
 :END:
-
-** Recentf
+** Recent files (Recentf)
 - Create a list of recently opened files
   :recentf:
-  #+BEGIN_SRC emacs-lisp
+  #+begin_src emacs-lisp
     (use-package recentf
-      :ensure t
+      :straight t
       :config
       (recentf-mode t)
-      (setq recentf-max-menu-items 25)
-      (setq recentf-max-saved-items 25)
-      (global-set-key "\C-x\ \C-r" 'recentf-open-files))
-  #+END_SRC
+      ;; (setq recentf-max-menu-items 15)
+      ;; (setq recentf-max-saved-items 15)
+      ;; :bind
+      ;; (("C-x C-r" . recentf-open-files))
+      )
+  #+end_src
   :END:
-** Treemacs
-[[https://github.com/Alexander-Miller/treemacs][Treemacs]] - a tree layout file explorer for Emacs
+** File navigation/management
+*** Neotree
+[[[https://github.com/jaypei/emacs-neotree][GitHub]]]
+:neotree:
+#+begin_src emacs-lisp
+  (use-package neotree
+    :straight (neotree :type git 
+                       :flavor melpa 
+                       :files (
+                               :defaults "icons" "neotree-pkg.el") 
+                       :host github 
+                       :repo "jaypei/emacs-neotree")
+    :bind
+    (:map global-map
+          ([f8] . 'neotree-toggle)
+          )
+    )
+#+end_src
+:END:
+*** Treemacs
+[[[https://github.com/Alexander-Miller/treemacs\]\[https://github.com/Alexander-Miller/treemacs][GitHub]]]
+A tree layout file explorer for Emacs
 :treemacs:
-#+BEGIN_SRC emacs-lisp :results silent
+#+begin_src emacs-lisp
   (use-package treemacs
-    :ensure t
+    :straight (treemacs :type git
+                        :flavor melpa
+                        :files (:defaults "Changelog.org" "icons" "src/elisp/treemacs*.el" "src/scripts/treemacs*.py" (:exclude "src/extra/*") "treemacs-pkg.el")
+                        :host github
+                        :repo "Alexander-Miller/treemacs")
     :defer t
     :config
     (progn
-
       (setq treemacs-follow-after-init          t
             treemacs-width                      35
             treemacs-indentation                2
@@ -450,31 +713,152 @@ Define Keybindings to move between windows
       (treemacs-filewatch-mode t))
     :bind
     (:map global-map
-          ([f8]        . treemacs)
+          ([f6]        . treemacs)
           ;; ([f9]        . treemacs-projectile-toggle)
           ;; ("<C-M-tab>" . treemacs-toggle)
           ("M-0"       . treemacs-select-window)
           ("C-c 1"     . treemacs-delete-other-windows)
           ))
-#+END_SRC
+  ;; (use-package treemacs-projectile
+  ;;   :defer t
+  ;;   :ensure t
+  ;;   :config
+  ;;   (setq treemacs-header-function #'treemacs-projectile-create-header)
+  ;;   )
+#+end_src
+:END:
+*** Dired
+**** Configuration
+:dired-config:
+#+begin_src emacs-lisp
+  (use-package dired
+    :ensure nil
+    :init
+    ;; Hide details such as permissions or modification date
+    (add-hook 'dired-mode-hook 'dired-hide-details-mode)
+    :commands
+    (dired dired-jump)
+
+    ;;Jumps to the parent level
+    :bind (("C-x C-j" . dired-jump))
+    :config
+
+    (setq dired-dwim-target t) ;try to guess where to copy...
+
+    :custom
+    ;; Sorting folders and files
+    ((dired-listing-switches "-agho --group-directories-first"))
+
+    )
+
+  ;; Use icons for folders and files
+  (use-package all-the-icons-dired
+    :after dired
+    :straight (all-the-icons-dired :type git 
+                                   :flavor melpa 
+                                   :host github 
+                                   :repo "wyuenho/all-the-icons-dired")
+    :hook (dired-mode . all-the-icons-dired-mode)
+    )
+
+  ;;Dired narrow allows filter by pattern, regex
+  (use-package dired-narrow
+    :after dired
+    :straight (dired-narrow :type git 
+                            :flavor melpa 
+                            :files ("dired-narrow.el" "dired-narrow-pkg.el") 
+                            :host github 
+                            :repo "Fuco1/dired-hacks")
+    :config
+    (bind-key "C-c C-n" #'dired-narrow)
+    (bind-key "C-c C-f" #'dired-narrow-fuzzy)
+    (bind-key "C-x C-N" #'dired-narrow-regexp)
+    )
+
+  ;; Allows open a folder with tab as a subtree
+  (use-package dired-subtree
+    :after dired
+    :straight (dired-subtree :type git 
+                             :flavor melpa 
+                             :files ("dired-subtree.el" "dired-subtree-pkg.el") 
+                             :host github 
+                             :repo "Fuco1/dired-hacks")
+    :config
+    (bind-key "<tab>" #'dired-subtree-toggle dired-mode-map)
+    (bind-key "<backtab>" #'dired-subtree-cycle dired-mode-map)
+    )
+
+  ;; Prevent opening multiple buffers
+  (use-package dired-single
+    :after dired
+    :straight (dired-single
+               :type git 
+               :flavor melpa 
+               :host codeberg 
+               :repo "amano.kenji/dired-single")
+    :config
+    (define-key dired-mode-map [return] 'dired-single-buffer)
+    (define-key dired-mode-map [mouse-1] 'dired-single-buffer-mouse)
+    (define-key dired-mode-map "^" 'dired-single-up-directory)
+    )
+
+  (use-package dired-open
+    :after dired
+    :straight (dired-open 
+               :type git 
+               :flavor melpa 
+               :files ("dired-open.el" "dired-open-pkg.el") 
+               :host github 
+               :repo "Fuco1/dired-hacks")
+
+    :commands (dired dired-jump)
+    :config
+    ;; Doesn't work as expected!
+    (add-to-list 'dired-open-functions #'dired-open-xdg t)
+    (setq dired-open-extensions '(("png" . "eom")
+                                  ("pdf" . "atril")
+                                  ))
+    )
+
+  ;; (use-package dired-hide-dotfiles
+  ;;   :ensure t
+  ;;   :hook (dired-mode . dired-hide-dotfiles-mode))
+#+end_src
 :END:
 ** Imenu
-[[https://www.emacswiki.org/emacs/ImenuMode][Imenu]] produces menus for accessing locations in documents
+[[[https://www.emacswiki.org/emacs/ImenuMode][Wiki]]]
+Produces menus for accessing locations in documents.
 :imenu-keybindings:
 #+begin_src emacs-lisp
   (use-package imenu-list
-    :ensure t
+    :straight (imenu-list :type git
+                          :flavor melpa
+                          :host github
+                          :repo "bmag/imenu-list")
     :bind(
-          ("C-c i" . imenu-list)
+          ("C-c i" . imenu-list-smart-toggle)
           )
     )
 #+end_src
 :END:
-* List buffers
-** Ibuffer
-[[https://www.emacswiki.org/emacs/IbufferMode][Ibuffer]] is the improved version of list-buffers.
+** Smoothscrolling
+This makes it so C-n-ing and C-p-ing won’t make the buffer jump
+around so much.
+#+begin_src emacs-lisp
+  (use-package smooth-scrolling
+    :straight (smooth-scrolling :type git 
+                                :flavor melpa 
+                                :host github 
+                                :repo "aspiers/smooth-scrolling")
+    :config
+    (smooth-scrolling-mode))
+#+end_src
+* Buffers
+** List buffers (Ibuffer)
+[[[https://www.emacswiki.org/emacs/IbufferMode][Wiki]]]
+Improved version of list-buffers.
 :ibuffer:
-#+BEGIN_SRC emacs-lisp :result silent
+#+begin_src emacs-lisp
   ;; set as default
   (defalias 'list-buffers 'ibuffer)
 
@@ -525,10 +909,11 @@ Define Keybindings to move between windows
                                  (mode . c++-mode)
                                  ))
                  ("Bash" (or (name . "^.*sh$")))
-                 ("TeX"(or (mode . latex-mode)
-                           (mode . bibtex-mode
-                                 )))
+                 ("TeX"(or (name . "^.*tex$")
+                           (name . "^.*sty$")
+                             ))
                  ("txt"(or (name ."^.*txt$")))
+                 ("pdf"(or (name ."^.*pdf$")))
                  ("R" (or (name . "^.*R$")
                           (name . "^.*Rmd$")
                           (mode . ess-mode)))
@@ -548,64 +933,419 @@ Define Keybindings to move between windows
 
   ;; Don't ask for confirmation to delete marked buffers
   (setq ibuffer-expert t)
-#+END_SRC
-:END:
-* Helm
-/"[[https://emacs-helm.github.io/helm/][Helm]] is an Emacs framework for incremental completions and narrowing selections. It helps to rapidly complete file names, buffer names, or any other Emacs interactions requiring selecting an item from a list of possible choices."/
-:helm-config:
-#+begin_src emacs-lisp :results silent
-  ;; (use-package helm-mode
-  ;;   :ensure nil
-  ;;   :after helm)
-  (use-package helm
-    :ensure nil
-    :init
-    (helm-mode 1)
-    (helm-autoresize-mode 1)
-    :bind (
-           ("M-x" . helm-M-x)
-           ("C-c h o" . helm-occur) ; show lines matching regex
-           ("C-x C-f" . helm-find-files) ; find files in pwd
-           ("C-x b" . helm-mini) 
-           ("C-c y". helm-show-kill-ring)
-           ("C-c m" . helm-bookmarks)
-           :map helm-map
-           ("<tab>" . helm-execute-persistent-action) ; rebind tab to run ;;persistent action
-           ("C-i" . helm-execute-persistent-action) ; make TAB works in ;;terminal
-           ("C-z" . helm-select-action) ; list actions using C-z
-           :map shell-mode-map
-           ("C-c C-l" . helm-comint-input-ring) ; in shell mode
-           :map minibuffer-local-map
-           ("C-c C-l" . helm-minibuffer-history))
-    :config
-    (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
-          helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
-          helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
-          helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
-          helm-ff-file-name-history-use-recentf t
-          helm-echo-input-in-header-line t)
-    (setq helm-autoresize-max-height 0)
-    (setq helm-autoresize-min-height 25)
-    )
-
-  (use-package swiper-helm
-    :ensure t
-    :bind
-    (("C-s" . swiper-helm))
-    )
 #+end_src
 :END:
+** Scratch buffer
+Convenient package to create *scratch* buffers that are based on the current buffer’s major mode. This is more convienent than manually creating a buffer to do some scratch work or reusing the initial *scratch* buffer.
+#+begin_src emacs-lisp
+  (use-package scratch
+    :straight (scratch :type git 
+                       :flavor melpa 
+                       :files ("scratch.el" "scratch-pkg.el") 
+                       :host codeberg 
+                       :repo "emacs-weirdware/scratch")
+    :commands scratch)
+#+end_src
+* Completion
+** Corfu
+[[[https://github.com/minad/corfu][GitHub]]]
+Enhances completion at point with a small completion popup.
+#+begin_src emacs-lisp
+  (use-package corfu
+    :straight (corfu
+               :type git
+               :flavor melpa
+               :files (:defaults "extensions/corfu-*.el" "corfu-pkg.el")
+               :host github
+               :repo "minad/corfu")
+    :config
+    (setq corfu-cycle t                ; Enable cycling for `corfu-next/previous'
+          corfu-auto t                 ; Enable auto completion
+          ;; corfu-auto-delay 60.0        ; Delay before auto-completion shows up
+          corfu-separator ?\s          ; Orderless field separator
+          corfu-quit-at-boundary nil   ; Never quit at completion boundary
+          corfu-quit-no-match t        ; Quit when no match
+          corfu-preview-current nil    ; Disable current candidate preview
+          corfu-preselect-first nil    ; Disable candidate preselection
+          corfu-on-exact-match nil     ; Configure handling of exact matches
+          corfu-echo-documentation nil ; Disable documentation in the echo area
+          corfu-scroll-margin 5)       ; Use scroll margin
+
+    (global-corfu-mode)
+    )
+#+end_src
+
+#+begin_src emacs-lisp
+  ;; TAB cycle if there are only few candidates
+  (setq completion-cycle-threshold 3)
+
+  ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
+  ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
+  ;; (setq read-extended-command-predicate
+        ;; #'command-completion-default-include-p)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; completion-at-point is often bound to M-TAB.
+  (setq tab-always-indent 'complete)
+#+end_src
+** Cape
+[[[https://github.com/minad/cape][GitHub]]]
+#+begin_src emacs-lisp
+  (use-package cape
+    :straight (cape 
+               :type git 
+               :flavor melpa 
+               :host github 
+               :repo "minad/cape")
+    :bind
+    (("C-c p p" . completion-at-point) ;; capf
+     ("C-c p t" . complete-tag)        ;; etags
+     ("C-c p d" . cape-dabbrev)        ;; or dabbrev-completion
+     ("C-c p h" . cape-history)
+     ("C-c p f" . cape-file)
+     ("C-c p k" . cape-keyword)
+     ("C-c p s" . cape-elisp-symbol)
+     ("C-c p e" . cape-elisp-block)
+     ("C-c p a" . cape-abbrev)
+     ("C-c p l" . cape-line)
+     ("C-c p w" . cape-dict)
+     ("C-c p \\" . cape-tex)
+     ("C-c p _" . cape-tex)
+     ("C-c p ^" . cape-tex)
+     ;; ("C-c p &" . cape-sgml)
+     )
+    :init
+    ;; Add to the global default value of `completion-at-point-functions' which is
+    ;; used by `completion-at-point'.  The order of the functions matters, the
+    ;; first function returning a result wins.  Note that the list of buffer-local
+    ;; completion functions takes precedence over the global list.
+    (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+    (add-to-list 'completion-at-point-functions #'cape-file)
+    (add-to-list 'completion-at-point-functions #'cape-elisp-block)
+    (add-to-list 'completion-at-point-functions #'cape-history)
+    (add-to-list 'completion-at-point-functions #'cape-keyword)
+    (add-to-list 'completion-at-point-functions #'cape-tex)
+    ;;(add-to-list 'completion-at-point-functions #'cape-sgml)
+    ;;(add-to-list 'completion-at-point-functions #'cape-rfc1345)
+    ;;(add-to-list 'completion-at-point-functions #'cape-abbrev)
+    ;;(add-to-list 'completion-at-point-functions #'cape-dict)
+    ;;(add-to-list 'completion-at-point-functions #'cape-elisp-symbol)
+    ;;(add-to-list 'completion-at-point-functions #'cape-line)
+    )
+#+end_src
+** Orderless
+[[[https://github.com/oantolin/orderless][GitHub]]]
+Allow completion based on space-separated tokens, out of order.
+#+begin_src emacs-lisp
+  (use-package orderless
+    :straight (orderless :type git
+                         :flavor melpa
+                         :host github
+                         :repo "oantolin/orderless")
+    :config
+    (setq completion-styles '(substring orderless basic)
+          orderless-component-separator 'orderless-escapable-split-on-space
+          read-file-name-completion-ignore-case t
+          read-buffer-completion-ignore-case t
+          completion-ignore-case t)
+    )
+#+end_src
+** Yasnippet
+:yasnippet:
+#+begin_src emacs-lisp
+  (use-package yasnippet
+    :straight (yasnippet :type git 
+                         :flavor melpa 
+                         :files ("yasnippet.el" "snippets" "yasnippet-pkg.el") 
+                         :host github 
+                         :repo "joaotavora/yasnippet")
+    :defer t
+    :config
+    (use-package yasnippet-snippets
+      :straight (yasnippet-snippets :type git 
+                                    :flavor melpa 
+                                    :files ("*.el" "snippets" ".nosearch" "yasnippet-snippets-pkg.el") 
+                                    :host github 
+                                    :repo "AndreaCrotti/yasnippet-snippets"))
+    (yas-reload-all)
+    :hook
+    (org-mode . yas-minor-mode)
+    (LaTeX-mode . yas-minor-mode)
+    (web-mode . yas-minor-mode)
+    (python-mode . yas-minor-mode)
+    (ess-r-mode . yas-minor-mode)
+    (c++-mode . yas-minor-mode)
+    (cc-mode . yas-minor-mode)
+    )
+  ;; (define-key yas-minor-mode-map (kbd "M-y") 'yas-expand)
+#+end_src
+:END:
+* Minibuffer
+** Consult
+[[[https://github.com/minad/consult][GitHub]]]
+Replace some of emacs functions with their consult equivalent
+#+begin_src emacs-lisp
+  (use-package consult
+    :straight (consult :type git
+                       :flavor melpa
+                       :host github
+                       :repo "minad/consult")
+    :config
+    (setq consult-preview-key nil) ; No live preview
+
+    (bind-key "C-x C-r" #'consult-recent-file)
+    (bind-key "C-x h"   #'consult-outline)
+    (bind-key "C-x b"   #'consult-buffer)
+    (bind-key "C-c h"   #'consult-history)
+    ;; (bind-key "M-:"     #'consult-complex-command)
+    )
+#+end_src
+
+For the [[help:consult-goto-line][consult-goto-line]] and ~consult-line~ commands, we define our owns with live preview (independently of the [[help:consult-preview-key][consult-preview-key]])
+#+name: my/consult-line
+#+begin_src emacs-lisp
+  (defun my/consult-line ()
+    "Consult line with live preview"
+
+    (interactive)
+    (let ((consult-preview-key 'any)
+          (mini-frame-resize 'grow-only)) ;; !! Important
+      (consult-line)))
+
+  (bind-key "C-s"   #'my/consult-line)
+#+end_src
+
+#+name: my/consult-goto-line
+#+begin_src emacs-lisp
+  (defun my/consult-goto-line ()
+    "Consult goto line with live preview"
+
+    (interactive)
+    (let ((consult-preview-key 'any))
+      (consult-goto-line)))
+
+  (bind-key "M-g g"   #'my/consult-goto-line)
+  (bind-key "M-g M-g" #'my/consult-goto-line)
+#+end_src
+** Vertico
+[[[https://github.com/minad/vertico][GitHub]]]
+Provides a performant and minimalistic vertical completion UI based on the default completion system but aims to be highly flexible, extensible and modular.
+#+begin_src emacs-lisp
+  (use-package vertico
+    :straight (vertico :type git
+                       :flavor melpa
+                       :files (:defaults "extensions/vertico-*.el" "vertico-pkg.el")
+                       :host github
+                       :repo "minad/vertico")
+    :config
+    ;; (setq completion-styles '(basic substring partial-completion flex))
+
+    (setq vertico-resize nil        ; How to resize the Vertico minibuffer window.
+          vertico-count 8          ; Maximal number of candidates to show.
+          vertico-count-format nil) ; No prefix with number of entries
+
+    (vertico-mode)
+    )
+#+end_src
+
+Tweaking settings
+
+#+begin_src emacs-lisp
+  (setq vertico-grid-separator
+        #("  |  " 2 3 (display (space :width (1))
+                               face (:background "#ECEFF1")))
+
+        vertico-group-format
+        (concat #(" " 0 1 (face vertico-group-title))
+                #(" " 0 1 (face vertico-group-separator))
+                #(" %s " 0 4 (face vertico-group-title))
+                #(" " 0 1 (face vertico-group-separator
+                            display (space :align-to (- right (-1 . right-margin) (- +1)))))))
+
+  ;; (set-face-attribute 'vertico-group-separator nil
+  ;;                     :strike-through t)
+  ;; (set-face-attribute 'vertico-current nil
+  ;;                     :inherit '(nano-strong nano-subtle))
+  ;; (set-face-attribute 'completions-first-difference nil
+  ;;                     :inherit '(nano-default))
+#+end_src
+
+Bind =shift-tab= for completion
+
+#+begin_src emacs-lisp
+  (bind-key "<backtab>" #'minibuffer-complete vertico-map)
+#+end_src
+
+Completion-at-point and completion-in-region (see
+https://github.com/minad/vertico#completion-at-point-and-completion-in-region)
+
+#+begin_src emacs-lisp
+  (setq completion-in-region-function
+        (lambda (&rest args)
+          (apply (if vertico-mode
+                     #'consult-completion-in-region
+                   #'completion--in-region)
+                 args)))
+#+end_src
+
+Prefix the current candidate
+(See https://github.com/minad/vertico/wiki#prefix-current-candidate-with-arrow)
+#+begin_src emacs-lisp
+  (defun minibuffer-format-candidate (orig cand prefix suffix index _start)
+    (let ((prefix (if (= vertico--index index)
+                      " > "
+                    "   "))) 
+      (funcall orig cand prefix suffix index _start)))
+
+  (advice-add #'vertico--format-candidate
+             :around #'minibuffer-format-candidate)
+#+end_src
+
+See https://kristofferbalintona.me/posts/vertico-marginalia-all-the-icons-completion-and-orderless/#vertico
+
+#+begin_src emacs-lisp
+  (defun vertico--prompt-selection ()
+    "Highlight the prompt"
+
+    (let ((inhibit-modification-hooks t))))
+#+end_src
+
+See https://github.com/minad/vertico/issues/145
+#+begin_src emacs-lisp
+  (defun minibuffer-vertico-setup ()
+
+    (setq truncate-lines t)
+    (setq completion-in-region-function
+          (if vertico-mode
+              #'consult-completion-in-region
+            #'completion--in-region)))
+
+  (add-hook 'vertico-mode-hook #'minibuffer-vertico-setup)
+  (add-hook 'minibuffer-setup-hook #'minibuffer-vertico-setup)
+#+end_src
+** Marginalia
+[[[https://github.com/minad/marginalia][GitHub]]]
+#+begin_src emacs-lisp
+  (use-package marginalia
+    :straight (marginalia :type git
+                            :flavor melpa
+                            :host github
+                            :repo "minad/marginalia")
+    :config
+    (setq-default marginalia--ellipsis "…"    ; Nicer ellipsis
+                  marginalia-align 'right     ; right alignment
+                  marginalia-align-offset -1) ; one space on the right
+    (marginalia-mode)
+    )
+#+end_src
+** Which Key
+#+begin_src emacs-lisp
+  (use-package which-key
+    :straight (which-key :type git 
+                         :flavor melpa 
+                         :host github 
+                         :repo "justbur/emacs-which-key")
+    ;;:defer t
+    :config
+    (which-key-mode))
+#+end_src
 * Coding
 ** General
 :general-options:
 #+begin_src emacs-lisp
   (electric-pair-mode 1)
-  (add-hook 'prog-mode-hook 'linum-mode 1)
 #+end_src
 :END:
+** Line numbers (Nlinum)
+[[[https://www.emacswiki.org/emacs/Nlinum][Wiki]]]
+:nlinum:
+#+begin_src emacs-lisp
+  (use-package nlinum
+    :straight (nlinum :type git 
+                      :host github      	       
+                      :repo "emacs-straight/nlinum" 
+                      :files ("*" (
+                                   :exclude ".git")))
+    :hook
+    (prog-mode . nlinum-mode)
+    )
+#+end_src
+:END:
+** Format code (Format-all)
+- [[[https://ianyepan.github.io/posts/format-all/][Home]]] [[[https://github.com/lassik/emacs-format-all-the-code][Github]]]
+/  "Lets you auto-format source code in many languages using the same command for all languages"/
+- You have to make sure that you have the external formatter programs (See [[#sec:requirements-format-all][some external formaters]] [[https://github.com/lassik/emacs-format-all-the-code?tab=readme-ov-file#supported-languages][supported languages]])
+- To format, =M-x format-all-region-or-buffer=
+- To auto-format on save use the minor mode, =mode format-all-mode=
+*** Some external formaters
+:PROPERTIES:
+:CUSTOM_ID: sec:requirements-format-all
+:END:
+| Language | Package  | Notes                                                  |
+|----------+----------+--------------------------------------------------------|
+| R        | styler   | =install.packages("styler")=                           |
+| Bash     | [[https://tracker.debian.org/pkg/golang-mvdan-sh][shfmt]]    | =sudo apt install golang-mvdan-sh-dev=                 |
+|          | [[https://github.com/lovesegfault/beautysh][beautysh]] | =pip install beautysh=                                 |
+| Python   | various  | =pip3 install black jedi autopep8 flake8 ipython yapf= |
+| Html     | [[http://www.html-tidy.org/][tidy]]     | =sudo apt install tidy=                                |
+| Latex    | auctex   | Part of [[https://tug.org/texlive/][TexLive]]                                        |
+*** Configuration
+#+begin_src emacs-lisp
+  (use-package format-all
+      :straight (format-all :type git 
+                          :flavor melpa 
+                          :host github 
+                          :repo "lassik/emacs-format-all-the-code")
+      :commands format-all-mode
+      :hook
+      (ess-mode . format-all-mode)
+      (python-mode . format-all-mode)
+      (LaTeX-mode . format-all-mode)
+      (Shell-script-mode . format-all-mode)
+      (sh-mode . format-all-mode)
+      ;; :config
+      ;; (setq-default format-all-formatters
+      ;;               '(("formatR" format-all-r-format-buffer)))
+      )
+#+end_src
+** Check code (Flycheck)
+[[[https://www.flycheck.org/en/latest/][Home]]]
+On-the-fly syntax checking. "/It uses various syntax checking and linting tools to automatically check the contents of buffers while you type, and reports warnings and errors directly in the buffer, or in an optional error list/".
+- Requires the installation of syntax checker programs (See [[#sec:requirements-flycheck][examples]] [[https://www.flycheck.org/en/latest/languages.html][supported languages]])
+*** Some syntax checker programs
+:PROPERTIES:
+:CUSTOM_ID: sec:requirements-flycheck
+:END:
+| Language   | Package    | Notes                         |
+|------------+------------+-------------------------------|
+| R          | [[https://lintr.r-lib.org/][lintr]]      | =install.packages("lintr")=   |
+| Awk        | gawk       | =sudo apt install gawk=       |
+| Bash       | [[https://github.com/koalaman/shellcheck/][shellcheck]] | =sudo apt install shellcheck= |
+| Html       | [[http://www.html-tidy.org/][tidy]]       | =sudo apt install tidy=       |
+| JavaScript | [[https://jshint.com/][jshint]]     | =npm install -g jshint=       |
+| Python     | various    | =pip3 install pylint flake8=  |
+|            |            | =sudo apt install pylint=     |
+| Latex      | lacheck    | Part of [[https://tug.org/texlive/][TexLive]]               |
+
+*** Configuration
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :straight (flycheck :type git 
+                        :flavor melpa 
+                        :host github 
+                        :repo "flycheck/flycheck")
+    :hook
+    (python-mode . flycheck-mode)
+    (sh-mode . flycheck-mode)
+    (ess-r-mode . flycheck-mode)
+    (LaTeX-mode . flycheck-mode)
+    )
+#+end_src
+** Code folding
 *** Hideshow
+[[[https://www.gnu.org/software/emacs/manual/html_node/emacs/Hideshow][Hideshow manual]]]
 :hideshow-minormode:
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
   (defun toggle-selective-display (column)
     (interactive "P")
     (set-selective-display
@@ -622,51 +1362,57 @@ Define Keybindings to move between windows
             (hs-show-all))
       (toggle-selective-display column)))
 
-  ;;Define Keybindings for hiding/showing code
+  ;; Define Keybindings for hiding/showing code
   (global-set-key (kbd "C-+") 'toggle-hiding)
   (global-set-key (kbd "C-\\") 'toggle-selective-display)
-  ;; (add-hook 'web-mode-hook (lambda () (hs-minor-mode 1)))
+
+  ;; Hooks
   (add-hook 'ess-r-mode-hook (lambda () (hs-minor-mode 1)))
+  (add-hook 'python-mode-hook (lambda () (hs-minor-mode 1)))
+  ;; (add-hook 'web-mode-hook (lambda () (hs-minor-mode 1)))
 #+end_src
 :END:
-** LSP                                        :commented:
-#+begin_src emacs-lisp :results silent
-    ;; (defun ssl/lsp-mode-setup ()
-    ;;   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-    ;;   (lsp-headerline-breadcrumb-mode))
+** Languages
+*** C++
+:config:
+#+begin_src emacs-lisp
+  (progn
+    (customize-set-variable 'eglot-autoshutdown t)
+    (customize-set-variable 'eglot-extend-to-xref t)
+    (customize-set-variable 'eglot-ignored-server-capabilities
+                            (quote (:documentFormattingProvider :documentRangeFormattingProvider)))
 
-  ;; (use-package lsp-mode
-  ;;   :ensure t
-  ;;   :init
-  ;;   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-  ;;   (setq lsp-keymap-prefix "C-c l")
-  ;;   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-  ;;          (sh-mode . lsp-deferred)
-  ;;          ;; if you want which-key integration
-  ;;          (lsp-mode . lsp-enable-which-key-integration))
-  ;;   :commands lsp)
+    (with-eval-after-load 'eglot
+      (setq completion-category-defaults nil)
+      (add-to-list 'eglot-server-programs
+                   '(c-mode c++-mode
+                            . ("clangd"
+                               "-j=4"
+                               "--malloc-trim"
+                               "--log=error"
+                               "--background-index"
+                               "--clang-tidy"
+                               "--cross-file-rename"
+                               "--completion-style=detailed"
+                               "--pch-storage=memory"
+                               "--header-insertion=never"
+                               "--header-insertion-decorators=0"))))
 
-  ;; ;; optionally
-  ;; (use-package lsp-ui
-  ;;   :ensure t
-  ;;   :after lsp-mode
-  ;;   :commands lsp-ui-mode)
-  ;; ;; if you are helm user
-  ;; (use-package helm-lsp
-  ;;   :ensure t
-  ;;   :after lsp-mode
-  ;;   :commands helm-lsp-workspace-symbol)
-
+    (add-hook 'c-mode-hook #'eglot-ensure)
+    (add-hook 'c++-mode-hook #'eglot-ensure)
+    )
 #+end_src
-
-** Python (Anaconda)
+:END:
+*** Python (Anaconda)
 Change the path for the anaconda (miniconda) installation accordingly
 :config:
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
   ;; Install and configure Conda
   (use-package conda
-    :ensure t
-    ;; :defer t
+    :straight (conda :type git 
+                     :flavor melpa 
+                     :host github 
+                     :repo "necaris/conda.el")
     :init
     ;; (add-to-list 'exec-path "/media/discs/shared/miniconda3/bin/")
     (setq conda-anaconda-home essl/anaconda-home)
@@ -675,84 +1421,96 @@ Change the path for the anaconda (miniconda) installation accordingly
     (conda-env-initialize-interactive-shells)
     (conda-env-initialize-eshell)
     (conda-env-autoactivate-mode t)
-    )
-
-  ;; Set up Elpy with Conda integration
-  (use-package elpy
-    :ensure t
-    :init
-    (elpy-enable)
-
-    (setq python-shell-interpreter "python"
-          elpy-rpc-virtualenv-path  'current
-          python-shell-virtualenv-root essl/anaconda-venv
-          elpy-rpc-virtualenv-path  essl/anaconda-venv)
-    )
-
-  (use-package company-anaconda
-    :ensure t
-    :config
-    (eval-after-load "company"
-      '(add-to-list 'company-backends '(company-anaconda)))
     :hook
     (python-mode . anaconda-mode)
     (python-mode . anaconda-eldoc-mode)
     )
 
-  (use-package python-black
-    :demand t
-    :after python
-    :hook
-    (python-mode . python-black-on-save-mode-enable-dwim)
-    (python-mode . yas-minor-mode)
-    (python-mode . linum-mode)
-    (python-mode . yafolding-mode)
+  ;; ;; (use-package yafolding
+  ;;   :straight (yafolding :type git 
+  ;;   		       :flavor melpa 
+  ;;   		       :host github 
+  ;;   		       :repo "emacsorphanage/yafolding"))
+
+  ;; (use-package python-black
+  ;;   :straight (python-black :type git 
+  ;;           		  :flavor melpa 
+  ;;           		  :host github 
+  ;;           		  :repo "wbolster/emacs-python-black")
+  ;;   :after python
+  ;;   :hook
+  ;;   (python-mode . python-black-on-save-mode-enable-dwim)
+  ;;   (python-mode . yas-minor-mode)
+  ;;   (python-mode . nlinum-mode)
+  ;;   ;; (python-mode . yafolding-mode)
+  ;;   ;; (python-mode . hs-minor-mode)
+  ;;   )
+
+  ;; Set up Elpy with Conda integration
+  (use-package elpy
+    :straight (elpy :type git 
+                    :flavor melpa 
+                    :files ("*.el" "NEWS.rst" "snippets" "elpy" "elpy-pkg.el") 
+                    :host github 
+                    :repo "jorgenschaefer/elpy")
+    :init
+    (elpy-enable)
+
+    (setq python-shell-interpreter "python"
+          elpy-rpc-completion-backend "corfu"
+          elpy-rpc-virtualenv-path  'current
+          python-shell-virtualenv-root essl/anaconda-venv
+          elpy-rpc-virtualenv-path  essl/anaconda-venv)
     )
 #+end_src
 :END:
-** R
-*** ESS
+*** R
+**** ESS
 :configuration:
-#+begin_src emacs-lisp :results silent
-  (defun my-ess-hook ()
-    ;; ensure company-R-library is in ESS backends
-    (make-local-variable 'company-backends)
-    (cl-delete-if (lambda (x) (and (eq (car-safe x) 'company-R-args))) company-backends)
-    (push (list 'company-R-args 'company-R-objects 'company-R-library :separate)
-          company-backends))
+#+begin_src emacs-lisp
   (use-package ess
-    :ensure t
-    :init
-    (add-hook 'ess-r-mode-hook #'hs-minor-mode)
-    (add-hook 'ess-r-mode-hook #'my-ess-hook)
+    :straight (ess :type git 
+                   :flavor melpa 
+                   :files ("lisp/*.el" "doc/ess.texi" ("etc" "etc/*") ("obsolete" "lisp/obsolete/*") (
+                                                                                                      :exclude "etc/other") "ess-pkg.el") 
+                   :host github 
+                   :repo "emacs-ess/ESS")
     :bind
-    ("_" . ess-insert-assign)
+    ("M--" . ess-insert-assign) ;; Arrow to when typing underscore
     :hook
-    (ess-r-mode . linum-mode)
+    (ess-r-mode . hs-minor-mode)
     )
-
-  (use-package format-all
-  :ensure t
-  :hook (ess-mode . format-all-mode)
-  :config
-  (setq-default format-all-formatters
-                '(("formatR" format-all-r-format-buffer))))
-
- #+end_src
+#+end_src
 :END:
-*** Rmd
+**** Rmd
 :Rmarkdown:
 #+begin_src emacs-lisp
   (require 'poly-R)
   (require 'poly-markdown)
-  (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+r-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+r-mode))
 #+end_src
 :END:
-** Html
+**** Quarto
+:quarto:
+#+begin_src emacs-lisp
+  (use-package quarto-mode
+    :straight (quarto-mode 
+               :type git 
+               :flavor melpa 
+               :host github 
+               :repo "quarto-dev/quarto-emacs")
+    :mode (("\\.Rmd" . poly-quarto-mode))
+    )
+#+end_src
+:END:
+*** Html
 :web-beautify:
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
   (use-package web-beautify
-    :ensure t
+    :straight (web-beautify :type git 
+                            :flavor melpa 
+                            :host github 
+                            :repo "yasuyk/web-beautify")
     :config
     (eval-after-load 'js2-mode
       '(define-key js2-mode-map (kbd "C-c b") 'web-beautify-js))
@@ -776,9 +1534,12 @@ Change the path for the anaconda (miniconda) installation accordingly
 :END:
 - [[https://web-mode.org/][Webmode]]: Major mode for editing web templates
 :webmode:
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
   (use-package web-mode
-    :ensure t
+    :straight (web-mode :type git 
+                        :flavor melpa 
+                        :host github 
+                        :repo "fxbois/web-mode")
     :config
     (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
     (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
@@ -789,40 +1550,53 @@ Change the path for the anaconda (miniconda) installation accordingly
     (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
     (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
     (setq web-mode-enable-current-column-highlight t)
-    (add-hook 'web-mode-hook #'yas-minor-mode)
     )
-
 #+end_src
 :END:
-** Flycheck
-:bash:
-#+BEGIN_SRC emacs-lisp :results silent
-  (use-package flycheck
-  :ensure t
-  :hook
-  (python-mode . flycheck-mode)
-  (sh-mode . flycheck-mode)
-  ;; (setq flycheck-shellcheck-follow-sources nil)
-  )
-#+END_SRC
-** Latex
-*** General
+:sass:
+#+begin_src emacs-lisp
+  (use-package sass-mode
+    :straight (sass-mode :type git 
+                         :flavor melpa 
+                         :host github 
+                         :repo "nex3/sass-mode")
+    :config
+    ;; (setq exec-path (cons (expand-file-name "") exec-path))
+    )
+#+end_src
+:END:
+:rainbow-mode:
+#+begin_src emacs-lisp
+  (use-package rainbow-mode
+    :straight (rainbow-mode :type git 
+                            :host github 
+                            :repo "emacs-straight/rainbow-mode" 
+                            :files ("*" (
+                                         :exclude ".git")))
+    )
+#+end_src
+:END:
+*** Latex
+**** General
 :General-options:
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
   (setq TeX-auto-save t); Enable parse on save.
   (setq TeX-parse-self t)
   (setq-default TeX-master nil)
+  (setq TeX-engine 'xetex); Use xelatex by default
   (add-hook 'LaTeX-mode-hook 'visual-line-mode) ;auto-fill-mode
   (add-hook 'LaTeX-mode-hook #'flyspell-mode)
   (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
-  (add-hook 'LaTeX-mode-hook #'yas-minor-mode)
 #+end_src
 :END:
-*** Aspect
+**** Aspect
 :editing-customizations:
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
   (use-package magic-latex-buffer
-    :ensure t
+    :straight (magic-latex-buffer :type git 
+                                  :flavor melpa 
+                                  :host github 
+                                  :repo "zk-phi/magic-latex-buffer")
     :init
     (add-hook 'LaTeX-mode-hook 'magic-latex-buffer)
     (add-hook 'LaTeX-mode-hook 'olivetti-mode)
@@ -837,17 +1611,18 @@ Change the path for the anaconda (miniconda) installation accordingly
     )
 #+end_src
 :END:
-*** Helm-bibtex
-:helm-bibtex:
-#+begin_src emacs-lisp :results silent
-  (use-package helm-bibtex
-    :ensure t
-    :after helm)
+**** ebib
+#+begin_src emacs-lisp
+  (use-package ebib
+    :straight (ebib :type git 
+                    :flavor melpa 
+                    :host github 
+                    :repo "joostkremers/ebib")
+    )
 #+end_src
-:END:
-*** Auctex and Reftex
+**** Auctex and Reftex
 :auctex-reftex-conf:
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
   (require 'reftex)
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex); with AUCTeX LaTeX mode
   (add-hook 'latex-mode-hook 'turn-on-reftex)   ; with Emacs latex mode
@@ -859,19 +1634,18 @@ Change the path for the anaconda (miniconda) installation accordingly
               (define-key LaTeX-mode-map (kbd "<C-tab>") 'outline-toggle-children)))
 #+end_src
 :END:
-*** Synctex
+**** Synctex
 :synctex:
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
   (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
   (setq TeX-source-correlate-method 'synctex)
   (setq TeX-source-correlate-start-server t)
   (setq TeX-parse-self t); Enable parse on load.
   (add-hook 'TeX-mode-hook
             (lambda () (TeX-fold-mode 1)));
-
 #+end_src
 :END:
-*** View output (pdf)
+**** View output (pdf)
 :pdf-settings:
 #+begin_src emacs-lisp
   ;; Use pdf-tools to open PDF files
@@ -883,107 +1657,111 @@ Change the path for the anaconda (miniconda) installation accordingly
             'TeX-revert-document-buffer)
 #+end_src
 :END:
-** Polymode
+*** Polymode
 :polymode:
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
   (add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
 #+end_src
 :END:
-** Terminal
+*** Terminal
 Setup terminal emulators, [[https://www.emacswiki.org/emacs/AnsiTermHints][ansi-term]] and [[https://www.gnu.org/software/emacs/manual/html_mono/eshell.html][eshell]]
-*** Ansi-term
-#+begin_src emacs-lisp :results silent
+**** Ansi-term
+#+begin_src emacs-lisp
   (defadvice ansi-term (before force-bash)
     (interactive (list essl/my-term)))
   (ad-activate 'ansi-term)
   (eval-after-load "term"
     '(define-key term-raw-map (kbd "s-y") 'term-paste))
 #+end_src
-*** eshell
-:eshell-config: 
-#+begin_src emacs-lisp :results silent
-  (setq eshell-prompt-regexp "^[^#$\n]*[#$] "
-        eshell-prompt-function
-        (lambda nil
-          (concat
-           "[" (user-login-name) "@" (system-name) " "
-           (if (string= (eshell/pwd) (getenv "HOME"))
-               "~" (eshell/basename (eshell/pwd)))
-           "]"
-           (if (= (user-uid) 0) "# " "$ "))))
-    (global-set-key (kbd "<s-return>") 'eshell)
+**** eshell
+:eshell-config:
+#+begin_src emacs-lisp
+  (use-package eshell-bookmark
+    :straight (eshell-bookmark :type git 
+                               :flavor melpa 
+                               :host github 
+                               :repo "Fuco1/eshell-bookmark")
+    :after eshell
+    :config
+    (setq eshell-prompt-regexp "^[^#$\n]*[#$] "
+          eshell-prompt-function
+          (lambda nil
+            (concat
+             "[" (user-login-name) "@" (system-name) " "
+             (if (string= (eshell/pwd) (getenv "HOME"))
+                 "~" (eshell/basename (eshell/pwd)))
+             "]"
+             (if (= (user-uid) 0) "# " "$ "))))
+    (add-hook 'eshell-mode-hook (lambda () (setenv "TERM" "xterm-256color")))
+    ;; (add-hook 'eshell-mode-hook #'eshell-bookmark-setup)
+    (global-set-key (kbd "<s-return>") 'eshell))
 #+end_src
 :END:
-
+* Pdf
+** pdf-tools
+Use pdf-tools as default pdf viewer in emacs. Customize navigation and highlighting
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :straight (pdf-tools :type git 
+                         :flavor melpa 
+                         :files (
+                                 :defaults "README" ("build" "Makefile") ("build" "server") "pdf-tools-pkg.el") 
+                         :host github 
+                         :repo "vedang/pdf-tools")
+    ;; :defer t
+    :config
+    ;; initialise
+    (pdf-tools-install)
+    ;; (pdf-loader-install) ;;to speedup loading
+    ;; open pdfs scaled to fit page
+    (setq-default pdf-view-display-size 'fit-width)
+    ;; automatically annotate highlights
+    (setq pdf-annot-activate-created-annotations t)
+    ;; use normal isearch
+    (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
+    ;; turn off cua so copy works
+    ;; (add-hook 'pdf-view-mode-hook (lambda () (cua-mode 0)))
+    ;; more fine-grained zooming
+    (setq pdf-view-resize-factor 1.1)
+    ;; keyboard shortcuts
+    (define-key pdf-view-mode-map (kbd "h") 'pdf-annot-add-highlight-markup-annotation)
+    (define-key pdf-view-mode-map (kbd "u") 'pdf-annot-add-underline-markup-annotation)
+    (define-key pdf-view-mode-map (kbd "t") 'pdf-annot-add-text-annotation)
+    (define-key pdf-view-mode-map (kbd "y") 'pdf-annot-add-squiggly-markup-annotation)
+    (define-key pdf-view-mode-map (kbd "_") 'pdf-annot-add-strikeout-markup-annotation)
+    (define-key pdf-view-mode-map (kbd "D") 'pdf-annot-delete)
+    ;; customize highlight color
+    (setq pdf-annot-default-annotation-properties
+          '((t
+             (label . "ssl"))
+            (text
+             (color . "khaki1")
+             (icon . "Note"))
+            (highlight
+             (color . "snow2")
+             )
+            (underline
+             (color . "dark cyan"))
+            (squiggly
+             (color . "orange red"))
+            (strike-out
+             (color . "red"))))
+    (setq pdf-annot-color-history '("khaki1" "powder blue" "thistle"
+                                      "DarkSeaGreen2" "light salmon" "snow2"
+                                      "dark cyan" "orange red"))
+    )
+#+end_src
 * Org-mode
 ** Aspect
-*** General setup
-:general-setup:
-#+BEGIN_SRC emacs-lisp :results silent
-    (use-package org
-      :ensure t
-      :pin elpa
-      ;; :commands (org-capture org-agenda)
-      :hook ((org-mode . yas-minor-mode)
-             (org-mode . org-indent-mode))
-      :config
-      ;; (setq org-ellipsis "▿")
-      ;; (setq org-hide-emphasis-markers t)
-      (setq org-use-speed-commands t)
-      (setq org-image-actual-width 550)
-      (setq org-highlight-latex-and-related '(latex script entities))
-      ;; reduce space between header and tags
-      (setq org-tags-column 47)
-
-      ;;Function to indent code
-      (defun indent-org-block ()
-        (interactive)
-        (when (org-in-src-block-p)
-          (org-edit-special)
-          (indent-region (point-min) (point-max))
-          (org-edit-src-exit)))
-
-      ;; Keybinding
-      (define-key org-mode-map
-        (kbd "C-x /") #'indent-org-block)
-      )
-#+END_SRC
-:END:
-*** Setup fonts
-:Font-faces:
-#+begin_src emacs-lisp :results silent
-  ;;Size for heading levels
-  (dolist (face '((org-level-1 . 1.6)
-                  (org-level-2 . 1.5)
-                  (org-level-3 . 1.4)
-                  (org-level-4 . 1.3)
-                  (org-level-5 . 1.2)
-                  (org-level-6 . 1.1)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil :font essl/mono-font :weight 'regular :height (cdr face))
-    )
-
-  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-  (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
-  (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
-  (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
-  (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch)
-#+end_src
-:END:
 *** Org-bullets
 Change the aspect of the bullets used in headings
 :bullets:
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
   (use-package org-bullets
-    :ensure t
+    :straight (org-bullets :type git 
+                           :flavor melpa 
+                           :host github 
+                           :repo "integral-dw/org-bullets")
     :config
     (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
     :custom
@@ -997,11 +1775,13 @@ Change the aspect of the bullets used in headings
 :END:
 ** Org babel languages
 :load-languages:
-#+BEGIN_SRC emacs-lisp :results silent
+#+begin_src emacs-lisp
   (use-package ob-restclient
-    ;; :mode ("\\.org\\'" . org-mode)
+    :straight (ob-restclient :type git 
+                             :flavor melpa 
+                             :host github 
+                             :repo "alf/ob-restclient.el")
     :after org
-    :ensure t
     :config
     (org-babel-do-load-languages
      'org-babel-load-languages
@@ -1031,11 +1811,11 @@ Change the aspect of the bullets used in headings
     (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
     ;; (setq org-src-tab-acts-natively t)
     )
-#+END_SRC
+#+end_src
 :END:
 ** Org templates
 :code-block-templates:
-#+BEGIN_SRC emacs-lisp :results silent
+#+begin_src emacs-lisp
   (use-package org-tempo
     :ensure nil
     ;; :mode ("\\.org" . org-mode)
@@ -1049,45 +1829,83 @@ Change the aspect of the bullets used in headings
     (add-to-list 'org-structure-template-alist '("md" . "src markdown"))
     (add-to-list 'org-structure-template-alist '("tx" . "src tex"))
     )
-#+END_SRC
+#+end_src
 :END:
 ** Org exporting
 *** Pandoc exporter
 Pandoc converts between a huge number of different file formats.
-#+BEGIN_SRC emacs-lisp :results silent
+#+begin_src emacs-lisp
   (use-package ox-pandoc
     :no-require t
     :defer 10
-    :ensure t)
-#+END_SRC
+    :straight (ox-pandoc :type git 
+                         :flavor melpa 
+                         :host github 
+                         :repo "emacsorphanage/ox-pandoc"))
+#+end_src
 *** Latex exporting
-Source: http://tex.stackexchange.com/a/161619.
-#+BEGIN_SRC emacs-lisp
+I’ve had issues with getting BiBTeX to work correctly with the
+LaTeX exporter for PDF exporting. By changing the command to
+`latexmk` references appear in the PDF output like they
+should. Source: http://tex.stackexchange.com/a/161619.
+#+begin_src emacs-lisp
   (setq org-latex-pdf-process (list "latexmk -xelatex %f"))
   (setq org-latex-listings 'minted
       org-latex-packages-alist '(("" "minted")))
   ;;(setq org-latex-pdf-process (list "arara %f"))
-#+END_SRC
+#+end_src
+
 Latex export configuration [[https://orgmode.org/worg/org-tutorials/org-latex-export.html][Org-tutorials]]
 It is necessary to load [[https://superuser.com/questions/896741/how-do-i-configure-org-latex-classes-in-emacs][Ox-latex]]
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
+  ;; Define class definitions with custom commands
+  (defvar custom-latex-classes
+    '(("plain"
+       "\\documentclass{article}
+      \\usepackage{hyperref}
+              [NO-DEFAULT-PACKAGES]
+              [NO-PACKAGES]
+        [NO-EXTRA]
+      "
+       ("\\section{%s}" . "\\section*{%s}")
+       ("\\subsection{%s}" . "\\subsection*{%s}")
+       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+       ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+
+      (
+       "custom-apa"
+       "\\documentclass{article}
+  \\usepackage{custom_apa}
+  [NO-DEFAULT-PACKAGES]
+  [EXTRA]
+  "
+       ("\\section{%s}" . "\\section*{%s}")
+       ("\\subsection{%s}" . "\\subsection*{%s}")
+       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+       ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+      ;; Add more custom classes as needed
+      ))
+
+
+  ;; Define function to test for each class
+  (defun ensure-latex-classes (class-definitions)
+    "Ensure that the given CLASS-DEFINITIONS are defined in `org-latex-classes`."
+    (dolist (class-def class-definitions)
+      (let ((class (car class-def))
+            (commands (cdr class-def)))
+        (unless (cl-find class org-latex-classes :key 'car :test 'equal)
+          (setq org-latex-classes
+                (append org-latex-classes
+                        (list (cons class commands))))))))
+
   (with-eval-after-load 'ox-latex
-    (add-to-list 'org-latex-classes
-                 '("article"
-                   "\\documentclass{article}
-            [NO-DEFAULT-PACKAGES]
-            [NO-PACKAGES]"
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
-                   )
-                 )
+    (ensure-latex-classes custom-latex-classes)
     )
 #+end_src
 *** Markdown
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
   (eval-after-load "org"
     '(require 'ox-gfm nil t))
 #+end_src
@@ -1095,15 +1913,51 @@ It is necessary to load [[https://superuser.com/questions/896741/how-do-i-config
 :ox-hugo:
 #+begin_src emacs-lisp
   (use-package ox-hugo
-    :ensure t   ;Auto-install the package from Melpa
+    :straight (ox-hugo :type git 
+                       :flavor melpa 
+                       :host github 
+                       :repo "kaushalmodi/ox-hugo")
     :after ox)
+#+end_src
+:END:
+** Org-noter
+Take notes from =pdf= documents (books, papers) in org mode
+- Documentation ([[https://github.com/weirdNox/org-noter][GitHub]])
+:org-noter:
+#+begin_src emacs-lisp
+  (use-package org-noter
+    :straight (org-noter
+               :type git
+               :flavor melpa
+               :files ("*.el" "modules" (:exclude "*-test-utils.el" "*-devel.el") "org-noter-pkg.el")
+               :host github
+               :repo "org-noter/org-noter")
+    )
+#+end_src
+:END:
+** Org-reveal
+:org-reveal:
+#+begin_src emacs-lisp
+  (use-package ox-reveal
+    :straight (ox-reveal :type git 
+                         :flavor melpa 
+                         :host github 
+                         :repo "yjwen/org-reveal")
+    :init
+    (require 'ox-reveal)
+    )
 #+end_src
 :END:
 ** Org-ref
 :org-ref:
-#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp
   (use-package org-ref
-    :ensure t
+    :straight (org-ref :type git 
+                       :flavor melpa 
+                       :files (
+                               :defaults "org-ref.org" "org-ref.bib" "citeproc" "org-ref-pkg.el") 
+                       :host github 
+                       :repo "jkitchin/org-ref")
     ;; :after org
     :init
     ;;Configuration to allow use of org-ref with ox-hugo
@@ -1117,7 +1971,8 @@ It is necessary to load [[https://superuser.com/questions/896741/how-do-i-config
       (add-to-list 'org-export-before-parsing-hook #'my/org-ref-process-buffer--html))
 
     :config
-    (setq 
+    (setq
+
      bibtex-completion-notes-template-multiple-files "* ${author-or-editor}, ${title}, ${journal}, (${year}) :${=type=}: \n\nSee [[cite:&${=key=}]]\n"
 
      bibtex-completion-additional-search-fields '(keywords)
@@ -1133,303 +1988,156 @@ It is necessary to load [[https://superuser.com/questions/896741/how-do-i-config
        (call-process "open" nil 0 nil fpath))
      )
 
-    ;Keybindings for inserting reference
+    ;;Keybindings for inserting reference
     (define-key bibtex-mode-map (kbd "H-b") 'org-ref-bibtex-hydra/body)
     (define-key org-mode-map (kbd "C-c ]") 'org-ref-insert-link)
     (define-key org-mode-map (kbd "s-[") 'org-ref-insert-link-hydra/body)
+    (setq org-ref-open-pdf-function 'org-pdfview-open)
     )
-#+end_src
-:END:
-:org-ref-helm:
-#+begin_src emacs-lisp :results silent
-  (use-package org-ref-helm
-    :ensure nil
-    :after org-ref
-    :config
-    (setq org-ref-insert-link-function 'org-ref-insert-link-hydra/body
-          org-ref-insert-cite-function 'org-ref-cite-insert-helm
-          org-ref-insert-label-function 'org-ref-insert-label-link
-          org-ref-insert-ref-function 'org-ref-insert-ref-link
-          org-ref-cite-onclick-function (lambda (_) (org-ref-citation-hydra/body))))
-#+end_src
-:END:
-** Org-reveal                                 :commented:
-:org-reveal:
-#+begin_src emacs-lisp :results silent
-  ;; (use-package ox-reveal
-  ;;   :ensure t
-  ;;   :defer t
-  ;;   :config
-  ;;   )
 #+end_src
 :END:
 * Editing
-** Smoothscrolling
-This makes it so C-n-ing and C-p-ing won’t make the buffer jump
-around so much.
-#+BEGIN_SRC emacs-lisp
-  (use-package smooth-scrolling
-    :ensure t
-    :config
-    (smooth-scrolling-mode))
-
-  ;; (use-package good-scroll
-  ;;   :ensure t
-  ;;   :config
-  ;;   (good-scroll-mode 1))
-#+END_SRC
-** Scratch
-Convenient package to create *scratch* buffers that are based on the current buffer’s major mode. This is more convienent than manually creating a buffer to do some scratch work or reusing the initial *scratch* buffer.
-#+BEGIN_SRC emacs-lisp :results silent
-  (use-package scratch
-    :ensure t
-    :commands scratch)
-#+END_SRC
-** Flyspell
-[[http://www.emacswiki.org/emacs/FlySpell][Source]] [[http://emacs.stackexchange.com/questions/13361/how-do-i-disable-the-emacs-flyspell-middle-mouse-correction][Configure buttons]]
-:flyspell-flyspell-correct:
+** Smart-Hungry delete
+:smart-hungry:
 #+begin_src emacs-lisp
-    (setq flyspell-sort-corrections nil)
-    (setq flyspell-issue-message-flag nil)
-
-  ;; Enable for text files
-    (dolist (hook '(text-mode-hook))
-      (add-hook hook (lambda () (flyspell-mode 1))))
-    (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
-      (add-hook hook (lambda () (flyspell-mode -1))))
-
-  ;; Change the mouse button for corrections
-    ;; (eval-after-load "flyspell"
-    ;;   '(progn
-    ;;      (define-key flyspell-mouse-map [down-mouse-3] #'flyspell-correct-word)
-    ;;      (define-key flyspell-mouse-map [mouse-3] #'undefined)
-    ;;      (define-key flyspell-mouse-map [down-mouse-2] nil)
-    ;;      (define-key flyspell-mouse-map [mouse-2] nil)))
-
-    (use-package flyspell-correct
-      :after flyspell
-      :bind (:map flyspell-mode-map ("C-;" . flyspell-correct-wrapper)))
-
-    (use-package flyspell-correct-helm
-      :after flyspell-correct)
+  (use-package smart-hungry-delete
+    :straight (smart-hungry-delete :type git
+                                   :flavor melpa
+                                   :host github
+                                   :repo "hrehfeld/emacs-smart-hungry-delete")
+    :bind
+    ;; (:map python-mode-map
+    ([remap backward-delete-char-untabify] . smart-hungry-delete-backward-char)
+    ([remap delete-backward-char] . smart-hungry-delete-backward-char)
+    ([remap delete-char] . smart-hungry-delete-forward-char)
+    ;; )
+    :init
+    (smart-hungry-delete-add-default-hooks))
 #+end_src
 :END:
-** Company mode
-Autocompletion
-#+BEGIN_SRC emacs-lisp :results silent
-  (use-package company
-    :ensure t
-    :hook
-    (prog-mode . company-mode)
-    (ess-r-mode . company-mode)
-    (python-mode . company-mode)
-    (inferior-python-mode . company-mode)
-    (inferior-ess-r-mode . company-mode)
-    :bind
-    (:map company-active-map
-          ("<tab>" . company-complete-selection) ;; instead of cycling
-          ("C-n" . company-select-next)
-          ("C-p" . company-select-previous)
-          )
-    :custom
-    (company-tooltip-limit 10) ;The maximum number of candidates
-    (company-minimum-prefix-length 2)
-    (company-idle-delay 0.5)
-    (company-show-numbers t)
-    (company-tooltip-flip-when-above t)
-    :config
-    (setq company-begin-commands '(self-insert-command))
-    (setq company-backends
-        '((company-files          ; files & directory
-           company-keywords       ; keywords
-           company-capf)  ; completion-at-point-functions
-          (company-abbrev company-dabbrev)
-          ))
-    )
-  (use-package company-box
-    :ensure t
-    :hook (company-mode . company-box-mode))
-#+END_SRC
-
-*** Company elisp                            :commented:
-#+begin_src emacs-lisp
-  ;; (defun company-elisp-finder-keyword-backend (command
-  ;; 					     &optional arg &rest ign)
-  ;;   "`company-backend' for finder-keywords."
-  ;;   (case command
-  ;;     (prefix
-  ;;      (and (require 'finder nil t)
-  ;; 	  (or (company-grab ":group '\\(\\(\\sw\\|\\s_\\)*\\)" 1)
-  ;; 	      (company-grab "Keywords:.*[ \t]+\\(\\(\\sw\\|\\s_\\)*\\)" 1))))
-  ;;     (candidates (all-completions arg finder-known-keywords))
-  ;;     (meta (cdr (assoc (intern arg) finder-known-keywords)))))
-    #+end_src
-** Which Key
-#+BEGIN_SRC emacs-lisp :results silent
-  (use-package which-key
-    :ensure t
-    ;;:defer t
-    :config
-    (which-key-mode))
-#+END_SRC
 ** Expand region, iedit
 - Gradually expands selected region
 :expand-region:
-   #+begin_src emacs-lisp :results silent
-     (use-package expand-region
-       :ensure t
-       :config
-       (global-set-key (kbd "C-=") 'er/expand-region))
-
-     ;;Mark similar occurences and edit them at the same time
-     (use-package multiple-cursors
-       :ensure t
-       :config
-       (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-       (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-       (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-       (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
-       )
-
-     (use-package iedit
-       :ensure t)
-   #+end_src
-   :END:
-
-** Yasnippet
-:yasnippet:
-#+begin_src emacs-lisp :results silent
-  (use-package yasnippet
-    :ensure t
-    :defer t
+#+begin_src emacs-lisp
+  (use-package expand-region
+    :straight (expand-region :type git 
+                             :flavor melpa 
+                             :host github 
+                             :repo "magnars/expand-region.el")
     :config
-    (use-package yasnippet-snippets
-      :ensure t)
-    (yas-reload-all))
+    (global-set-key (kbd "C-=") 'er/expand-region))
+
+  ;;Mark similar occurences and edit them at the same time
+  (use-package multiple-cursors
+    :straight (multiple-cursors :type git 
+                                :flavor melpa 
+                                :host github 
+                                :repo "magnars/multiple-cursors.el") 
+    :config
+    (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+    (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+    (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+    (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+    )
+
+  (use-package iedit
+    :straight (iedit :type git 
+                     :flavor melpa 
+                     :host github 
+                     :repo "victorhge/iedit"))
+
+  (use-package wrap-region
+    :straight (wrap-region :type git 
+                           :flavor melpa 
+                           :host github 
+                           :repo "rejeep/wrap-region.el")
+    :hook
+    (org-mode . wrap-region-mode)
+
+    :config
+    (wrap-region-add-wrapper "=" "=" nil 'org-mode) ; select region, hit = then region -> =region= in org-mode
+    (wrap-region-add-wrapper "*" "*" nil 'org-mode) ; select region, hit * then region -> *region* in org-mode
+    (wrap-region-add-wrapper "/" "/" nil 'org-mode) ; select region, hit / then region -> /region/ in org-mode
+    (wrap-region-add-wrapper "_" "_" nil 'org-mode) ; select region, hit _ then region -> _region_ in org-mode
+    (wrap-region-add-wrapper "+" "+" nil 'org-mode) ; select region, hit + then region -> +region+ in org-mode
+    )
 #+end_src
 :END:
-* Dired
-** Configuration
-:dired-config:
-#+BEGIN_SRC emacs-lisp :results silent
-  (use-package dired
-    :ensure nil
-    :init
-    ;; Hide details such as permissions or modification date
-    (add-hook 'dired-mode-hook 'dired-hide-details-mode)
-    :commands
-    (dired dired-jump)
+* Writing
+** Spelling
+*** Hunspell
+Source: [[https://tex.stackexchange.com/questions/166681/changing-language-of-flyspell-emacs-with-a-shortcut][link]]
+See also this blog-post ([[http://blog.binchen.org/posts/what-s-the-best-spell-check-set-up-in-emacs/][link]]) for other form of configuration
+#+begin_src emacs-lisp
+  (if (file-exists-p "/usr/bin/hunspell")
+      (progn
+        (setq ispell-program-name "hunspell")
+        (eval-after-load "ispell"
+          '(progn (defun ispell-get-coding-system () 'utf-8)))))
+#+end_src
+*** Flyspell
+[[http://www.emacswiki.org/emacs/FlySpell][Source]] [[http://emacs.stackexchange.com/questions/13361/how-do-i-disable-the-emacs-flyspell-middle-mouse-correction][Configure buttons]]
+:flyspell-flyspell-correct:
+#+begin_src emacs-lisp
+  ;; (use-package flyspell
+  ;;   :hook text-mode
+  ;;   :config
+  ;;   (setq flyspell-sort-corrections nil)
+  ;;   (setq flyspell-issue-message-flag nil)
+  ;;   )
 
-    ;;Jumps to the parent level
-    :bind (("C-x C-j" . dired-jump))
-    :config
+  (setq flyspell-sort-corrections nil)
+  (setq flyspell-issue-message-flag nil)
 
-    (setq dired-dwim-target t) ;try to guess where to copy...
+  ;; Enable for text files
+  (dolist (hook '(text-mode-hook))
+    (add-hook hook (lambda () (flyspell-mode 1))))
+  (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
+    (add-hook hook (lambda () (flyspell-mode -1))))
 
-    :custom
-    ;; Sorting folders and files
-    ((dired-listing-switches "-agho --group-directories-first"))
+  ;; Change the mouse button for corrections
+  ;; (eval-after-load "flyspell"
+  ;;   '(progn
+  ;;      (define-key flyspell-mouse-map [down-mouse-3] #'flyspell-correct-word)
+  ;;      (define-key flyspell-mouse-map [mouse-3] #'undefined)
+  ;;      (define-key flyspell-mouse-map [down-mouse-2] nil)
+  ;;      (define-key flyspell-mouse-map [mouse-2] nil)))
 
-    )
-
-  ;; Use icons for folders and files
-  (use-package all-the-icons-dired
-    :after dired
-    :ensure t
-    :hook (dired-mode . all-the-icons-dired-mode)
-    )
-
-  ;;Dired narrow allows filter by pattern, regex
-  (use-package dired-narrow
-    :after dired
-    :ensure t
-    :config
-    (bind-key "C-c C-n" #'dired-narrow)
-    (bind-key "C-c C-f" #'dired-narrow-fuzzy)
-    (bind-key "C-x C-N" #'dired-narrow-regexp)
-    )
-
-  ;; Allows open a folder with tab as a subtree
-  (use-package dired-subtree
-    :after dired
-    :ensure t
-    :config
-    (bind-key "<tab>" #'dired-subtree-toggle dired-mode-map)
-    (bind-key "<backtab>" #'dired-subtree-cycle dired-mode-map)
-    )
-
-  ;; Prevent opening multiple buffers
-  (use-package dired-single
-    :after dired
-    :ensure t
-    :config
-    (define-key dired-mode-map [return] 'dired-single-buffer)
-    (define-key dired-mode-map [mouse-1] 'dired-single-buffer-mouse)
-    (define-key dired-mode-map "^" 'dired-single-up-directory)
-    )
-
-  (use-package dired-open
-    :after dired
-    :commands (dired dired-jump)
-    :config
-    ;; Doesn't work as expected!
-    (add-to-list 'dired-open-functions #'dired-open-xdg t)
-    (setq dired-open-extensions '(("png" . "eom")
-                                  ("pdf" . "atril")
-                                  ))
-    )
-
-  ;; (use-package dired-hide-dotfiles
-  ;;   :ensure t
-  ;;   :hook (dired-mode . dired-hide-dotfiles-mode))
-#+END_SRC
+  (use-package flyspell-correct
+    :straight (flyspell-correct :type git 
+                                :flavor melpa 
+                                :files ("flyspell-correct.el" "flyspell-correct-ido.el" "flyspell-correct-pkg.el") 
+                                :host github 
+                                :repo "d12frosted/flyspell-correct")
+    :after flyspell
+    :bind
+    (:map flyspell-mode-map ("C-;" . flyspell-correct-wrapper)))
+#+end_src
 :END:
-* PDF
-** PDF tools
-Use pdf-tools as default pdf viewer in emacs. Customize navigation and highlighting
-#+begin_src emacs-lisp :results silent
-    (use-package pdf-tools
-      :ensure t
-      ;; :defer t
-      :config
-      ;; initialise
-      (pdf-tools-install)
-      ;; (pdf-loader-install) ;;to speedup loading
-      ;; open pdfs scaled to fit page
-      (setq-default pdf-view-display-size 'fit-width)
-      ;; automatically annotate highlights
-      (setq pdf-annot-activate-created-annotations t)
-      ;; use normal isearch
-      (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
-      ;; turn off cua so copy works
-      ;; (add-hook 'pdf-view-mode-hook (lambda () (cua-mode 0)))
-      ;; more fine-grained zooming
-      (setq pdf-view-resize-factor 1.1)
-      ;; keyboard shortcuts
-      (define-key pdf-view-mode-map (kbd "h") 'pdf-annot-add-highlight-markup-annotation)
-      (define-key pdf-view-mode-map (kbd "u") 'pdf-annot-add-underline-markup-annotation)
-      (define-key pdf-view-mode-map (kbd "t") 'pdf-annot-add-text-annotation)
-      (define-key pdf-view-mode-map (kbd "D") 'pdf-annot-delete)
-      ;; customize highlight color
-      (setq pdf-annot-default-annotation-properties
-            '((t
-               (label . "ssl"))
-              (text
-               (color . "#193365")
-               (icon . "Note"))
-              (highlight
-               (color . "khaki1")
-               (color . "lavender")
-               (color . "thistle1"))
-              (underline
-               (color . "OrangeRed1")
-               (color . "chartreuse4"))
-              (squiggly
-               (color . "orange"))
-              (strike-out
-               (color . "red"))))
-      (setq pdf-annot-color-history '("lavender" "OrangeRed1" "chartreuse4" "LightSteelBlue1"))
-      )
+** Thesaurus
+For quick access to specific query types, use these commands:
+- =powerthesaurus-lookup-synonyms-dwim=
+- =powerthesaurus-lookup-antonyms-dwim=
+- =powerthesaurus-lookup-related-dwim=
+- =powerthesaurus-lookup-definitions-dwim=
+- =powerthesaurus-lookup-sentences-dwim=
+:power-thesaurus:
+#+begin_src emacs-lisp
+  (use-package powerthesaurus
+   :straight (powerthesaurus :type git
+                       :flavor melpa
+                       :host github
+                       :repo "SavchenkoValeriy/emacs-powerthesaurus"))
+#+end_src
+:END:
+** Lorem ipsum
+#+begin_src emacs-lisp
+  (use-package lorem-ipsum
+  :straight (lorem-ipsum :type git
+                         :flavor melpa
+                         :host github
+                         :repo "jschaf/emacs-lorem-ipsum")
+  )
 #+end_src
 * Remote
 ** TRAMP
@@ -1440,11 +2148,12 @@ Use pdf-tools as default pdf viewer in emacs. Customize navigation and highlight
 :END:
 * Others
 ** yequake-frames
-"This package provides configurable, drop-down Emacs frames" ([[https://github.com/alphapapa/yequake][Official GitHub repository]])
-To work from outside emacs (although emacs needs to be running) a shortcut for the following command should be created  ~emacsclient -n -e '(yequake-toggle "tmp-notes")'~
-#+begin_src emacs-lisp :result silent
+#+begin_src emacs-lisp
   (use-package yequake
-    :ensure t
+    :straight (yequake :type git 
+                       :flavor melpa 
+                       :host github 
+                       :repo "alphapapa/yequake")
     :init
     (get-buffer-create "tmp-notes")
     :config
@@ -1459,15 +2168,4 @@ To work from outside emacs (although emacs needs to be running) a shortcut for t
                                    ))
               ))))
     )
-  ;; (require 'yequake)
-  ;; (setq yequake-frames
-  ;;       '(("notes" .
-  ;;          ((width . 0.45)
-  ;;           (height . 0.35)
-  ;;           (alpha . 0.95)
-  ;;           ;; (buffer-fns . ("~/src/emacs/yequake/yequake.el"
-  ;;           ;;                split-window-horizontally
-  ;;           ;;                "*scratch*"))
-  ;;           (buffer-fns . ("*scratch*"))
-  ;;           (frame-parameters . ((undecorated . t)))))))
 #+end_src
