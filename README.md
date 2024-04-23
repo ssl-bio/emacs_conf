@@ -1,4 +1,4 @@
-# Emacs configuration file using `Straight` + `Helm`
+# Emacs configuration file using `straight.el` + `Helm`
 
 
 ## Description
@@ -39,7 +39,7 @@ Two packages that help writing code are [format-all](https://ianyepan.github.io/
 | Html       | [tidy](http://www.html-tidy.org/)                     | `sudo apt install tidy`                     |
 | JavaScript | [jshint](https://jshint.com/)                         | `npm install -g jshint`                     |
 | Python     | various                                               | `pip3 install pylint flake8`                |
-|            |                                                       | `sudp apt install pylint`                   |
+|            |                                                       | `sudo apt install pylint`                   |
 | Latex      | lacheck                                               | Part of [TexLive](https://tug.org/texlive/) |
 
 

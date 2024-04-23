@@ -134,7 +134,7 @@
   (defvar reveal-path
     (if (file-directory-p "/media/discs/shared/Cloned/reveal.js")
         "file:///media/discs/shared/Cloned/reveal.js"
-      (if (file-directory-p "/media/particiones/Compartidos/saul/Cloned/reveal.js")
+      (if (file-directory-p "/media/particiones/Cloned/reveal.js")
           "file:///media/particiones/Cloned/reveal.js"
         "other")))
   (setq org-reveal-root reveal-path)
@@ -1049,6 +1049,7 @@ Autocompletion
     (LaTeX-mode . yas-minor-mode)
     (web-mode . yas-minor-mode)
     (python-mode . yas-minor-mode)
+    (ess-r-mode . yas-minor-mode)
     (c++-mode . yas-minor-mode)
     (cc-mode . yas-minor-mode)
     )
@@ -1170,7 +1171,7 @@ On-the-fly syntax checking. "/It uses various syntax checking and linting tools 
 | Html       | [[http://www.html-tidy.org/][tidy]]       | =sudo apt install tidy=       |
 | JavaScript | [[https://jshint.com/][jshint]]     | =npm install -g jshint=       |
 | Python     | various    | =pip3 install pylint flake8=  |
-|            |            | =sudp apt install pylint=     |
+|            |            | =sudo apt install pylint=     |
 | Latex      | lacheck    | Part of [[https://tug.org/texlive/][TexLive]]               |
 
 *** Configuration
