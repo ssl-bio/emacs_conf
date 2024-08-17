@@ -11,7 +11,8 @@ Configuration files to customize the aspect of emacs and extend its default capa
 
 ### Dependencies
 
--   **Pandoc:** Required for exporting (converting) org files to other formats (*e.g.* HTML, markdown, etc). See pandoc's official website for [installation instructions](https://pandoc.org/installing.html)
+-   **Pandoc:** [\*Recommended\*] Required for exporting (converting) org files to other formats (*e.g.* HTML, markdown, etc). See pandoc's official website for [installation instructions](https://pandoc.org/installing.html)
+-   **Zoxide**: [\*Optional\*] Provides a better way to navigate directories [[homepage](https://github.com/ajeetdsouza/zoxide?tab=readme-ov-file)]. The emacs package, [zoxide.el](https://gitlab.com/Vonfry/zoxide.el), allows a similar functionality using dired.
 
 
 ### Others
@@ -52,52 +53,93 @@ Provided an internet connection is available, the configuration file will instal
 
 ### Packages that require the specification of a pathway
 
-The following packages require the user to specify the pathway where specific files or directories are located.
+The following packages require the user to specify the pathway where specific files or directories are located. **For easier maintenance variables that require a path were grouped in the section *Custom variables*. Modify these accordingly**
 
--   **org-ref:** Allows inserting references in a org file. References should be in bibtex format (`*.bib`) and the path to their location, as well as, that of the associated files should be specified. More information can be found on the official `org-ref` [GitHub page](https://github.com/jkitchin/org-ref)
+1.  Path to documents
 
-```emacs-lisp
-;; Bibtex paths and files
-  (defvar docs-dir
-    (if (file-directory-p "~/Documents")
-        "~/Documents"
-      (if (file-directory-p "~/Documentos")
-          "~/Documentos"
-        "other")))
-  (setq
-   bibtex-completion-bibliography (concat docs-dir "/Referencias/Bibtex/Working.bib")
-   bibtex-completion-library-path (concat docs-dir "/Articulos_y_Libros/")
-   bibtex-completion-notes-path (concat docs-dir "/Articulos_y_Libros/Resumenes"))
-```
+    Since most of the packages are used to create notes, a custom variable to indicate the `Documents` path was created. It uses an `if` statement to distinguish two different locations based on the localization of the system but that could be changed
+    
+    ```emacs-lisp
+    (defvar docs-dir
+        (if (file-directory-p "~/Documents")
+            "~/Documents"
+          (if (file-directory-p "~/Documentos")
+              "~/Documentos"
+            "other")))
+    ```
 
--   **org-reveal:** It is a package to export org files to [reveal.js](https://revealjs.com/) format. The path to the cloned directory should be specified
+2.  Python (Anaconda)
 
-```emacs-lisp
-(defvar reveal-path
-    (if (file-directory-p "/media/discs/shared/Cloned/reveal.js")
-        "file:///media/discs/shared/Cloned/reveal.js"
-      (if (file-directory-p "/media/particiones/Compartidos/saul/Cloned/reveal.js")
-          "file:///media/particiones/Cloned/reveal.js"
-        "other")))
-(setq org-reveal-root reveal-path)
-```
+    It assumes an anaconda or miniconda installation is present (See [official installation page](https://docs.anaconda.com/anaconda/install/index.html)). To be able to use the environments, make sure to specify the pathway to the installation folder, as well as, the environments folder is specified
+    
+    ```emacs-lisp
+    ;; Path to anaconda installation 
+    (defvar conda-dir
+      (if (file-directory-p "/media/discs/shared/miniconda3")
+          "/media/discs/shared/miniconda3"
+        (if (file-directory-p "~/.local/bin/miniconda3")
+            "~/.local/bin/miniconda3"
+          "other")))
+    
+    (defvar essl/anaconda-home conda-dir)
+    (defvar essl/anaconda-venv (concat conda-dir "/envs"))
+    ```
 
--   **Python (Anaconda):** It assumes an anaconda or miniconda installation is present (See [official installation page](https://docs.anaconda.com/anaconda/install/index.html)). To be able to use the environments, make sure to specify the pathway to the installation folder, as well as, the environments folder is specified
+3.  org-roam
 
-```emacs-lisp
-;; Path to anaconda installation 
-(defvar conda-dir
-  (if (file-directory-p "/media/discs/shared/miniconda3")
-      "/media/discs/shared/miniconda3"
-    (if (file-directory-p "~/.local/bin/miniconda3")
-        "~/.local/bin/miniconda3"
-      "other")))
+    Allows the creation and management of interconnected notes using the Zettelkasten method (see its [homepage](https://www.orgroam.com/)). It requires to specify a directory where to store the notes. The following line creates a custom variable that is latter used in the org-roam configuration section.
+    
+    ```emacs-lisp
+    (setq essl/org-roam-dir "~/Documents/Org-files/Org-roam")
+    ```
 
-(defvar essl/anaconda-home conda-dir)
-(defvar essl/anaconda-venv (concat conda-dir "/envs"))
-```
+4.  org-noter
 
-**For easier maintenance variables that require a path were grouped in the section *Custom variables*. Modify these accordingly**
+    Provides functions to simplify taking notes on documents particularly pdf files (see its [GitHub](https://github.com/org-noter/org-noter/tree/master) page). Examples include synchronizing the notes at specific points in the document or creating an overview of the document. It also requires to specify a directory where to store the notes.
+    
+    ```emacs-lisp
+    (setq essl/org-noter-dir "~/Documents/Org-files/Org_noter")
+    ```
+
+5.  org-ref
+
+    Allows inserting references in a org file. References should be in bibtex format (`*.bib`) and the path to their location, as well as, that of the associated files should be specified. More information can be found on the official `org-ref` [GitHub page](https://github.com/jkitchin/org-ref)
+    
+    ```emacs-lisp
+    ;; Bibtex paths and files
+    (setq
+       bibtex-completion-bibliography (concat docs-dir "/Refs/Bibtex/Working.bib")
+       bibtex-completion-library-path (concat docs-dir "/Papers_Books/")
+       bibtex-completion-notes-path (concat docs-dir "/Papers_Books/Summaries"))
+    ```
+
+6.  ebib
+
+    Allows the management of references in bibtex format (see its [online manual](http://joostkremers.github.io/ebib/ebib-manual.html)). The following variables are used to store the location where to search for bibtex files and which files should be load when the package is started.
+    
+    ```emacs-lisp
+    ;; ebib
+      (setq essl/ebib-search-dir (concat docs-dir "/Refs/Bibtex/"))
+      (setq essl/ebib-bibtex-files
+          (list
+           (concat docs-dir "/Refs/Bibtex/Articles_zotero.bib")
+           (concat docs-dir "/Refs/Bibtex/Books_zotero.bib")))
+    ```
+
+7.  org-reveal
+
+    It is a package to export org files to [reveal.js](https://revealjs.com/) format. The path to the cloned directory should be specified
+    
+    ```emacs-lisp
+    ;; org-reveal-path
+    (defvar reveal-path
+      (if (file-directory-p "/media/discs/shared/Cloned/reveal.js")
+          "file:///media/discs/shared/Cloned/reveal.js"
+        (if (file-directory-p "/media/particiones/Cloned/reveal.js")
+            "file:///media/particiones/Cloned/reveal.js"
+          "other")))
+    (setq org-reveal-root reveal-path)
+    ```
 
 
 ### Troubleshooting
