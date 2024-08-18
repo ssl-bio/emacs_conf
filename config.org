@@ -1087,7 +1087,7 @@ Replace some of emacs functions with their consult equivalent
     ("C-c y" . yank-from-kill-ring)
     ("C-x C-r" . consult-recent-file)
     ("C-x C-o" . consult-outline)
-    ("C-x C-b" . consult-buffer)
+    ("C-x b" . consult-buffer)
     ("C-x C-h" . consult-history)
     )
 #+end_src
