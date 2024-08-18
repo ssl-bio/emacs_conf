@@ -71,7 +71,7 @@
 #+end_src
 :END:
 ** Custom variables
-- Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* Org-ref][Org-ref bibtex-path]] [[* Org-reveal][Org-reveal]] [[* Ansi-term][Ansi-term]]
+- Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* Org-ref][Org-ref bibtex-path]] [[* Org-reveal][Org-reveal]] [[* Ansi-term][Ansi-term]] [[* Org-roam][Org-roam]]
 - If statements are used to set variables for
   1) Path to anaconda installation
      - Default: =~/.local/bin/miniconda3=
@@ -79,10 +79,7 @@
   2) Path to bibtex files
      - One for a Linux installation in Spanish (searches for the folder =Documentos=)
      - Another for a Linux installation in English (searches for the folder =Documents=)
-  3) Font size
-     - One for a computer with small screen size (15'' searches for the folder =Documents=)
-     - Another for a computer with a large (24'' alternative to the above)
-  4) Path to [[https://revealjs.com/][Reveal.js]] installation (Presentations)
+  3) Path to [[https://revealjs.com/][Reveal.js]] installation (Presentations)
      - Two different paths
 - Additionally fixed- and variable-width font variables are defined
   - monotype: Courier-New
@@ -109,26 +106,25 @@
       (if (file-directory-p "~/Documentos")
           "~/Documentos"
         "other")))
+
+  ;; org-roam directory
+  (setq essl/org-roam-dir "~/Documents/Org-files/Org-roam")
+
+  ;; org-noter directory
+  (setq essl/org-noter-dir "~/Documents/Org-files/Org_noter")
+
+  ;; Bibtex files
   (setq
-   bibtex-completion-bibliography (concat docs-dir "/Referencias/Bibtex/Working.bib")
-   bibtex-completion-library-path (concat docs-dir "/Articulos_y_Libros/")
-   bibtex-completion-notes-path (concat docs-dir "/Articulos_y_Libros/Resumenes"))
+   bibtex-completion-bibliography (concat docs-dir "/Refs/Bibtex/Working.bib")
+   bibtex-completion-library-path (concat docs-dir "/Papers_Books/")
+   bibtex-completion-notes-path (concat docs-dir "/Papers_Books/Summaries"))
 
-  ;; Font sizes
-  (defvar font-regular)
-  (defvar font-medium)
-  (defvar font-large)
-  (let ((folder-exists (file-directory-p "~/Documents")))
-    (if folder-exists
-        (progn
-          (setq font-regular 130)
-          (setq font-medium 150)
-          (setq font-large 170))
-      (progn
-        (setq font-regular 105)
-        (setq font-medium 120)
-        (setq font-large 135))))
-
+  ;; ebib
+  (setq essl/ebib-search-dir (concat docs-dir "/Refs/Bibtex/"))
+  (setq essl/ebib-bibtex-files
+      (list
+       (concat docs-dir "/Refs/Bibtex/Articles_zotero.bib")
+       (concat docs-dir "/Refs/Bibtex/Books_zotero.bib")))
 
   ;; org-reveal-path
   (defvar reveal-path
@@ -146,30 +142,6 @@
   (defvar essl/mono-font "Courier-New")
   (defvar essl/sans-font "Verdana")
   (defvar essl/default-font "Courier-New")
-#+end_src
-:END:
-:ox-hugo:
-#+begin_src emacs-lisp
-  ;; Colored text for ox-hugo
-    (defun ssl/code ()
-    "Add a 'mark' macro to the current region (for Hugo)"
-    (interactive)
-    (if (region-active-p)
-        (progn
-          (goto-char (region-end))
-          (insert ")}}}")
-          (goto-char (region-beginning))
-          (insert "{{{code("))))
-  ;; mark text for ox-hugo
-    (defun ssl/mark ()
-    "Add a 'mark' macro to the current region (for Hugo)"
-    (interactive)
-    (if (region-active-p)
-        (progn
-          (goto-char (region-end))
-          (insert "</mark>@@")
-          (goto-char (region-beginning))
-          (insert "@@html:<mark>"))))
 #+end_src
 :END:
 ** Startup time
@@ -210,8 +182,8 @@
 *** Installation
 :install-packages:
 #+begin_src emacs-lisp
-  (setq ipackages '(magit ox-gfm org auctex ebib ess olivetti unfill format-all poly-R poly-markdown crux djvu nov anaconda-mode))
-  ;; install packages 
+  (setq ipackages '(magit ox-gfm org auctex ebib ess helm-R olivetti unfill format-all org poly-R poly-markdown crux djvu nov anaconda-mode))
+  ;; install packages
   (dolist (package ipackages)
       (straight-use-package package))
 #+end_src
@@ -252,10 +224,9 @@
 :cycle-through-themes:
 #+begin_src emacs-lisp
   ;; List of favorite themes
-  (setq my-dark-themes '("ef-melissa-dark" "ef-elea-dark" "misterioso"
-                         "flatland" "darktooth" "mellow" "suscolors"
-                         "warm-night"))
-  (setq my-light-themes '("dichromacy" "modus-operandi-tinted" "ef-day"
+  (setq my-dark-themes '("ef-melissa-dark" "ef-elea-dark" "timu-spacegrey"
+                         "flatland" "darktooth" "ef-cherie" "suscolors"))
+  (setq my-light-themes '("dichromacy" "modus-operandi-tritanopia" "ef-day"
                           "ef-tritanopia-light" "ef-cyprus"
                           "ef-melissa-light" "ef-maris-light"))
   (setq my-write-themes '("almost-mono-cream" "almost-mono-gray"
@@ -366,13 +337,19 @@
     (setq fontaine-latest-state-file
     	(locate-user-emacs-file "fontaine-latest-state.eld"))
     (setq fontaine-presets
-    	'(
-            (regular
-             :default-height font-regular)
+          '(
+           (regular
+             :default-height 130)
             (medium
-             :default-height font-medium)
+             :default-height 150)
             (large
-             :default-height font-large)
+             :default-height 170)
+            (regular-desktop
+             :default-height 105)
+            (medium-desktop
+             :default-height 120)
+            (large-desktop
+             :default-height 135)
             (t
              :default-family "Courier New" ;;Roboto Mono
              :default-weight regular
@@ -389,7 +366,8 @@
              :bold-weight bold
              :italic-family nil
              :italic-slant italic
-             :line-spacing 4)))
+             :line-spacing 4))
+          )
     )
   ;; Recover last preset or fall back to desired style from
   ;; `fontaine-presets'.
@@ -803,6 +781,17 @@ A tree layout file explorer for Emacs
   ;;   :hook (dired-mode . dired-hide-dotfiles-mode))
 #+end_src
 :END:
+*** Zoxide.el
+:zoxide-config:
+#+begin_src emacs-lisp
+  (use-package zoxide
+    :straight `(zoxide.el :type git :host github :repo "emacsmirror/zoxide" :files (:defaults))
+    :config
+    (defun dired-jump-with-zoxide (&optional other-window)
+      (interactive "P")
+      (zoxide-open-with nil (lambda (file) (dired-jump other-window file)) t)))
+#+end_src
+:END:
 ** Imenu
 [[[https://www.emacswiki.org/emacs/ImenuMode][Wiki]]]
 Produces menus for accessing locations in documents.
@@ -914,7 +903,7 @@ Improved version of list-buffers.
 #+end_src
 :END:
 ** Scratch buffer
-Convenient package to create *scratch* buffers that are based on the current buffer’s major mode. This is more convienent than manually creating a buffer to do some scratch work or reusing the initial *scratch* buffer.
+Convenient package to create *scratch* buffers that are based on the current buffer’s major mode. This is more convenient than manually creating a buffer to do some scratch work or reusing the initial *scratch* buffer.
 #+begin_src emacs-lisp
   (use-package scratch
     :straight (scratch :type git 
@@ -976,8 +965,8 @@ Convenient package to create *scratch* buffers that are based on the current buf
 #+end_src
 :END:
 * Completion
-** Company mode
-Autocompletion
+** Company
+:company:
 #+begin_src emacs-lisp
   (use-package company   
     :straight (company :type git 
@@ -986,45 +975,50 @@ Autocompletion
                                :defaults "icons" ("images/small" "doc/images/small/*.png") "company-pkg.el") 
                        :host github 
                        :repo "company-mode/company-mode")
+    :config
+    '(add-to-list 'company-backends '(company-capf company-dabbrev))
+    (defun toggle-company-dabbrev ()
+      "Toggle company-dabbref"
+      (interactive)
+      (cond
+       ((memq 'company-dabbrev company-backends)
+        (setq company-backends (delete 'company-dabbrev company-backends))
+        (message "company-dabbrev disabled"))
+       (t
+        (setq company-backends (push 'company-dabbrev company-backends))
+        (message "company-dabbrev enabled!"))))
     :hook
     (prog-mode . company-mode)
-    (ess-r-mode . company-mode)
-    (python-mode . company-mode)
-    (inferior-python-mode . company-mode)
-    (inferior-ess-r-mode . company-mode)
-    :bind
-    (:map company-active-map
-          ("<tab>" . company-complete-selection) ;; instead of cycling
-          ("C-n" . company-select-next)
-          ("C-p" . company-select-previous)
-          )
-    :custom
-    (company-tooltip-limit 10) ;; The maximum number of candidates
-    (company-minimum-prefix-length 2)
-    ;; (company-idle-delay 0.5)
-    (company-box-doc-delay 2) ;; show documentation only after 2s
-    (company-show-numbers t)
-    (company-tooltip-flip-when-above t) ;; invert box when necessary
-    :config
-    (setq company-begin-commands '(self-insert-command))
-    (setq company-backends
-          '((company-files          ; files & directory
-             company-keywords       ; keywords
-             company-capf)  ; completion-at-point-functions
-            (company-abbrev company-dabbrev)
-            ))
+    (LaTeX-mode . company-mode)
     )
-
-  ;; (add-hook 'after-init-hook 'global-company-mode)
-
-  (use-package company-box
-    :straight (company-box :type git 
-                           :flavor melpa 
-                           :files (
-                                   :defaults "images" "company-box-pkg.el") 
-                           :host github 
-                           :repo "sebastiencs/company-box")
-    :hook (company-mode . company-box-mode))
+#+end_src
+:END:
+:company-anaconda:
+#+begin_src emacs-lisp
+  (use-package company-anaconda
+    :straight (company-anaconda :type git
+                                :flavor melpa
+                                :host github
+                                :repo "pythonic-emacs/company-anaconda")
+    :config
+    (eval-after-load "company"
+      '(add-to-list 'company-backends '(company-anaconda)))
+    :hook
+    (python-mode . anaconda-mode)
+    (python-mode . anaconda-eldoc-mode)
+    )
+#+end_src
+:END:
+#+begin_src emacs-lisp
+  (use-package company-auctex
+    :straight (company-auctex :type git
+                        :flavor melpa
+                        :host github
+                        :repo "alexeyr/company-auctex")
+    :after company
+    :hook
+    (LaTeX-mode-hook . company-auctex-init)
+    )
 #+end_src
 ** Yasnippet
 :yasnippet:
@@ -1052,22 +1046,10 @@ Autocompletion
     (ess-r-mode . yas-minor-mode)
     (c++-mode . yas-minor-mode)
     (cc-mode . yas-minor-mode)
+    (sh-mode . yas-minor-mode)
     )
-  ;; (define-key yas-minor-mode-map (kbd "M-y") 'yas-expand)
 #+end_src
 :END:
-* Minibuffer
-** Which Key
-#+begin_src emacs-lisp
-  (use-package which-key
-    :straight (which-key :type git 
-                         :flavor melpa 
-                         :host github 
-                         :repo "justbur/emacs-which-key")
-    ;;:defer t
-    :config
-    (which-key-mode))
-#+end_src
 * Coding
 ** General
 :general-options:
@@ -1268,15 +1250,12 @@ Change the path for the anaconda (miniconda) installation accordingly
     (conda-env-initialize-interactive-shells)
     (conda-env-initialize-eshell)
     (conda-env-autoactivate-mode t)
-    :hook
-    (python-mode . anaconda-mode)
-    (python-mode . anaconda-eldoc-mode)
     )
 
-  ;; ;; (use-package yafolding
-  ;;   :straight (yafolding :type git 
-  ;;   		       :flavor melpa 
-  ;;   		       :host github 
+  ;; (use-package yafolding
+  ;;   :straight (yafolding :type git
+  ;;   		       :flavor melpa
+  ;;   		       :host github
   ;;   		       :repo "emacsorphanage/yafolding"))
 
   ;; (use-package python-black
@@ -1287,27 +1266,26 @@ Change the path for the anaconda (miniconda) installation accordingly
   ;;   :after python
   ;;   :hook
   ;;   (python-mode . python-black-on-save-mode-enable-dwim)
-  ;;   (python-mode . yas-minor-mode)
   ;;   (python-mode . nlinum-mode)
   ;;   ;; (python-mode . yafolding-mode)
   ;;   ;; (python-mode . hs-minor-mode)
   ;;   )
 
   ;; Set up Elpy with Conda integration
-  (use-package elpy
-    :straight (elpy :type git 
-            	  :flavor melpa 
-            	  :files ("*.el" "NEWS.rst" "snippets" "elpy" "elpy-pkg.el") 
-            	  :host github 
-            	  :repo "jorgenschaefer/elpy")
-    :init
-    (elpy-enable)
+  ;; (use-package elpy
+  ;;   :straight (elpy :type git
+  ;;           	  :flavor melpa
+  ;;           	  :files ("*.el" "NEWS.rst" "snippets" "elpy" "elpy-pkg.el")
+  ;;           	  :host github
+  ;;           	  :repo "jorgenschaefer/elpy")
+  ;;   :init
+  ;;   (elpy-enable)
 
-    (setq python-shell-interpreter "python"
-          elpy-rpc-virtualenv-path  'current
-          python-shell-virtualenv-root essl/anaconda-venv
-          elpy-rpc-virtualenv-path  essl/anaconda-venv)
-    )
+  ;;   (setq python-shell-interpreter "python"
+  ;;         elpy-rpc-virtualenv-path  'current
+  ;;         python-shell-virtualenv-root essl/anaconda-venv
+  ;;         elpy-rpc-virtualenv-path  essl/anaconda-venv)
+  ;;   )
 #+end_src
 :END:
 *** R
@@ -1341,7 +1319,6 @@ Change the path for the anaconda (miniconda) installation accordingly
 #+begin_src emacs-lisp
   (require 'poly-R)
   (require 'poly-markdown)
-  ;; (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+r-mode))
 #+end_src
 :END:
 **** Quarto
@@ -1466,7 +1443,7 @@ Change the path for the anaconda (miniconda) installation accordingly
     )
 #+end_src
 :END:
-**** Helm-bibtex
+*** Helm-bibtex
 :helm-bibtex:
 #+begin_src emacs-lisp
   (use-package helm-bibtex
@@ -1475,16 +1452,14 @@ Change the path for the anaconda (miniconda) installation accordingly
                            :files ("helm-bibtex.el" "helm-bibtex-pkg.el") 
                            :host github 
                            :repo "tmalsburg/helm-bibtex")
-    :after helm
-    :config
-    (autoload 'helm-bibtex "helm-bibtex" "" t)
-    (global-set-key (kbd "C-c [") 'helm-bibtex-with-local-bibliography)
-    (setq  bibtex-completion-cite-prompt-for-optional-arguments nil)
-    (helm-delete-action-from-source "Insert Citation" helm-source-bibtex)
-    (helm-add-action-to-source "Insert Citation" 
-                               'helm-bibtex-insert-citation 
-                               helm-source-bibtex 0)
-    )
+    :after helm)
+  (autoload 'helm-bibtex "helm-bibtex" "" t)
+  (global-set-key (kbd "C-c [") 'helm-bibtex-with-local-bibliography)
+  (setq  bibtex-completion-cite-prompt-for-optional-arguments nil)
+  (helm-delete-action-from-source "Insert Citation" helm-source-bibtex)
+  (helm-add-action-to-source "Insert Citation"
+                             'helm-bibtex-insert-citation
+                             helm-source-bibtex 0)
 #+end_src
 :END:
 **** Auctex and Reftex
@@ -1525,15 +1500,6 @@ Change the path for the anaconda (miniconda) installation accordingly
              'TeX-revert-document-buffer)
 #+end_src
 :END:
-**** ebib
-#+begin_src emacs-lisp
-  (use-package ebib
-    :straight (ebib :type git 
-                    :flavor melpa 
-                    :host github 
-                    :repo "joostkremers/ebib")
-    )
-#+end_src
 *** Polymode
 :polymode:
 #+begin_src emacs-lisp
@@ -1553,13 +1519,7 @@ Setup terminal emulators, [[https://www.emacswiki.org/emacs/AnsiTermHints][ansi-
 **** eshell
 :eshell-config:
 #+begin_src emacs-lisp
-  (use-package eshell-bookmark
-    :straight (eshell-bookmark :type git 
-                               :flavor melpa 
-                               :host github 
-                               :repo "Fuco1/eshell-bookmark")
-    :after eshell
-    :config
+
     (setq eshell-prompt-regexp "^[^#$\n]*[#$] "
           eshell-prompt-function
           (lambda nil
@@ -1570,8 +1530,29 @@ Setup terminal emulators, [[https://www.emacswiki.org/emacs/AnsiTermHints][ansi-
              "]"
              (if (= (user-uid) 0) "# " "$ "))))
     (add-hook 'eshell-mode-hook (lambda () (setenv "TERM" "xterm-256color")))
-    ;; (add-hook 'eshell-mode-hook #'eshell-bookmark-setup)
-    (global-set-key (kbd "<s-return>") 'eshell))
+    ;; 
+    (global-set-key (kbd "<s-return>") 'eshell)
+
+    ;; https://karthinks.com/software/jumping-directories-in-eshell/
+    (defun eshell/z (&optional regexp)
+      "Navigate to a previously visited directory in eshell, or to
+  any directory proferred by `consult-dir'."
+      (let ((eshell-dirs (delete-dups
+                          (mapcar 'abbreviate-file-name
+                                  (ring-elements eshell-last-dir-ring)))))
+        (cond
+         ((and (not regexp) (featurep 'consult-dir))
+          (let* ((consult-dir--source-eshell `(:name "Eshell"
+                                               :narrow ?e
+                                               :category file
+                                               :face consult-file
+                                               :items ,eshell-dirs))
+                 (consult-dir-sources (cons consult-dir--source-eshell
+                                            consult-dir-sources)))
+            (eshell/cd (substring-no-properties
+                        (consult-dir--pick "Switch directory: ")))))
+         (t (eshell/cd (if regexp (eshell-find-previous-directory regexp)
+                              (completing-read "cd: " eshell-dirs)))))))
 #+end_src
 :END:
 * Pdf
@@ -1727,8 +1708,8 @@ LaTeX exporter for PDF exporting. By changing the command to
 should. Source: http://tex.stackexchange.com/a/161619.
 #+begin_src emacs-lisp
   (setq org-latex-pdf-process (list "latexmk -xelatex %f"))
-  (setq org-latex-listings 'minted
-      org-latex-packages-alist '(("" "minted")))
+  ;; (setq org-latex-listings 'minted
+  ;;    org-latex-packages-alist '(("" "minted")))
   ;;(setq org-latex-pdf-process (list "arara %f"))
 #+end_src
 
@@ -1751,17 +1732,31 @@ It is necessary to load [[https://superuser.com/questions/896741/how-do-i-config
        ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
 
       (
-       "custom-apa"
-       "\\documentclass{article}
-  \\usepackage{custom_apa}
+       "custom-report"
+       "\\documentclass{report}
+  \\usepackage{custom_packages}
   [NO-DEFAULT-PACKAGES]
   [EXTRA]
   "
+       ("\\chapter{%s}" . "\\chapter{%s}")
        ("\\section{%s}" . "\\section*{%s}")
        ("\\subsection{%s}" . "\\subsection*{%s}")
        ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
        ("\\paragraph{%s}" . "\\paragraph*{%s}")
        ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+
+      (
+       "custom-article"
+       "\\documentclass{article}
+  \\usepackage{custom_packages}
+  [NO-DEFAULT-PACKAGES]
+  [EXTRA]
+  "
+       ("\\section{%s}" . "\\section{%s}")
+       ("\\subsection{%s}" . "\\subsection{%s}")
+       ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+       ("\\paragraph{%s}" . "\\paragraph{%s}")
+       ("\\subparagraph{%s}" . "\\subparagraph{%s}"))
       ;; Add more custom classes as needed
       ))
 
@@ -1790,11 +1785,33 @@ It is necessary to load [[https://superuser.com/questions/896741/how-do-i-config
 :ox-hugo:
 #+begin_src emacs-lisp
   (use-package ox-hugo
-    :straight (ox-hugo :type git 
-  		     :flavor melpa 
-  		     :host github 
-  		     :repo "kaushalmodi/ox-hugo")
-    :after ox)
+    :straight (ox-hugo :type git
+                       :flavor melpa
+                       :host github
+                       :repo "kaushalmodi/ox-hugo")
+    :after ox
+    :config
+    ;; Colored text for ox-hugo
+    (defun ssl/code ()
+      "Add a 'mark' macro to the current region (for Hugo)"
+      (interactive)
+      (if (region-active-p)
+          (progn
+            (goto-char (region-end))
+            (insert ")}}}")
+            (goto-char (region-beginning))
+            (insert "{{{code("))))
+    ;; mark text for ox-hugo
+    (defun ssl/mark ()
+      "Add a 'mark' macro to the current region (for Hugo)"
+      (interactive)
+      (if (region-active-p)
+          (progn
+            (goto-char (region-end))
+            (insert "</mark>@@")
+            (goto-char (region-beginning))
+            (insert "@@html:<mark>"))))
+    )
 #+end_src
 :END:
 ** Org-noter
@@ -1809,6 +1826,8 @@ Take notes from =pdf= documents (books, papers) in org mode
                :files ("*.el" "modules" (:exclude "*-test-utils.el" "*-devel.el") "org-noter-pkg.el")
                :host github
                :repo "org-noter/org-noter")
+    :config
+    '(org-noter-notes-search-path essl/org-noter-dir)
     )
 #+end_src
 :END:
@@ -1864,9 +1883,11 @@ Take notes from =pdf= documents (books, papers) in org mode
      (lambda (fpath)
        (call-process "open" nil 0 nil fpath))
      )
+    (custom-set-faces
+     '(org-ref-cite-face ((t (:inherit link :foreground nil)))))
 
     ;;Keybindings for inserting reference
-    (define-key bibtex-mode-map (kbd "H-b") 'org-ref-bibtex-hydra/body)
+    (define-key bibtex-mode-map (kbd "s-]") 'org-ref-bibtex-hydra/body)
     (define-key org-mode-map (kbd "C-c ]") 'org-ref-insert-link)
     (define-key org-mode-map (kbd "s-[") 'org-ref-insert-link-hydra/body)
     (setq org-ref-open-pdf-function 'org-pdfview-open)
@@ -1886,6 +1907,27 @@ Take notes from =pdf= documents (books, papers) in org mode
           org-ref-cite-onclick-function (lambda (_) (org-ref-citation-hydra/body))))
 #+end_src
 :END:
+** Org-roam
+:config-roam:
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :straight (org-roam :type git
+                        :flavor melpa
+                        :files (:defaults "extensions/*" "org-roam-pkg.el")
+                        :host github
+                        :repo "org-roam/org-roam")
+    :custom
+    (org-roam-directory essl/org-roam-dir)
+
+    :bind (("C-c n l" . org-roam-buffer-toggle)
+           ("C-c n f" . org-roam-node-find)
+           ("C-c n i" . org-roam-node-insert))
+    :config
+    (org-roam-setup)
+    )
+#+end_src
+:END:
+** Commented
 * Editing
 ** Smart-Hungry delete
 :smart-hungry:
@@ -2029,6 +2071,30 @@ For quick access to specific query types, use these commands:
                          :repo "jschaf/emacs-lorem-ipsum")
   )
 #+end_src
+** ebib
+:ebib-config:
+#+begin_src emacs-lisp
+  (use-package ebib
+    :straight (ebib :type git
+                    :flavor melpa
+                    :host github
+                    :repo "joostkremers/ebib")
+    :init
+    (setq
+     ebib-bib-search-dirs essl/ebib-search-dir
+     ebib-bibtex-dialect 'biblatex
+     ebib-file-associations '(("pdf") ("ps" . "gv"))
+     ebib-index-columns
+     '(("Author/Editor" 30 t)
+       ("Title" 40 t)
+       ("timestamp" 30 t)
+       ("Entry Key" 20 t))
+     ebib-index-default-sort '("timestamp" . descend)
+     ebib-preload-bib-files essl/ebib-bibtex-files
+     ebib-timestamp-format "%Y-%m-%d"
+     ebib-use-timestamp t))
+#+end_src
+:END:
 * Remote
 ** TRAMP
 :tramp:
