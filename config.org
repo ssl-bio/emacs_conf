@@ -18,9 +18,9 @@
   (cua-mode 0) ;Disable cua mode
 
   ;; Use UTF8
-  (setq locale-coding-system 'utf-8) 
-  (set-terminal-coding-system 'utf-8) 
-  (set-keyboard-coding-system 'utf-8) 
+  (setq locale-coding-system 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
   (set-selection-coding-system 'utf-8)
   (prefer-coding-system 'utf-8)
 
@@ -52,13 +52,22 @@
     (server-start)
     ;; (setq server-socket-dir "~/.emacs.d/server")
     )
+
   ;; Enable variable-pitch mode for text-mode
   (add-hook 'text-mode-hook #'variable-pitch-mode)
 
   ;; Only show high level warnings
   (setq warning-minimum-level :emergency)
 
-  ;; Line spacing 
+  ;; revert buffer Keybinding
+  (defun my-revert-buffer-no-confirm ()
+    "Revert the current buffer without confirmation."
+    (interactive)
+    (revert-buffer :ignore-auto :noconfirm))
+
+  (global-set-key (kbd "<f5>") 'my-revert-buffer-no-confirm)
+
+  ;; Line spacing
   ;; (setq-default line-spacing 4)
 
   ;;  Load shell conf (.bashrc)
@@ -71,7 +80,7 @@
 #+end_src
 :END:
 ** Custom variables
-- Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* Org-ref][Org-ref bibtex-path]] [[* Org-reveal][Org-reveal]] [[* Ansi-term][Ansi-term]] [[* Org-roam][Org-roam]]
+- Links to configuration sections: [[* Python (Anaconda)][Pyhon (Anaconda)]] [[* Org-ref][Org-ref bibtex-path]] [[* Org-reveal][Org-reveal]] [[* Ansi-term][Ansi-term]]  [[* Org-roam][Org-roam]]
 - If statements are used to set variables for
   1) Path to anaconda installation
      - Default: =~/.local/bin/miniconda3=
@@ -85,10 +94,10 @@
   - monotype: Courier-New
   - sans: Verdana
   - default: Courier-New
-*Modify these accordingly*    
+*Modify these accordingly*
 :custom-vars:
 #+begin_src emacs-lisp
-  ;; Path to anaconda installation 
+  ;; Path to anaconda installation
   (defvar conda-dir
     (if (file-directory-p "/media/discs/shared/miniconda3")
         "/media/discs/shared/miniconda3"
@@ -159,7 +168,6 @@
              gcs-done))
 
   (add-hook 'emacs-startup-hook #'ssl/display-startup-time)
-
 #+end_src
 :END:
 ** Packages without configuration
@@ -195,16 +203,17 @@
 **** Dark themes
 - base16: base16-da-one-sea base16-tokyo-night-storm base16-everforest base16-railscasts base16-sandcastle
 - ef-themes: ef-autumn ef-elea-dark ef-maris-dark ef-tritanopia-dark
-- Independent: flatland darktooth-theme timu-spacegrey mellow-theme warm-night-theme
+- Independent: flatland darktooth-theme timu-spacegrey mellow-theme warm-night-theme jazz-theme blackboard-theme arjen-theme deep-blue-theme desert-theme  railscast robin-hood suscolors-theme
 **** Light themes
 - built-in: dichromacy
 - base16-themes: base16-github base16-dirtysea base16-equilibrium-gray-light
 - modus-themes: modus-operandi
 - ef-themes: ef-day ef-deuteranopia-light ef-elea-light ef-kassio ef-melissa-light ef-tritanopia-light
+- cloud-theme majapahit andreas gtk-ide vim-colors
 **** Write
 - base16-themes: base16-grayscale-light base16-gruvbox-material-light-soft base16-rose-pine-dawn base16-tokyo-city-terminal-light
-- almost-mono-themes: almost-mono-cream almost-mono-gray
-  - Independent: monotropic eink nord poet
+- almost-mono-themes: almost-mono-cream almost-mono-gray eink-theme
+  - Independent: monotropic eink nord poet kingsajz
 *** Install themes
 :install-themes:
 #+begin_src emacs-lisp
@@ -212,25 +221,39 @@
   (setq ithemes '(ef-themes
                   modus-themes nord-theme
                     darktooth-theme flatland-theme timu-spacegrey-theme
-                    almost-mono-themes monotropic-theme eink-theme poet-theme
-                    suscolors-theme))
+                    almost-mono-themes monotropic-theme poet-theme
+                    majapahit-themes jazz-theme suscolors-theme))
 
-  ;; install themes 
+  ;; install themes
   (dolist (theme ithemes)
     (straight-use-package theme))
+#+end_src
+:END:
+*** Github only themes
+:test:
+#+begin_src emacs-lisp
+  (straight-use-package
+   '(replace-colorthemes
+     :type git
+     :host github
+     :repo "emacs-jp/replace-colorthemes"
+     :files ("andreas-theme.el" "arjen-theme.el" "kingsajz-theme.el"
+             "gtk-ide-theme.el" "deep-blue-theme.el" "late-night-theme.el"))
+   )
 #+end_src
 :END:
 *** Functions to cycle over preferred themes
 :cycle-through-themes:
 #+begin_src emacs-lisp
   ;; List of favorite themes
-  (setq my-dark-themes '("ef-melissa-dark" "ef-elea-dark" "timu-spacegrey"
-                         "flatland" "darktooth" "ef-cherie" "suscolors"))
-  (setq my-light-themes '("dichromacy" "modus-operandi-tritanopia" "ef-day"
-                          "ef-tritanopia-light" "ef-cyprus"
-                          "ef-melissa-light" "ef-maris-light"))
-  (setq my-write-themes '("almost-mono-cream" "almost-mono-gray"
-                            "monotropic" "eink" "nord" "poet"))
+  (setq my-dark-themes '("suscolors" "kingsajz" "ef-melissa-dark" "flatland"
+                         "darktooth"  "jazz"  "ef-cherie"
+                         "arjen" "deep-blue"))
+  (setq my-light-themes '("dichromacy" "andreas" "gtk-ide"
+                          "modus-operandi-tritanopia" "ef-maris-light"
+                          "ef-day" "ef-cyprus"))
+  (setq my-write-themes '("almost-mono-cream" "monotropic" "nord" "poet"
+                          "majapahit-light" "ef-melissa-light" "almost-mono-gray" "late-night"))
   ;; Cycle through themes
   (defun rotate-dark-themes ()
     (interactive)
@@ -238,7 +261,7 @@
       (disable-theme theme))
     (setq my-dark-themes (append (cdr my-dark-themes) (list (car my-dark-themes))))
     (let ((theme (car my-dark-themes))
-        	(command (format "(load-theme '%s t)" (car my-dark-themes))))
+          (command (format "(load-theme '%s t)" (car my-dark-themes))))
       (message "Loading theme: %s" theme)
       ;; (message "Command: %s" command)
       (eval (read command))))
@@ -246,7 +269,7 @@
   (defun rotate-light-themes ()
     (interactive)
     (dolist (theme custom-enabled-themes)
-    (disable-theme theme))
+      (disable-theme theme))
     (setq my-light-themes (append (cdr my-light-themes) (list (car my-light-themes))))
     (let ((theme (car my-light-themes))
           (command (format "(load-theme '%s t)" (car my-light-themes))))
@@ -271,7 +294,7 @@
   (global-set-key (kbd "<f7>") 'rotate-write-themes)
 
   ;; Default theme
-  (load-theme 'ef-tritanopia-light t)
+  (load-theme 'suscolors t)
 #+end_src
 :END:
 ** Window size
@@ -280,10 +303,9 @@
   ;; Window height
   (add-to-list 'default-frame-alist '(height . 45))
   ;; Window Width
-  (add-to-list 'default-frame-alist '(width . 90)) 
+  (add-to-list 'default-frame-alist '(width . 90))
 #+end_src
 :END:
-
 ** Fonts
 *** Fonts in org-mode
 :Font-faces:
@@ -300,8 +322,8 @@
                     (org-level-7 . 1.0)
                     (org-level-8 . 1.0)))
       (set-face-attribute (car face) nil
-    			:inherit 'variable-pitch
-    			:height (cdr face))
+                          :inherit 'variable-pitch
+                          :height (cdr face))
       )
 
     ;; Ensure that anything that should be fixed-pitch in Org files appears that way
@@ -329,13 +351,13 @@
 #+begin_src emacs-lisp
   (use-package fontaine
     :straight (fontaine
-      	     :type git
-      	     :host github
-      	     :repo "emacs-straight/fontaine"
-      	     :files ("*" (:exclude ".git")))
+               :type git
+               :host github
+               :repo "emacs-straight/fontaine"
+               :files ("*" (:exclude ".git")))
     :config
     (setq fontaine-latest-state-file
-    	(locate-user-emacs-file "fontaine-latest-state.eld"))
+          (locate-user-emacs-file "fontaine-latest-state.eld"))
     (setq fontaine-presets
           '(
            (regular
@@ -387,17 +409,16 @@
 
   (add-hook 'after-enable-theme-hook #'fontaine-apply-current-preset)
   (add-hook 'after-enable-theme-hook #'customize-org-faces)
-
 #+end_src
 :END:
 *** Font scaling
 :font-scaling:
 #+begin_src emacs-lisp
   (use-package default-text-scale
-    :straight (default-text-scale :type git 
-  	    :flavor melpa 
-  	    :host github 
-  	    :repo "purcell/default-text-scale")
+    :straight (default-text-scale :type git
+              :flavor melpa
+              :host github
+              :repo "purcell/default-text-scale")
     :config
     (global-set-key (kbd "C-M-+") 'default-text-scale-increase)
     (global-set-key (kbd "C-M--") 'default-text-scale-decrease))
@@ -409,16 +430,16 @@
 :nerd-icons:
 #+begin_src emacs-lisp
   (use-package nerd-icons
-    :straight (nerd-icons :type git 
-  			:flavor melpa 
-  			:files (
-  				:defaults "data" "nerd-icons-pkg.el") 
-  			:host github 
-  			:repo "rainstormstudio/nerd-icons.el")
-    
+    :straight (nerd-icons :type git
+                          :flavor melpa
+                          :files (
+                                  :defaults "data" "nerd-icons-pkg.el")
+                          :host github
+                          :repo "rainstormstudio/nerd-icons.el")
+
     )
 #+end_src
-:END:   
+:END:
 ** Modeline
 - =Modeline= is the region on a window where the file name and the active modes (among other information) are displayed.
 - Available modelines [[https://github.com/seagle0128/doom-modeline][Doom-modeline]], [[https://github.com/TheBB/spaceline][Spaceline]], [[https://github.com/gexplorer/simple-modeline][Simple modeline]], [[https://github.com/Malabarba/smart-mode-line][Smartmodeline]], [[https://github.com/dbordak/telephone-line][Telephone-Line]]
@@ -441,11 +462,24 @@ To show the icons it may be necessary to install =NerdFontsSymbolsOnly= from [[h
 #+begin_src emacs-lisp
   ;; Customize modeline
   ( use-package doom-modeline
-    :straight (doom-modeline :type git 
-                             :flavor melpa 
-                             :host github 
+    :straight (doom-modeline :type git
+                             :flavor melpa
+                             :host github
                              :repo "seagle0128/doom-modeline")
-    :init (doom-modeline-mode 1)
+    :init
+    (doom-modeline-mode 1)
+    ;; Display time in the mode line
+    (display-time-mode 1)
+
+    ;; Optional: customize the format
+    (setq display-time-format "%H:%M") ;; 24-hour format
+    (setq display-time-default-load-average nil) ;; Remove system load
+
+    :config
+    ;; Enable display time in doom-modeline
+    (setq doom-modeline-time t)
+    (setq doom-modeline-time-icon t)
+
     :custom (
              (doom-modeline-height 33)
              (setq doom-modeline-window-width-limit 65)
@@ -494,10 +528,10 @@ When using a split frame, change the size of the windows based on which one is a
 #+begin_src emacs-lisp
   (use-package zoom
     :straight (zoom
-   	     :type git
-   	     :flavor melpa
-   	     :host github
-   	     :repo "cyrus-and/zoom")
+               :type git
+               :flavor melpa
+               :host github
+               :repo "cyrus-and/zoom")
     :init
     (custom-set-variables
      '(zoom-size '(0.618 . 0.618)))
@@ -529,9 +563,9 @@ Helps manage window configurations (Different number of divisions/dimensions).
 #+begin_src emacs-lisp
   (use-package eyebrowse
     :straight (eyebrowse :type git
-  			:flavor melpa
-  			:repo "https://depp.brause.cc/eyebrowse.git")
-    :config 
+                          :flavor melpa
+                          :repo "https://depp.brause.cc/eyebrowse.git")
+    :config
     (eyebrowse-mode))
 #+end_src
 :END:
@@ -540,9 +574,9 @@ Helps manage window configurations (Different number of divisions/dimensions).
 #+begin_src emacs-lisp
   (use-package bm
     :straight (bm :type git
-  	  :flavor melpa
-  	  :host github
-  	  :repo "joodland/bm")
+            :flavor melpa
+            :host github
+            :repo "joodland/bm")
     :ensure t
     :demand t
 
@@ -603,37 +637,22 @@ Helps manage window configurations (Different number of divisions/dimensions).
   ;; (set-face-attribute 'bm-face nil :background "GreenYellow" :foreground 'unspecified)
 #+end_src
 :END:
-** Recent files (Recentf)
-- Create a list of recently opened files
-  :recentf:
-  #+begin_src emacs-lisp
-    (use-package recentf
-      :straight t
-      :config
-      (recentf-mode t)
-      (setq recentf-max-menu-items 15)
-      (setq recentf-max-saved-items 15)
-      :bind
-      (("C-x C-r" . recentf-open-files))
-      )
-  #+end_src
-  :END:
 ** File navigation/management
 *** Neotree
 [[[https://github.com/jaypei/emacs-neotree][GitHub]]]
 :neotree:
 #+begin_src emacs-lisp
   (use-package neotree
-    :straight (neotree :type git 
-  		     :flavor melpa 
-  		     :files (
-  			     :defaults "icons" "neotree-pkg.el") 
-  		     :host github 
-  		     :repo "jaypei/emacs-neotree")
+    :straight (neotree :type git
+                       :flavor melpa
+                       :files (
+                               :defaults "icons" "neotree-pkg.el")
+                       :host github
+                       :repo "jaypei/emacs-neotree")
     :bind
     (:map global-map
-  	([f8] . 'neotree-toggle)
-  	)
+          ([f8] . 'neotree-toggle)
+          )
     )
 #+end_src
 :END:
@@ -644,14 +663,13 @@ A tree layout file explorer for Emacs
 #+begin_src emacs-lisp
   (use-package treemacs
     :straight (treemacs :type git
-  		      :flavor melpa
-  		      :files (:defaults "Changelog.org" "icons" "src/elisp/treemacs*.el" "src/scripts/treemacs*.py" (:exclude "src/extra/*") "treemacs-pkg.el")
-  		      :host github
-  		      :repo "Alexander-Miller/treemacs")
+                        :flavor melpa
+                        :files (:defaults "Changelog.org" "icons" "src/elisp/treemacs*.el" "src/scripts/treemacs*.py" (:exclude "src/extra/*") "treemacs-pkg.el")
+                        :host github
+                        :repo "Alexander-Miller/treemacs")
     :defer t
     :config
     (progn
-
       (setq treemacs-follow-after-init          t
             treemacs-width                      35
             treemacs-indentation                2
@@ -698,7 +716,6 @@ A tree layout file explorer for Emacs
     ;;Jumps to the parent level
     :bind (("C-x C-j" . dired-jump))
     :config
-
     (setq dired-dwim-target t) ;try to guess where to copy...
 
     :custom
@@ -710,9 +727,9 @@ A tree layout file explorer for Emacs
   ;; Use icons for folders and files
   (use-package all-the-icons-dired
     :after dired
-    :straight (all-the-icons-dired :type git 
-                                   :flavor melpa 
-                                   :host github 
+    :straight (all-the-icons-dired :type git
+                                   :flavor melpa
+                                   :host github
                                    :repo "wyuenho/all-the-icons-dired")
     :hook (dired-mode . all-the-icons-dired-mode)
     )
@@ -720,10 +737,10 @@ A tree layout file explorer for Emacs
   ;;Dired narrow allows filter by pattern, regex
   (use-package dired-narrow
     :after dired
-    :straight (dired-narrow :type git 
-                            :flavor melpa 
-                            :files ("dired-narrow.el" "dired-narrow-pkg.el") 
-                            :host github 
+    :straight (dired-narrow :type git
+                            :flavor melpa
+                            :files ("dired-narrow.el" "dired-narrow-pkg.el")
+                            :host github
                             :repo "Fuco1/dired-hacks")
     :config
     (bind-key "C-c C-n" #'dired-narrow)
@@ -734,10 +751,10 @@ A tree layout file explorer for Emacs
   ;; Allows open a folder with tab as a subtree
   (use-package dired-subtree
     :after dired
-    :straight (dired-subtree :type git 
-                             :flavor melpa 
-                             :files ("dired-subtree.el" "dired-subtree-pkg.el") 
-                             :host github 
+    :straight (dired-subtree :type git
+                             :flavor melpa
+                             :files ("dired-subtree.el" "dired-subtree-pkg.el")
+                             :host github
                              :repo "Fuco1/dired-hacks")
     :config
     (bind-key "<tab>" #'dired-subtree-toggle dired-mode-map)
@@ -748,9 +765,9 @@ A tree layout file explorer for Emacs
   (use-package dired-single
     :after dired
     :straight (dired-single
-               :type git 
-               :flavor melpa 
-               :host codeberg 
+               :type git
+               :flavor melpa
+               :host codeberg
                :repo "amano.kenji/dired-single")
     :config
     (define-key dired-mode-map [return] 'dired-single-buffer)
@@ -760,11 +777,11 @@ A tree layout file explorer for Emacs
 
   (use-package dired-open
     :after dired
-    :straight (dired-open 
-               :type git 
-               :flavor melpa 
-               :files ("dired-open.el" "dired-open-pkg.el") 
-               :host github 
+    :straight (dired-open
+               :type git
+               :flavor melpa
+               :files ("dired-open.el" "dired-open-pkg.el")
+               :host github
                :repo "Fuco1/dired-hacks")
 
     :commands (dired dired-jump)
@@ -799,9 +816,9 @@ Produces menus for accessing locations in documents.
 #+begin_src emacs-lisp
   (use-package imenu-list
     :straight (imenu-list :type git
-  			:flavor melpa
-  			:host github
-  			:repo "bmag/imenu-list")
+                          :flavor melpa
+                          :host github
+                          :repo "bmag/imenu-list")
     :bind(
           ("C-c i" . imenu-list-smart-toggle)
           )
@@ -813,12 +830,24 @@ This makes it so C-n-ing and C-p-ing won’t make the buffer jump
 around so much.
 #+begin_src emacs-lisp
   (use-package smooth-scrolling
-    :straight (smooth-scrolling :type git 
-                                :flavor melpa 
-                                :host github 
+    :straight (smooth-scrolling :type git
+                                :flavor melpa
+                                :host github
                                 :repo "aspiers/smooth-scrolling")
     :config
     (smooth-scrolling-mode))
+#+end_src
+** Ace-jump-mode
+Allows you to quickly jump to any visible point in the buffer by typing a few characters. When activated, it displays letters next to each word or character, and you can jump to a specific location by pressing the corresponding letter.
+#+begin_src emacs-lisp
+  (use-package ace-jump-mode
+    :straight (ace-jump-mode :type git
+                              :flavor melpa
+                              :host github
+                              :repo "winterTTr/ace-jump-mode")
+    :bind
+    ("C-c SPC" . ace-jump-mode)
+    )
 #+end_src
 * Buffers
 ** List buffers (Ibuffer)
@@ -867,9 +896,9 @@ Improved version of list-buffers.
                                     (name . "^.*toml$")
                                     ))
                  ("magit" (mode . magit-mode))
-                 ;; ("web" (or (mode . web-mode) 
+                 ;; ("web" (or (mode . web-mode)
                  ;;            (mode . js2-mode)))
-                 ("shell" (or (mode . eshell-mode) 
+                 ("shell" (or (mode . eshell-mode)
                               (mode . shell-mode)))
                  ("programming" (or
                                  (mode . python-mode)
@@ -906,10 +935,10 @@ Improved version of list-buffers.
 Convenient package to create *scratch* buffers that are based on the current buffer’s major mode. This is more convenient than manually creating a buffer to do some scratch work or reusing the initial *scratch* buffer.
 #+begin_src emacs-lisp
   (use-package scratch
-    :straight (scratch :type git 
-                       :flavor melpa 
-                       :files ("scratch.el" "scratch-pkg.el") 
-                       :host codeberg 
+    :straight (scratch :type git
+                       :flavor melpa
+                       :files ("scratch.el" "scratch-pkg.el")
+                       :host codeberg
                        :repo "emacs-weirdware/scratch")
     :commands scratch)
 #+end_src
@@ -919,12 +948,12 @@ Convenient package to create *scratch* buffers that are based on the current buf
 :helm-config:
 #+begin_src emacs-lisp
   (use-package helm
-    :straight (helm :type git 
-    		  :flavor melpa 
-    		  :files ("*.el" "emacs-helm.sh" (
-    						  :exclude "helm-lib.el" "helm-source.el" "helm-multi-match.el" "helm-core.el") "helm-pkg.el") 
-    		  :host github 
-    		  :repo "emacs-helm/helm")
+    :straight (helm :type git
+                    :flavor melpa
+                    :files ("*.el" "emacs-helm.sh" (
+                                                    :exclude "helm-lib.el" "helm-source.el" "helm-multi-match.el" "helm-core.el") "helm-pkg.el")
+                    :host github
+                    :repo "emacs-helm/helm")
     :init
     (helm-mode 1)
     (helm-autoresize-mode 1)
@@ -932,15 +961,22 @@ Convenient package to create *scratch* buffers that are based on the current buf
            ("M-x" . helm-M-x)
            ("C-c h o" . helm-occur) ; show lines matching regex
            ("C-x C-f" . helm-find-files) ; find files in pwd
-           ("C-x b" . helm-mini) 
+           ("C-x C-r" . helm-recentf)
+           ("C-x b" . helm-mini)
            ("C-c y". helm-show-kill-ring)
            ("C-c m" . helm-bookmarks)
+
            :map helm-map
            ("<tab>" . helm-execute-persistent-action) ; rebind tab to run ;;persistent action
            ("C-i" . helm-execute-persistent-action) ; make TAB works in ;;terminal
-           ("C-z" . helm-select-action) ; list actions using C-z
+           ("C-c z" . helm-select-action) ; list actions using C-z
+
+           :map eshell-mode-map
+           ("C-c h h" . helm-eshell-history)
+
            :map shell-mode-map
            ("C-c C-l" . helm-comint-input-ring) ; in shell mode
+
            :map minibuffer-local-map
            ("C-c C-l" . helm-minibuffer-history))
     :config
@@ -953,14 +989,23 @@ Convenient package to create *scratch* buffers that are based on the current buf
     (setq helm-autoresize-max-height 0)
     (setq helm-autoresize-min-height 25)
     )
-
+#+end_src
+#+begin_src emacs-lisp
   (use-package swiper-helm
-    :straight (swiper-helm :type git 
-  			 :flavor melpa 
-  			 :host github 
-  			 :repo "abo-abo/swiper-helm")
+    :straight (swiper-helm :type git
+                           :flavor melpa
+                           :host github
+                           :repo "abo-abo/swiper-helm")
     :bind
     (("C-s" . swiper-helm))
+    )
+#+end_src
+#+begin_src emacs-lisp
+  (use-package helm-ag
+    :straight (helm-ag :type git
+                 :flavor melpa
+                 :host github
+                 :repo "emacsorphanage/helm-ag")
     )
 #+end_src
 :END:
@@ -968,12 +1013,12 @@ Convenient package to create *scratch* buffers that are based on the current buf
 ** Company
 :company:
 #+begin_src emacs-lisp
-  (use-package company   
-    :straight (company :type git 
-                       :flavor melpa 
+  (use-package company
+    :straight (company :type git
+                       :flavor melpa
                        :files (
-                               :defaults "icons" ("images/small" "doc/images/small/*.png") "company-pkg.el") 
-                       :host github 
+                               :defaults "icons" ("images/small" "doc/images/small/*.png") "company-pkg.el")
+                       :host github
                        :repo "company-mode/company-mode")
     :config
     '(add-to-list 'company-backends '(company-capf company-dabbrev))
@@ -1024,18 +1069,18 @@ Convenient package to create *scratch* buffers that are based on the current buf
 :yasnippet:
 #+begin_src emacs-lisp
   (use-package yasnippet
-    :straight (yasnippet :type git 
-                         :flavor melpa 
-                         :files ("yasnippet.el" "snippets" "yasnippet-pkg.el") 
-                         :host github 
+    :straight (yasnippet :type git
+                         :flavor melpa
+                         :files ("yasnippet.el" "snippets" "yasnippet-pkg.el")
+                         :host github
                          :repo "joaotavora/yasnippet")
     :defer t
     :config
     (use-package yasnippet-snippets
-      :straight (yasnippet-snippets :type git 
-                                    :flavor melpa 
-                                    :files ("*.el" "snippets" ".nosearch" "yasnippet-snippets-pkg.el") 
-                                    :host github 
+      :straight (yasnippet-snippets :type git
+                                    :flavor melpa
+                                    :files ("*.el" "snippets" ".nosearch" "yasnippet-snippets-pkg.el")
+                                    :host github
                                     :repo "AndreaCrotti/yasnippet-snippets"))
     (yas-reload-all)
     :hook
@@ -1090,9 +1135,9 @@ Convenient package to create *scratch* buffers that are based on the current buf
 :nlinum:
 #+begin_src emacs-lisp
   (use-package nlinum
-    :straight (nlinum :type git 
-                      :host github      	       
-                      :repo "emacs-straight/nlinum" 
+    :straight (nlinum :type git
+                      :host github      	
+                      :repo "emacs-straight/nlinum"
                       :files ("*" (
                                    :exclude ".git")))
     :hook
@@ -1121,9 +1166,9 @@ Convenient package to create *scratch* buffers that are based on the current buf
 *** Configuration
 #+begin_src emacs-lisp
   (use-package format-all
-      :straight (format-all :type git 
-                          :flavor melpa 
-                          :host github 
+      :straight (format-all :type git
+                          :flavor melpa
+                          :host github
                           :repo "lassik/emacs-format-all-the-code")
       :commands format-all-mode
       :hook
@@ -1159,9 +1204,9 @@ On-the-fly syntax checking. "/It uses various syntax checking and linting tools 
 *** Configuration
 #+begin_src emacs-lisp
   (use-package flycheck
-    :straight (flycheck :type git 
-                        :flavor melpa 
-                        :host github 
+    :straight (flycheck :type git
+                        :flavor melpa
+                        :host github
                         :repo "flycheck/flycheck")
     :hook
     (python-mode . flycheck-mode)
@@ -1238,10 +1283,10 @@ Change the path for the anaconda (miniconda) installation accordingly
 #+begin_src emacs-lisp
   ;; Install and configure Conda
   (use-package conda
-    :straight (conda :type git 
-        		   :flavor melpa 
-        		   :host github 
-        		   :repo "necaris/conda.el")
+    :straight (conda :type git
+                     :flavor melpa
+                     :host github
+                     :repo "necaris/conda.el")
     :init
     ;; (add-to-list 'exec-path "/media/discs/shared/miniconda3/bin/")
     (setq conda-anaconda-home essl/anaconda-home)
@@ -1250,6 +1295,9 @@ Change the path for the anaconda (miniconda) installation accordingly
     (conda-env-initialize-interactive-shells)
     (conda-env-initialize-eshell)
     (conda-env-autoactivate-mode t)
+    :hook
+    (python-mode . anaconda-mode)
+    (python-mode . anaconda-eldoc-mode)
     )
 
   ;; (use-package yafolding
@@ -1259,10 +1307,10 @@ Change the path for the anaconda (miniconda) installation accordingly
   ;;   		       :repo "emacsorphanage/yafolding"))
 
   ;; (use-package python-black
-  ;;   :straight (python-black :type git 
-  ;;           		  :flavor melpa 
-  ;;           		  :host github 
-  ;;           		  :repo "wbolster/emacs-python-black")
+  ;;   :straight (python-black :type git
+  ;;       			  :flavor melpa
+  ;;       			  :host github
+  ;;       			  :repo "wbolster/emacs-python-black")
   ;;   :after python
   ;;   :hook
   ;;   (python-mode . python-black-on-save-mode-enable-dwim)
@@ -1293,12 +1341,12 @@ Change the path for the anaconda (miniconda) installation accordingly
 :configuration:
 #+begin_src emacs-lisp
   (use-package ess
-    :straight (ess :type git 
-  		 :flavor melpa 
-  		 :files ("lisp/*.el" "doc/ess.texi" ("etc" "etc/*") ("obsolete" "lisp/obsolete/*") (
-  												    :exclude "etc/other") "ess-pkg.el") 
-  		 :host github 
-  		 :repo "emacs-ess/ESS")
+    :straight (ess :type git
+                   :flavor melpa
+                   :files ("lisp/*.el" "doc/ess.texi" ("etc" "etc/*") ("obsolete" "lisp/obsolete/*") (
+                                                                                                      :exclude "etc/other") "ess-pkg.el")
+                   :host github
+                   :repo "emacs-ess/ESS")
     :init
     (defun my-ess-hook ()
       ;; ensure company-R-library is in ESS backends
@@ -1325,10 +1373,10 @@ Change the path for the anaconda (miniconda) installation accordingly
 :quarto:
 #+begin_src emacs-lisp
   (use-package quarto-mode
-    :straight (quarto-mode 
-               :type git 
-               :flavor melpa 
-               :host github 
+    :straight (quarto-mode
+               :type git
+               :flavor melpa
+               :host github
                :repo "quarto-dev/quarto-emacs")
     :mode (("\\.Rmd" . poly-quarto-mode))
     )
@@ -1338,10 +1386,10 @@ Change the path for the anaconda (miniconda) installation accordingly
 :web-beautify:
 #+begin_src emacs-lisp
   (use-package web-beautify
-    :straight (web-beautify :type git 
-  			  :flavor melpa 
-  			  :host github 
-  			  :repo "yasuyk/web-beautify")
+    :straight (web-beautify :type git
+                            :flavor melpa
+                            :host github
+                            :repo "yasuyk/web-beautify")
     :config
     (eval-after-load 'js2-mode
       '(define-key js2-mode-map (kbd "C-c b") 'web-beautify-js))
@@ -1367,10 +1415,10 @@ Change the path for the anaconda (miniconda) installation accordingly
 :webmode:
 #+begin_src emacs-lisp
   (use-package web-mode
-    :straight (web-mode :type git 
-  		      :flavor melpa 
-  		      :host github 
-  		      :repo "fxbois/web-mode")
+    :straight (web-mode :type git
+                        :flavor melpa
+                        :host github
+                        :repo "fxbois/web-mode")
     :config
     (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
     (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
@@ -1382,16 +1430,15 @@ Change the path for the anaconda (miniconda) installation accordingly
     (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
     (setq web-mode-enable-current-column-highlight t)
     )
-
 #+end_src
 :END:
 :sass:
 #+begin_src emacs-lisp
   (use-package sass-mode
-    :straight (sass-mode :type git 
-  		       :flavor melpa 
-  		       :host github 
-  		       :repo "nex3/sass-mode")
+    :straight (sass-mode :type git
+                         :flavor melpa
+                         :host github
+                         :repo "nex3/sass-mode")
     :config
     ;; (setq exec-path (cons (expand-file-name "") exec-path))
     )
@@ -1400,11 +1447,11 @@ Change the path for the anaconda (miniconda) installation accordingly
 :rainbow-mode:
 #+begin_src emacs-lisp
   (use-package rainbow-mode
-    :straight (rainbow-mode :type git 
-  			  :host github 
-  			  :repo "emacs-straight/rainbow-mode" 
-  			  :files ("*" (
-  				       :exclude ".git")))
+    :straight (rainbow-mode :type git
+                            :host github
+                            :repo "emacs-straight/rainbow-mode"
+                            :files ("*" (
+                                         :exclude ".git")))
     )
 #+end_src
 :END:
@@ -1425,10 +1472,10 @@ Change the path for the anaconda (miniconda) installation accordingly
 :editing-customizations:
 #+begin_src emacs-lisp
   (use-package magic-latex-buffer
-    :straight (magic-latex-buffer :type git 
-  				:flavor melpa 
-  				:host github 
-  				:repo "zk-phi/magic-latex-buffer")
+    :straight (magic-latex-buffer :type git
+                                  :flavor melpa
+                                  :host github
+                                  :repo "zk-phi/magic-latex-buffer")
     :init
     (add-hook 'LaTeX-mode-hook 'magic-latex-buffer)
     (add-hook 'LaTeX-mode-hook 'olivetti-mode)
@@ -1447,10 +1494,10 @@ Change the path for the anaconda (miniconda) installation accordingly
 :helm-bibtex:
 #+begin_src emacs-lisp
   (use-package helm-bibtex
-    :straight (helm-bibtex :type git 
-                           :flavor melpa 
-                           :files ("helm-bibtex.el" "helm-bibtex-pkg.el") 
-                           :host github 
+    :straight (helm-bibtex :type git
+                           :flavor melpa
+                           :files ("helm-bibtex.el" "helm-bibtex-pkg.el")
+                           :host github
                            :repo "tmalsburg/helm-bibtex")
     :after helm)
   (autoload 'helm-bibtex "helm-bibtex" "" t)
@@ -1485,7 +1532,6 @@ Change the path for the anaconda (miniconda) installation accordingly
   (setq TeX-parse-self t); Enable parse on load.
   (add-hook 'TeX-mode-hook
             (lambda () (TeX-fold-mode 1)));
-
 #+end_src
 :END:
 **** View output (pdf)
@@ -1497,7 +1543,7 @@ Change the path for the anaconda (miniconda) installation accordingly
 
   ;; Update PDF buffers after successful LaTeX runs
   (add-hook 'TeX-after-compilation-finished-functions
-             'TeX-revert-document-buffer)
+            'TeX-revert-document-buffer)
 #+end_src
 :END:
 *** Polymode
@@ -1530,7 +1576,7 @@ Setup terminal emulators, [[https://www.emacswiki.org/emacs/AnsiTermHints][ansi-
              "]"
              (if (= (user-uid) 0) "# " "$ "))))
     (add-hook 'eshell-mode-hook (lambda () (setenv "TERM" "xterm-256color")))
-    ;; 
+    ;;
     (global-set-key (kbd "<s-return>") 'eshell)
 
     ;; https://karthinks.com/software/jumping-directories-in-eshell/
@@ -1560,11 +1606,11 @@ Setup terminal emulators, [[https://www.emacswiki.org/emacs/AnsiTermHints][ansi-
 Use pdf-tools as default pdf viewer in emacs. Customize navigation and highlighting
 #+begin_src emacs-lisp
   (use-package pdf-tools
-    :straight (pdf-tools :type git 
-                         :flavor melpa 
+    :straight (pdf-tools :type git
+                         :flavor melpa
                          :files (
-                                 :defaults "README" ("build" "Makefile") ("build" "server") "pdf-tools-pkg.el") 
-                         :host github 
+                                 :defaults "README" ("build" "Makefile") ("build" "server") "pdf-tools-pkg.el")
+                         :host github
                          :repo "vedang/pdf-tools")
     ;; :defer t
     :config
@@ -1616,10 +1662,10 @@ Change the aspect of the bullets used in headings
 :bullets:
 #+begin_src emacs-lisp
   (use-package org-bullets
-    :straight (org-bullets :type git 
-  			 :flavor melpa 
-  			 :host github 
-  			 :repo "integral-dw/org-bullets")
+    :straight (org-bullets :type git
+                           :flavor melpa
+                           :host github
+                           :repo "integral-dw/org-bullets")
     :config
     (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
     :custom
@@ -1635,10 +1681,10 @@ Change the aspect of the bullets used in headings
 :load-languages:
 #+begin_src emacs-lisp
   (use-package ob-restclient
-    :straight (ob-restclient :type git 
-  			   :flavor melpa 
-  			   :host github 
-  			   :repo "alf/ob-restclient.el")
+    :straight (ob-restclient :type git
+                             :flavor melpa
+                             :host github
+                             :repo "alf/ob-restclient.el")
     :after org
     :config
     (org-babel-do-load-languages
@@ -1696,10 +1742,10 @@ Pandoc converts between a huge number of different file formats.
   (use-package ox-pandoc
     :no-require t
     :defer 10
-    :straight (ox-pandoc :type git 
-  		       :flavor melpa 
-  		       :host github 
-  		       :repo "emacsorphanage/ox-pandoc"))
+    :straight (ox-pandoc :type git
+                         :flavor melpa
+                         :host github
+                         :repo "emacsorphanage/ox-pandoc"))
 #+end_src
 *** Latex exporting
 I’ve had issues with getting BiBTeX to work correctly with the
@@ -1835,25 +1881,25 @@ Take notes from =pdf= documents (books, papers) in org mode
 :org-reveal:
 #+begin_src emacs-lisp
   (use-package ox-reveal
-    :straight (ox-reveal :type git 
-                         :flavor melpa 
-                         :host github 
+  :straight (ox-reveal :type git
+                         :flavor melpa
+                         :host github
                          :repo "yjwen/org-reveal")
-    :init
-    (require 'ox-reveal)
-    )
+  :init
+  (require 'ox-reveal)
+  )
 #+end_src
 :END:
 ** Org-ref
 :org-ref:
 #+begin_src emacs-lisp
   (use-package org-ref
-    :straight (org-ref :type git 
-  		     :flavor melpa 
-  		     :files (
-  			     :defaults "org-ref.org" "org-ref.bib" "citeproc" "org-ref-pkg.el") 
-  		     :host github 
-  		     :repo "jkitchin/org-ref")
+    :straight (org-ref :type git
+                       :flavor melpa
+                       :files (
+                               :defaults "org-ref.org" "org-ref.bib" "citeproc" "org-ref-pkg.el")
+                       :host github
+                       :repo "jkitchin/org-ref")
     ;; :after org
     :init
     ;;Configuration to allow use of org-ref with ox-hugo
@@ -1868,7 +1914,7 @@ Take notes from =pdf= documents (books, papers) in org mode
 
     :config
     (setq
-     
+
      bibtex-completion-notes-template-multiple-files "* ${author-or-editor}, ${title}, ${journal}, (${year}) :${=type=}: \n\nSee [[cite:&${=key=}]]\n"
 
      bibtex-completion-additional-search-fields '(keywords)
@@ -1934,9 +1980,9 @@ Take notes from =pdf= documents (books, papers) in org mode
 #+begin_src emacs-lisp
   (use-package smart-hungry-delete
     :straight (smart-hungry-delete :type git
-  				 :flavor melpa
-  				 :host github
-  				 :repo "hrehfeld/emacs-smart-hungry-delete")
+                                   :flavor melpa
+                                   :host github
+                                   :repo "hrehfeld/emacs-smart-hungry-delete")
     :bind
     ;; (:map python-mode-map
     ([remap backward-delete-char-untabify] . smart-hungry-delete-backward-char)
@@ -1952,19 +1998,19 @@ Take notes from =pdf= documents (books, papers) in org mode
 :expand-region:
 #+begin_src emacs-lisp
   (use-package expand-region
-    :straight (expand-region :type git 
-                             :flavor melpa 
-                             :host github 
+    :straight (expand-region :type git
+                             :flavor melpa
+                             :host github
                              :repo "magnars/expand-region.el")
     :config
     (global-set-key (kbd "C-=") 'er/expand-region))
 
   ;;Mark similar occurences and edit them at the same time
   (use-package multiple-cursors
-    :straight (multiple-cursors :type git 
-                      	      :flavor melpa 
-                      	      :host github 
-                      	      :repo "magnars/multiple-cursors.el") 
+    :straight (multiple-cursors :type git
+                                :flavor melpa
+                                :host github
+                                :repo "magnars/multiple-cursors.el")
     :config
     (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
     (global-set-key (kbd "C->") 'mc/mark-next-like-this)
@@ -1973,19 +2019,19 @@ Take notes from =pdf= documents (books, papers) in org mode
     )
 
   (use-package iedit
-    :straight (iedit :type git 
-                 	   :flavor melpa 
-                 	   :host github 
-                 	   :repo "victorhge/iedit"))
+    :straight (iedit :type git
+                     :flavor melpa
+                     :host github
+                     :repo "victorhge/iedit"))
 
   (use-package wrap-region
-    :straight (wrap-region :type git 
-       			 :flavor melpa 
-       			 :host github 
-       			 :repo "rejeep/wrap-region.el")
+    :straight (wrap-region :type git
+                           :flavor melpa
+                           :host github
+                           :repo "rejeep/wrap-region.el")
     :hook
     (org-mode . wrap-region-mode)
-    
+
     :config
     (wrap-region-add-wrapper "=" "=" nil 'org-mode) ; select region, hit = then region -> =region= in org-mode
     (wrap-region-add-wrapper "*" "*" nil 'org-mode) ; select region, hit * then region -> *region* in org-mode
@@ -2036,10 +2082,10 @@ See also this blog-post ([[http://blog.binchen.org/posts/what-s-the-best-spell-c
   ;;      (define-key flyspell-mouse-map [mouse-2] nil)))
 
   (use-package flyspell-correct
-    :straight (flyspell-correct :type git 
-                                :flavor melpa 
-                                :files ("flyspell-correct.el" "flyspell-correct-ido.el" "flyspell-correct-pkg.el") 
-                                :host github 
+    :straight (flyspell-correct :type git
+                                :flavor melpa
+                                :files ("flyspell-correct.el" "flyspell-correct-ido.el" "flyspell-correct-pkg.el")
+                                :host github
                                 :repo "d12frosted/flyspell-correct")
     :after flyspell
     :bind
@@ -2106,10 +2152,10 @@ For quick access to specific query types, use these commands:
 ** yequake-frames
 #+begin_src emacs-lisp
   (use-package yequake
-    :straight (yequake :type git 
-  		     :flavor melpa 
-  		     :host github 
-  		     :repo "alphapapa/yequake")
+    :straight (yequake :type git
+                       :flavor melpa
+                       :host github
+                       :repo "alphapapa/yequake")
     :init
     (get-buffer-create "tmp-notes")
     :config
