@@ -17,7 +17,7 @@
   ;; (set-default-file-modes #o600)
 
   ;; Editing options
-  (keymap-global-set "C-x h" 'mark-whole-buffer)
+  (global-set-key (kbd "C-x h") 'mark-whole-buffer)
   (put 'downcase-region 'disabled nil)
   (put 'upcase-region 'disabled nil)
   (put 'narrow-to-region 'disabled nil) ;;select and edit region
