@@ -1,0 +1,21 @@
+#+options: broken-links:t ^:{} num:nil toc:nil author:nil
+:latex-options:
+#+LATEX_CLASS: custom-article
+#+LATEX_CLASS_OPTIONS: [10pt]
+#+LATEX_HEADER: \usepackage[backend=biber,maxcitenames=2,maxbibnames=100,uniquename=false,uniquelist=false]{biblatex}
+#+LATEX_HEADER: \geometry{papersize={165mm,216mm},vmargin=15mm,hmargin=12mm}
+#+LATEX_HEADER: \addbibresource{~/Documents/Referencias/Bibtex/Notes.bib}
+#+LATEX_HEADER: \input{custom_biblatex.tex}
+#+LATEX_HEADER: \renewcommand{\arraystretch}{1.35}
+#+LATEX_HEADER: \pagestyle{empty}
+:END:
+
+* Description
+
+
+#+begin_export latex
+\singlespacing
+\printbibliography
+#+end_export
+
+* Back-links

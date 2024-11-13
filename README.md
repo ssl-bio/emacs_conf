@@ -13,6 +13,7 @@ Configuration files to customize the aspect of emacs and extend its default capa
 
 -   **Pandoc:** [\*Recommended\*] Required for exporting (converting) org files to other formats (*e.g.* HTML, markdown, etc). See pandoc's official website for [installation instructions](https://pandoc.org/installing.html)
 -   **Zoxide**: [\*Optional\*] Provides a better way to navigate directories [[homepage](https://github.com/ajeetdsouza/zoxide?tab=readme-ov-file)]. The emacs package, [zoxide.el](https://gitlab.com/Vonfry/zoxide.el), allows a similar functionality using dired.
+-   **Mermaid-cli**: [\*Optional\*] Command line interface to the diagramming and charting tool, Mermaid. In the recommended way to [install](https://github.com/mermaid-js/mermaid-cli?tab=readme-ov-file#installation) is through node.js package manager, npm: `npm install -g @mermaid-js/mermaid-cli`. The path to the binaries should be defined accordingly.
 
 
 ### Others
@@ -139,6 +140,21 @@ The following packages require the user to specify the pathway where specific fi
             "file:///media/particiones/Cloned/reveal.js"
           "other")))
     (setq org-reveal-root reveal-path)
+    ```
+
+8.  Mermaid-cli
+
+    ```emacs-lisp
+    ;; Define directory where ananconda is installed
+    (defvar conda-dir
+      (if (file-directory-p "/media/discs/shared/miniconda3")
+          "/media/discs/shared/miniconda3"
+        (if (file-directory-p "~/.local/bin/miniconda3")
+            "~/.local/bin/miniconda3"
+          "other")))
+    ;; Concatenate the base directory for anaconda and
+    ;; that for mermaid-cli
+    (defvar essl/mmdc-path (concat conda-dir "/bin/mmdc"))
     ```
 
 
