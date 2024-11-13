@@ -14,7 +14,7 @@
   ;; (defvar essl/frame-transparency '(90 . 90))
 
   ;; Default file permissions
-  ;; (set-default-file-modes #o600)
+  ;; (set-default-file-modes #o660)
 
   ;; Editing options
   (global-set-key (kbd "C-x h") 'mark-whole-buffer)
@@ -124,6 +124,7 @@
 
   (defvar essl/anaconda-home conda-dir)
   (defvar essl/anaconda-venv (concat conda-dir "/envs"))
+  (defvar essl/mmdc-path (concat conda-dir "/bin/mmdc"))
 
   ;; Bibtex paths and files
   (defvar docs-dir
@@ -220,7 +221,7 @@
 **** Dark themes
 - base16: base16-da-one-sea base16-tokyo-night-storm base16-everforest base16-railscasts base16-sandcastle
 - ef-themes: ef-autumn ef-elea-dark ef-maris-dark ef-tritanopia-dark
-- Independent: flatland darktooth-theme timu-spacegrey mellow-theme warm-night-theme jazz-theme blackboard-theme arjen-theme deep-blue-theme desert-theme  railscast robin-hood suscolors-theme
+- Independent: flatland darktooth-theme timu-spacegrey mellow-theme warm-night-theme jazz-theme blackboard-theme arjen-theme deep-blue-theme desert-theme  railscast robin-hood suscolors-theme flucui-themes labburn
 **** Light themes
 - built-in: dichromacy
 - base16-themes: base16-github base16-dirtysea base16-equilibrium-gray-light
@@ -239,7 +240,7 @@
                   modus-themes nord-theme
                     darktooth-theme flatland-theme timu-spacegrey-theme
                     almost-mono-themes monotropic-theme poet-theme
-                    majapahit-themes jazz-theme suscolors-theme))
+                    majapahit-themes labburn-theme flucui-themes))
 
   ;; install themes
   (dolist (theme ithemes)
@@ -254,8 +255,8 @@
      :type git
      :host github
      :repo "emacs-jp/replace-colorthemes"
-     :files ("andreas-theme.el" "arjen-theme.el" "kingsajz-theme.el"
-             "gtk-ide-theme.el" "deep-blue-theme.el" "late-night-theme.el"))
+     :files ("parus-theme.el" "snow-theme.el"
+             "gtk-ide-theme.el" "late-night-theme.el"))
    )
 #+end_src
 :END:
@@ -263,10 +264,9 @@
 :cycle-through-themes:
 #+begin_src emacs-lisp
   ;; List of favorite themes
-  (setq my-dark-themes '("suscolors" "kingsajz" "ef-melissa-dark" "flatland"
-                         "darktooth"  "jazz"  "ef-cherie"
-                         "arjen" "deep-blue"))
-  (setq my-light-themes '("dichromacy" "andreas" "gtk-ide"
+  (setq my-dark-themes '("ef-cherie" "darktooth" "flatland"
+                       "ef-elea-dark" "labburn" "ef-owl" "flucui-dark" "parus"))
+  (setq my-light-themes '("dichromacy" "ef-trio-light" "gtk-ide"
                           "modus-operandi-tritanopia" "ef-maris-light"
                           "ef-day" "ef-cyprus"))
   (setq my-write-themes '("almost-mono-cream" "monotropic" "nord" "poet"
@@ -311,7 +311,7 @@
   (global-set-key (kbd "<f7>") 'rotate-write-themes)
 
   ;; Default theme
-  (load-theme 'suscolors t)
+  (load-theme 'ef-cherie t)
 #+end_src
 :END:
 ** Window size
@@ -571,6 +571,24 @@ Define Keybindings to move between windows
   (global-set-key [s-down] 'windmove-down) ;move to lower window
 #+end_src
 :END:
+** Window-purpose
+Gives a better control where Emacs places buffers. [[[https://github.com/bmag/emacs-purpose][GitHub]]]
+Start with =M-x purpose-mode=
+Set a buffer for a defined purpose =C-c d= =purpose-toggle-window-purpose-dedicated=
+:purpose:
+#+begin_src emacs-lisp
+  (use-package window-purpose
+      :straight (window-purpose :type git
+                              :flavor melpa
+                              :files (
+                                      :defaults "layouts" "window-purpose-pkg.el")
+                              :host github
+                              :repo "bmag/emacs-purpose")
+      :config
+      (add-to-list 'purpose-user-mode-purposes '(org-mode . org))
+      )
+#+end_src
+:END:
 ** Manage/Save window configuration (Eyebrowse)
 [[[https://depp.brause.cc/eyebrowse/][Eyebrowse Home]]]
 Helps manage window configurations (Different number of divisions/dimensions).
@@ -689,7 +707,7 @@ Helps manage window configurations (Different number of divisions/dimensions).
 #+end_src
 :END:
 *** Treemacs
-[[[https://github.com/Alexander-Miller/treemacs][https://github.com/Alexander-Miller/treemacs][GitHub]]]
+[[[https://github.com/Alexander-Miller/treemacs\]\[https://github.com/Alexander-Miller/treemacs][GitHub]]]
 A tree layout file explorer for Emacs
 :treemacs:
 #+begin_src emacs-lisp
@@ -753,7 +771,6 @@ A tree layout file explorer for Emacs
     :custom
     ;; Sorting folders and files
     ((dired-listing-switches "-agho --group-directories-first"))
-
     )
 
   ;; Use icons for folders and files
@@ -1128,6 +1145,7 @@ Replace some of emacs functions with their consult equivalent
     ("C-x C-o" . consult-outline)
     ("C-x b" . consult-buffer)
     ("C-x C-h" . consult-history)
+    ("C-c r" . consult-ripgrep)
     )
 #+end_src
 
@@ -1252,6 +1270,35 @@ See https://github.com/minad/vertico/issues/145
 
   (add-hook 'vertico-mode-hook #'minibuffer-vertico-setup)
   (add-hook 'minibuffer-setup-hook #'minibuffer-vertico-setup)
+#+end_src
+** Embark
+#+begin_src emacs-lisp
+  (use-package embark
+    :straight (embark :type git
+                      :flavor melpa
+                      :files ("embark.el" "embark-org.el" "embark.texi" "embark-pkg.el")
+                      :host github
+                      :repo "oantolin/embark")
+    :bind
+    (("C-c a" . embark-act))
+    :init
+    (setq prefix-help-command #'embark-prefix-help-command)
+    :config
+      (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none))))
+    )
+
+  (use-package embark-consult
+    :straight (embark-consult :type git
+                              :flavor melpa
+                              :files ("embark-consult.el" "embark-consult-pkg.el")
+                              :host github
+                              :repo "oantolin/embark")
+    :after
+    (embark consult)
+    )
 #+end_src
 ** Marginalia
 [[[https://github.com/minad/marginalia][GitHub]]]
@@ -1849,6 +1896,8 @@ Change the aspect of the bullets used in headings
        (lisp . t)
        (shell . t)
        (awk . t)
+       (mermaid . t)
+       (scheme . t)
        ;; (yaml . t)
        ;; (restclient . t)
        ;;   (C . t)
@@ -2105,12 +2154,69 @@ Take notes from =pdf= documents (books, papers) in org mode
                         :repo "org-roam/org-roam")
     :custom
     (org-roam-directory essl/org-roam-dir)
+    (org-roam-capture-templates
+     '(
+       ;; Default template
+       ("d" "default" plain "%?"
+        :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                           "#+title: ${title}\n#+filetags: \n\n")
+        :unnarrowed t)
+
+       ;; Personal template
+       ("p" "personal" plain
+        "\n* Description\n%?\n\n* Back-links\n"
+        :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                           "#+title: ${title}\n#+filetags: \n\n")
+        :unnarrowed t)
+
+       ;; notes template
+       ("n" "notes" plain
+        (file "~/Templates/org-roam-notes-template.org")
+        :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                           "#+title: ${title}\n#+filetags: \n\n")
+        :unnarrowed t)
+       ))
 
     :bind (("C-c n l" . org-roam-buffer-toggle)
            ("C-c n f" . org-roam-node-find)
-           ("C-c n i" . org-roam-node-insert))
+           ("C-c n g" . org-roam-graph)
+           ("C-c n i" . org-roam-node-insert)
+           ("C-c n c" . org-roam-capture)
+           ;; Dailies
+           ("C-c n j" . org-roam-dailies-capture-today))
     :config
+    ;; If you're using a vertical completion framework, you might want a more informative completion interface
+    (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+    (org-roam-db-autosync-mode)
     (org-roam-setup)
+    )
+#+end_src
+:END:
+*** org-roam-ui
+:org-roam-ui:
+#+begin_src emacs-lisp
+  (use-package org-roam-ui
+    :straight
+    (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
+    :after org-roam
+    :defer t
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
+#+end_src
+:END:
+** Mermaid
+diagramming and charting tool that renders Markdown-inspired text definitions to create and modify diagrams dynamically.'
+It requires the installation of =mermaid-cli= via node.js. =npm install -g @mermaid-js/mermaid-cli=.
+:mermaid:
+#+begin_src emacs-lisp
+  (use-package ob-mermaid
+    :straight (ob-mermaid :type git
+                          :flavor melpa
+                          :host github
+                          :repo "arnm/ob-mermaid")
     )
 #+end_src
 :END:
@@ -2179,6 +2285,53 @@ Take notes from =pdf= documents (books, papers) in org mode
     (wrap-region-add-wrapper "/" "/" nil 'org-mode) ; select region, hit / then region -> /region/ in org-mode
     (wrap-region-add-wrapper "_" "_" nil 'org-mode) ; select region, hit _ then region -> _region_ in org-mode
     (wrap-region-add-wrapper "+" "+" nil 'org-mode) ; select region, hit + then region -> +region+ in org-mode
+    )
+#+end_src
+:END:
+** wgrep
+#+begin_src emacs-lisp
+  (use-package wgrep
+    :straight (wgrep :type git
+                     :flavor melpa
+                     :files ("wgrep.el" "wgrep-pkg.el")
+                     :host github
+                     :repo "mhayashi1120/Emacs-wgrep")
+    :bind
+    (("C-c C-p" . wgrep-change-to-wgrep-mode))
+    )
+#+end_src
+** Undo
+Vundo (visual undo) displays the undo history as a tree and lets you move in the tree to go back to previous buffer states. To use vundo, type M-x vundo RET in the buffer you want to undo. An undo tree buffer should pop up. To move around, type:
+|-----------------------+-----------------------------------------------------------------|
+| Key                   | Function                                                        |
+|-----------------------+-----------------------------------------------------------------|
+| f                     | to go forward                                                   |
+| b                     | to go backward                                                  |
+|                       |                                                                 |
+| n                     | to go to the node below when at a branch point                  |
+| p                     | to go to the node above                                         |
+|                       |                                                                 |
+| a                     | to go back to the last branching point                          |
+| w                     | to go forward to the next branching point                       |
+| e                     | to go forward to the end/tip of the branch                      |
+| l                     | to go to the last saved node                                    |
+| r                     | to go to the next saved node                                    |
+|                       |                                                                 |
+| m                     | to mark the current node for diff                               |
+| u                     | to unmark the marked node                                       |
+| d                     | to show a diff between the marked (or parent) and current nodes |
+|                       |                                                                 |
+| q                     | to quit, you can also type C-g                                  |
+|                       |                                                                 |
+| C-x C-s (save-buffer) | to save the buffer at the current undo state                    |
+|-----------------------+-----------------------------------------------------------------|
+:vundo:
+#+begin_src emacs-lisp
+  (use-package vundo
+    :straight (vundo :type git
+                     :host github
+                     :repo "emacs-straight/vundo"
+                     :files ("*" (:exclude ".git")))
     )
 #+end_src
 :END:
@@ -2259,6 +2412,29 @@ For quick access to specific query types, use these commands:
   )
 #+end_src
 * Remote
+** Version control
+*** Git timemachine
+Step through historic versions of git controlled files. [[[https://codeberg.org/pidu/git-timemachine][Home]]]
+Use the following keys to navigate historic version of the file
+- =p= Visit previous historic version
+- =n= Visit next historic version
+- =w= Copy the abbreviated hash of the current historic version
+- =W= Copy the full hash of the current historic version
+- =g= Goto nth revision
+- =t= Goto revision by selected commit message
+- =q= Exit the time machine.
+- =b= Run magit-blame on the currently visited revision (if magit available).
+- =c= Show current commit using magit (if magit available).
+
+#+begin_src emacs-lisp
+  (use-package git-timemachine
+    :straight (git-timemachine :type git
+                               :flavor melpa
+                               :host codeberg
+                               :repo "pidu/git-timemachine")
+
+    )
+#+end_src
 ** TRAMP
 :tramp:
 #+begin_src emacs-lisp
