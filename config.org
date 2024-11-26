@@ -67,6 +67,9 @@
 
   (global-set-key (kbd "<f5>") 'my-revert-buffer-no-confirm)
 
+  ;; Line numbers
+  (add-hook 'prog-mode-hook #'display-line-numbers-mode)
+
   ;; Line spacing
   ;; (setq-default line-spacing 4)
 
@@ -97,66 +100,64 @@
 *Modify these accordingly*
 :custom-vars:
 #+begin_src emacs-lisp
-  ;; Path to anaconda installation
-  (defvar conda-dir
-    (if (file-directory-p "/media/discs/shared/miniconda3")
-        "/media/discs/shared/miniconda3"
-      (if (file-directory-p "~/.local/bin/miniconda3")
-          "~/.local/bin/miniconda3"
-        "other")))
+    ;; Path to anaconda installation
+    (defvar conda-dir
+      (if (file-directory-p "/media/discs/shared/miniconda3")
+          "/media/discs/shared/miniconda3"
+        (if (file-directory-p "~/.local/bin/miniconda3")
+            "~/.local/bin/miniconda3"
+          "other")))
 
-  (defvar essl/anaconda-home conda-dir)
-  (defvar essl/anaconda-venv (concat conda-dir "/envs"))
-  (defvar essl/mmdc-path (concat conda-dir "/bin/mmdc"))
+    (defvar my/anaconda-home conda-dir)
+    (defvar my/anaconda-venv (concat conda-dir "/envs"))
+    (defvar my/mmdc-path (concat conda-dir "/bin/mmdc"))
 
-  ;; Bibtex paths and files
-  (defvar docs-dir
-    (if (file-directory-p "~/Documents")
-        "~/Documents"
-      (if (file-directory-p "~/Documentos")
-          "~/Documentos"
-        "other")))
+    ;; Bibtex paths and files
+    (defvar my/docs-dir
+      (if (file-directory-p "~/Documents")
+          "~/Documents"
+        (if (file-directory-p "~/Documentos")
+            "~/Documentos"
+          "other")))
+  ;; mermaid-cli path
+  (setq ob-mermaid-cli-path  my/mmdc-path)
 
   ;; org-roam directory
-  (setq essl/org-roam-dir "~/Documents/Org-files/Org-roam")
+  (setq my/org-roam-dir "~/Documents/Org-files/Org-roam")
 
-  ;; org-noter directory
-  (setq essl/org-noter-dir "~/Documents/Org-files/Org_noter")
+    ;; org-noter directory
+    (setq my/org-noter-dir "~/Documents/Org-files/Org_noter")
 
-  ;; Bibtex files
-  (setq
-   bibtex-completion-bibliography (concat docs-dir "/Refs/Bibtex/Working.bib")
-   bibtex-completion-library-path (concat docs-dir "/Papers_Books/")
-   bibtex-completion-notes-path (concat docs-dir "/Papers_Books/Summaries"))
+    ;; Bibtex files
+    (setq
+     bibtex-completion-bibliography (concat my/docs-dir "/Refs/Bibtex/Working.bib")
+     bibtex-completion-library-path (concat my/docs-dir "/Papers_Books/")
+     bibtex-completion-notes-path (concat my/docs-dir "/Papers_Books/Summaries"))
 
-  ;; ebib
-  (setq essl/ebib-search-dir (concat docs-dir "/Refs/Bibtex/"))
-  (setq essl/ebib-bibtex-files
-      (list
-       (concat docs-dir "/Refs/Bibtex/Articles_zotero.bib")
-       (concat docs-dir "/Refs/Bibtex/Books_zotero.bib")))
+    ;; ebib
+    (setq my/ebib-search-dir (concat my/docs-dir "/Refs/Bibtex/"))
+    (setq my/ebib-bibtex-files
+        (list
+         (concat my/docs-dir "/Refs/Bibtex/Articles_zotero.bib")
+         (concat my/docs-dir "/Refs/Bibtex/Books_zotero.bib")))
 
-  ;; org-reveal-path
-  (defvar reveal-path
-    (if (file-directory-p "/media/discs/shared/Cloned/reveal.js")
-        "file:///media/discs/shared/Cloned/reveal.js"
-      (if (file-directory-p "/media/particiones/Cloned/reveal.js")
-          "file:///media/particiones/Cloned/reveal.js"
-        "other")))
-  (setq org-reveal-root reveal-path)
+    ;; org-reveal-path
+    (defvar my/reveal-path
+      (if (file-directory-p "/media/discs/shared/Cloned/reveal.js")
+          "file:///media/discs/shared/Cloned/reveal.js"
+        (if (file-directory-p "/media/particiones/Cloned/reveal.js")
+            "file:///media/particiones/Cloned/reveal.js"
+          "other")))
+    (setq org-reveal-root my/reveal-path)
 
-  ;; Path to bash (ansi term)
-  (defvar essl/my-term "/bin/bash")
+    ;; Path to bash (ansi term)
+    (defvar my/my-term "/bin/bash")
 
-  ;; Fonts
-  (defvar essl/mono-font "Courier-New")
-  (defvar essl/sans-font "Verdana")
-  (defvar essl/default-font "Courier-New")
+    ;; Fonts
+    (defvar my/mono-font "Courier-New")
+    (defvar my/sans-font "Verdana")
+    (defvar my/default-font "Courier-New")
 #+end_src
-
-#+RESULTS:
-: essl/default-font
-
 :END:
 ** Startup time
 :startup-time:
@@ -165,14 +166,14 @@
   ;; The default is 800 kilobytes.  Measured in bytes.
   ;; (setq gc-cons-threshold (* 50 1000 1000))
 
-  (defun ssl/display-startup-time ()
+  (defun my/display-startup-time ()
     (message "Emacs loaded in %s with %d garbage collections."
              (format "%.2f seconds"
                      (float-time
                       (time-subtract after-init-time before-init-time)))
              gcs-done))
 
-  (add-hook 'emacs-startup-hook #'ssl/display-startup-time)
+  (add-hook 'emacs-startup-hook #'my/display-startup-time)
 #+end_src
 :END:
 ** Packages without configuration
@@ -838,7 +839,6 @@ Produces menus for accessing locations in documents.
 #+begin_src emacs-lisp
   (use-package imenu-list
     :straight (imenu-list :type git
-                          :flavor melpa
                           :host github
                           :repo "bmag/imenu-list")
     :bind(
@@ -1055,8 +1055,7 @@ Convenient package to create *scratch* buffers that are based on the current buf
         (setq company-backends (push 'company-dabbrev company-backends))
         (message "company-dabbrev enabled!"))))
     :hook
-    (prog-mode . company-mode)
-    (LaTeX-mode . company-mode)
+    ((prog-mode LaTeX-mode) . company-mode)
     )
 #+end_src
 :END:
@@ -1106,14 +1105,7 @@ Convenient package to create *scratch* buffers that are based on the current buf
                                     :repo "AndreaCrotti/yasnippet-snippets"))
     (yas-reload-all)
     :hook
-    (org-mode . yas-minor-mode)
-    (LaTeX-mode . yas-minor-mode)
-    (web-mode . yas-minor-mode)
-    (python-mode . yas-minor-mode)
-    (ess-r-mode . yas-minor-mode)
-    (c++-mode . yas-minor-mode)
-    (cc-mode . yas-minor-mode)
-    (sh-mode . yas-minor-mode)
+    ((org-mode LaTeX-mode web-mode python-mode ess-r-mode c++-mode cc-mode sh-mode) . yas-minor-mode)
     )
 #+end_src
 :END:
@@ -1126,7 +1118,7 @@ Convenient package to create *scratch* buffers that are based on the current buf
 :END:
 ** LSP                                         :commented:
 #+begin_src emacs-lisp
-  ;; (defun ssl/lsp-mode-setup ()
+  ;; (defun my/lsp-mode-setup ()
   ;;   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
   ;;   (lsp-headerline-breadcrumb-mode))
 
@@ -1194,11 +1186,8 @@ Convenient package to create *scratch* buffers that are based on the current buf
                           :repo "lassik/emacs-format-all-the-code")
       :commands format-all-mode
       :hook
-      (ess-mode . format-all-mode)
-      (python-mode . format-all-mode)
-      (LaTeX-mode . format-all-mode)
-      (Shell-script-mode . format-all-mode)
-      (sh-mode . format-all-mode)
+      ((ess-mode python-mode LaTeX-mode
+               Shell-script-mode sh-mode) . format-all-mode)
       ;; :config
       ;; (setq-default format-all-formatters
       ;;               '(("formatR" format-all-r-format-buffer)))
@@ -1231,74 +1220,10 @@ On-the-fly syntax checking. "/It uses various syntax checking and linting tools 
                         :host github
                         :repo "flycheck/flycheck")
     :hook
-    (python-mode . flycheck-mode)
-    (sh-mode . flycheck-mode)
-    (ess-r-mode . flycheck-mode)
-    (LaTeX-mode . flycheck-mode)
+    ((python-mode sh-mode ess-r-mode LaTeX-mode) . flycheck-mode)
     )
 #+end_src
-** Code folding
-*** Hideshow
-[[[https://www.gnu.org/software/emacs/manual/html_node/emacs/Hideshow][Hideshow manual]]]
-:hideshow-minormode:
-#+begin_src emacs-lisp
-  (defun toggle-selective-display (column)
-    (interactive "P")
-    (set-selective-display
-     (or column
-         (unless selective-display
-           (1+ (current-column))))))
-
-  (defun toggle-hiding (column)
-    (interactive "P")
-    (if hs-minor-mode
-        (if (condition-case nil
-                (hs-toggle-hiding)
-              (error t))
-            (hs-show-all))
-      (toggle-selective-display column)))
-
-  ;; Define Keybindings for hiding/showing code
-  (global-set-key (kbd "C-+") 'toggle-hiding)
-  (global-set-key (kbd "C-\\") 'toggle-selective-display)
-
-  ;; Hooks
-  (add-hook 'ess-r-mode-hook (lambda () (hs-minor-mode 1)))
-  (add-hook 'python-mode-hook (lambda () (hs-minor-mode 1)))
-  ;; (add-hook 'web-mode-hook (lambda () (hs-minor-mode 1)))
-#+end_src
-:END:
 ** Languages
-*** C++
-:config:
-#+begin_src emacs-lisp
-  (progn
-    (customize-set-variable 'eglot-autoshutdown t)
-    (customize-set-variable 'eglot-extend-to-xref t)
-    (customize-set-variable 'eglot-ignored-server-capabilities
-                            (quote (:documentFormattingProvider :documentRangeFormattingProvider)))
-
-    (with-eval-after-load 'eglot
-      (setq completion-category-defaults nil)
-      (add-to-list 'eglot-server-programs
-                   '(c-mode c++-mode
-                            . ("clangd"
-                               "-j=4"
-                               "--malloc-trim"
-                               "--log=error"
-                               "--background-index"
-                               "--clang-tidy"
-                               "--cross-file-rename"
-                               "--completion-style=detailed"
-                               "--pch-storage=memory"
-                               "--header-insertion=never"
-                               "--header-insertion-decorators=0"))))
-
-    (add-hook 'c-mode-hook #'eglot-ensure)
-    (add-hook 'c++-mode-hook #'eglot-ensure)
-    )
-#+end_src
-:END:
 *** Python (Anaconda)
 Change the path for the anaconda (miniconda) installation accordingly
 :config:
@@ -1310,13 +1235,15 @@ Change the path for the anaconda (miniconda) installation accordingly
                      :host github
                      :repo "necaris/conda.el")
     :init
-    ;; (add-to-list 'exec-path "/media/discs/shared/miniconda3/bin/")
-    (setq conda-anaconda-home essl/anaconda-home)
-    (setq conda-env-home-directory essl/anaconda-venv)
+    (setq conda-anaconda-home my/anaconda-home
+          conda-env-home-directory my/anaconda-venv)
+
     :config
+    (conda-env-autoactivate-mode t)
     (conda-env-initialize-interactive-shells)
     (conda-env-initialize-eshell)
     (conda-env-autoactivate-mode t)
+
     :hook
     (python-mode . anaconda-mode)
     (python-mode . anaconda-eldoc-mode)
@@ -1353,8 +1280,8 @@ Change the path for the anaconda (miniconda) installation accordingly
 
   ;;   (setq python-shell-interpreter "python"
   ;;         elpy-rpc-virtualenv-path  'current
-  ;;         python-shell-virtualenv-root essl/anaconda-venv
-  ;;         elpy-rpc-virtualenv-path  essl/anaconda-venv)
+  ;;         python-shell-virtualenv-root my/anaconda-venv
+  ;;         elpy-rpc-virtualenv-path  my/anaconda-venv)
   ;;   )
 #+end_src
 :END:
@@ -1379,7 +1306,7 @@ Change the path for the anaconda (miniconda) installation accordingly
     :bind
     ("M--" . ess-insert-assign) ;; Arrow to when typing underscore
     :hook
-    (ess-r-mode . hs-minor-mode)
+    ;; (ess-r-mode . hs-minor-mode)
     (ess-r-mode . my-ess-hook)
     )
 #+end_src
@@ -1479,40 +1406,80 @@ Change the path for the anaconda (miniconda) installation accordingly
 :END:
 *** Latex
 **** General
-:General-options:
-#+begin_src emacs-lisp
-  (setq TeX-auto-save t); Enable parse on save.
-  (setq TeX-parse-self t)
-  (setq-default TeX-master nil)
-  (setq TeX-engine 'xetex); Use xelatex by default
-  (add-hook 'LaTeX-mode-hook 'visual-line-mode) ;auto-fill-mode
-  (add-hook 'LaTeX-mode-hook #'flyspell-mode)
-  (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
-#+end_src
-:END:
-**** Aspect
+General configuration, Aspect, Auctex, Reftex, Synctex
 :editing-customizations:
 #+begin_src emacs-lisp
+    ;; Optimize loading of magic-latex-buffer
+  ;; Optimize loading of magic-latex-buffer and integrate pdf-tools
   (use-package magic-latex-buffer
     :straight (magic-latex-buffer :type git
                                   :flavor melpa
                                   :host github
                                   :repo "zk-phi/magic-latex-buffer")
     :init
-    (add-hook 'LaTeX-mode-hook 'magic-latex-buffer)
-    (add-hook 'LaTeX-mode-hook 'olivetti-mode)
-    ;;(add-hook 'LaTeX-mode-hook 'fuente-variable)
-    (add-hook 'LaTeX-mode-hook 'variable-pitch-mode)
+    ;; AUCTeX configuration (related to LaTeX setup)
+    (setq TeX-auto-save t                ; Enable parse on save
+          TeX-parse-self t               ; Enable parse on load
+          TeX-master nil                 ; Ask for the master file
+          TeX-engine 'xetex              ; Use XeLaTeX by default
+          reftex-plug-into-AUCTeX t      ; Integrate RefTeX with AUCTeX
+          TeX-source-correlate-method 'synctex
+          TeX-source-correlate-start-server t
+          TeX-view-program-selection '((output-pdf "PDF Tools"))) ; Use PDF Tools for PDFs
+
+    ;; Magic-latex-buffer customization
     (setq magic-latex-enable-block-highlight nil
           magic-latex-enable-suscript        t
           magic-latex-enable-pretty-symbols  t
           magic-latex-enable-block-align     nil
           magic-latex-enable-inline-image    nil
           magic-latex-enable-minibuffer-echo nil)
-    )
+
+    :config
+    ;; Load RefTeX when LaTeX mode is enabled
+    (require 'reftex)
+
+    ;; Use pdf-tools to open PDF files and refresh after compilation
+    (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
+
+    ;; Add hooks for LaTeX mode
+    :hook
+    (LaTeX-mode . (lambda ()
+                    (magic-latex-buffer)
+                    (olivetti-mode)
+                    (variable-pitch-mode)
+                    (flyspell-mode)
+                    (LaTeX-math-mode)
+                    (turn-on-reftex)
+                    (define-key LaTeX-mode-map (kbd "<C-tab>") 'outline-toggle-children)
+                    (TeX-fold-mode 1)
+                    (TeX-source-correlate-mode 1))))
 #+end_src
 :END:
-*** Helm-bibtex
+**** ebib
+:ebib-config:
+#+begin_src emacs-lisp
+  (use-package ebib
+    :straight (ebib :type git
+                    :host github
+                    :repo "joostkremers/ebib")
+    :init
+    (setq
+     ebib-bib-search-dirs my/ebib-search-dir
+     ebib-bibtex-dialect 'biblatex
+     ebib-file-associations '(("pdf") ("ps" . "gv"))
+     ebib-index-columns
+     '(("Author/Editor" 30 t)
+       ("Title" 40 t)
+       ("timestamp" 30 t)
+       ("Entry Key" 20 t))
+     ebib-index-default-sort '("timestamp" . descend)
+     ebib-preload-bib-files my/ebib-bibtex-files
+     ebib-timestamp-format "%Y-%m-%d"
+     ebib-use-timestamp t))
+#+end_src
+:END:
+**** Helm-bibtex
 :helm-bibtex:
 #+begin_src emacs-lisp
   (use-package helm-bibtex
@@ -1531,43 +1498,6 @@ Change the path for the anaconda (miniconda) installation accordingly
                              helm-source-bibtex 0)
 #+end_src
 :END:
-**** Auctex and Reftex
-:auctex-reftex-conf:
-#+begin_src emacs-lisp
-  (require 'reftex)
-  (add-hook 'LaTeX-mode-hook 'turn-on-reftex); with AUCTeX LaTeX mode
-  (add-hook 'latex-mode-hook 'turn-on-reftex)   ; with Emacs latex mode
-  (setq reftex-plug-into-AUCTeX t) ; Integrate RefTeX with AUCTeX
-
-  ;;Keybinding for folding sections
-  (add-hook 'LaTeX-mode-hook
-            (lambda ()
-              (define-key LaTeX-mode-map (kbd "<C-tab>") 'outline-toggle-children)))
-#+end_src
-:END:
-**** Synctex
-:synctex:
-#+begin_src emacs-lisp
-  (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
-  (setq TeX-source-correlate-method 'synctex)
-  (setq TeX-source-correlate-start-server t)
-  (setq TeX-parse-self t); Enable parse on load.
-  (add-hook 'TeX-mode-hook
-            (lambda () (TeX-fold-mode 1)));
-#+end_src
-:END:
-**** View output (pdf)
-:pdf-settings:
-#+begin_src emacs-lisp
-  ;; Use pdf-tools to open PDF files
-  (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
-        TeX-source-correlate-start-server t)
-
-  ;; Update PDF buffers after successful LaTeX runs
-  (add-hook 'TeX-after-compilation-finished-functions
-            'TeX-revert-document-buffer)
-#+end_src
-:END:
 *** Polymode
 :polymode:
 #+begin_src emacs-lisp
@@ -1579,7 +1509,7 @@ Setup terminal emulators, [[https://www.emacswiki.org/emacs/AnsiTermHints][ansi-
 **** Ansi-term
 #+begin_src emacs-lisp
   (defadvice ansi-term (before force-bash)
-    (interactive (list essl/my-term)))
+    (interactive (list my/my-term)))
   (ad-activate 'ansi-term)
   (eval-after-load "term"
     '(define-key term-raw-map (kbd "s-y") 'term-paste))
@@ -1623,6 +1553,56 @@ Setup terminal emulators, [[https://www.emacswiki.org/emacs/AnsiTermHints][ansi-
                               (completing-read "cd: " eshell-dirs)))))))
 #+end_src
 :END:
+** Tree-sitter
+[[[https://tree-sitter.github.io/tree-sitter/][Home]]]
+- Install language grammar =M-x treesit-install-language-grammar=
+  | Grammar    | Url                                               |
+  |------------+---------------------------------------------------|
+  | LaTeX      | https://github.com/latex-lsp/tree-sitter-latex    |
+  | Emacs-Lisp | https://github.com/Wilfred/tree-sitter-elisp      |
+  | R          | https://github.com/r-lib/tree-sitter-r            |
+  | Python     | https://github.com/tree-sitter/tree-sitter-python |
+  | Bash       | https://github.com/tree-sitter/tree-sitter-bash   |
+
+#+begin_src emacs-lisp
+  (use-package tree-sitter
+    :straight (tree-sitter :type git
+                           :files (
+                                   :defaults (
+                                              :exclude "lisp/tree-sitter-tests.el") "tree-sitter-pkg.el")
+                           :branch "release"
+                           :host github
+                           :repo "emacs-tree-sitter/elisp-tree-sitter")
+
+    :init
+    (defun my-enable-tree-sitter ()
+      (tree-sitter-mode)
+      (tree-sitter-hl-mode))
+    :hook
+    ((sh-mode python-mode ess-r-mode
+              css-mode js-mode) . my-enable-tree-sitter)
+    )
+#+end_src
+*** Languages
+#+begin_src emacs-lisp
+  (use-package tree-sitter-langs
+    :straight (tree-sitter-langs :type git
+                                 :files (
+                                         :defaults "queries" "tree-sitter-langs-pkg.el")
+                                 :branch "release"
+                                 :host github
+                                 :repo "emacs-tree-sitter/tree-sitter-langs")
+    )
+#+end_src
+*** ts-fold
+#+begin_src emacs-lisp
+  (use-package ts-fold
+    :straight (ts-fold :type git :host github :repo "emacs-tree-sitter/ts-fold")
+    :hook
+    ((sh-mode python-mode
+              ess-r-mode css-mode js-mode) . ts-fold-indicators-mode)
+    )
+#+end_src
 * Pdf
 ** pdf-tools
 Use pdf-tools as default pdf viewer in emacs. Customize navigation and highlighting
@@ -1630,52 +1610,44 @@ Use pdf-tools as default pdf viewer in emacs. Customize navigation and highlight
   (use-package pdf-tools
     :straight (pdf-tools :type git
                          :flavor melpa
-                         :files (
-                                 :defaults "README" ("build" "Makefile") ("build" "server") "pdf-tools-pkg.el")
+                         :files (:defaults "README" ("build" "Makefile") ("build" "server") "pdf-tools-pkg.el")
                          :host github
                          :repo "vedang/pdf-tools")
-    ;; :defer t
+    :mode ("\\.pdf\\'" . pdf-view-mode)
+    :commands (pdf-view-mode pdf-tools-install)
     :config
-    ;; initialise
-    (pdf-tools-install)
-    ;; (pdf-loader-install) ;;to speedup loading
-    ;; open pdfs scaled to fit page
+    ;; (pdf-tools-install)
+
+    ;; Set default display size to fit width
     (setq-default pdf-view-display-size 'fit-width)
-    ;; automatically annotate highlights
-    (setq pdf-annot-activate-created-annotations t)
-    ;; use normal isearch
-    (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
-    ;; turn off cua so copy works
-    ;; (add-hook 'pdf-view-mode-hook (lambda () (cua-mode 0)))
-    ;; more fine-grained zooming
     (setq pdf-view-resize-factor 1.1)
-    ;; keyboard shortcuts
-    (define-key pdf-view-mode-map (kbd "h") 'pdf-annot-add-highlight-markup-annotation)
-    (define-key pdf-view-mode-map (kbd "u") 'pdf-annot-add-underline-markup-annotation)
-    (define-key pdf-view-mode-map (kbd "t") 'pdf-annot-add-text-annotation)
-    (define-key pdf-view-mode-map (kbd "y") 'pdf-annot-add-squiggly-markup-annotation)
-    (define-key pdf-view-mode-map (kbd "_") 'pdf-annot-add-strikeout-markup-annotation)
-    (define-key pdf-view-mode-map (kbd "D") 'pdf-annot-delete)
-    ;; customize highlight color
+
+    ;; Automatically activate annotations after creation
+    (setq pdf-annot-activate-created-annotations t)
+
+    ;; Keybindings for common annotations in pdf-view-mode
+    (let ((map pdf-view-mode-map))
+      (define-key map (kbd "C-s") 'isearch-forward)
+      (define-key map (kbd "h") 'pdf-annot-add-highlight-markup-annotation)
+      (define-key map (kbd "u") 'pdf-annot-add-underline-markup-annotation)
+      (define-key map (kbd "t") 'pdf-annot-add-text-annotation)
+      (define-key map (kbd "y") 'pdf-annot-add-squiggly-markup-annotation)
+      (define-key map (kbd "_") 'pdf-annot-add-strikeout-markup-annotation)
+      (define-key map (kbd "D") 'pdf-annot-delete))
+
+    ;; Default properties for annotations
     (setq pdf-annot-default-annotation-properties
-          '((t
-             (label . "ssl"))
-            (text
-             (color . "khaki1")
-             (icon . "Note"))
-            (highlight
-             (color . "snow2")
-             )
-            (underline
-             (color . "dark cyan"))
-            (squiggly
-             (color . "orange red"))
-            (strike-out
-             (color . "red"))))
-    (setq pdf-annot-color-history '("khaki1" "powder blue" "thistle"
-                                      "DarkSeaGreen2" "light salmon" "snow2"
-                                      "dark cyan" "orange red"))
-    )
+          '((t (label . "ssl"))
+            (text (color . "khaki1") (icon . "Note"))
+            (highlight (color . "snow2"))
+            (underline (color . "dark cyan"))
+            (squiggly (color . "orange red"))
+            (strike-out (color . "red"))))
+
+    ;; Recent color history for annotations
+    (setq pdf-annot-color-history
+          '("khaki1" "powder blue" "thistle" "DarkSeaGreen2"
+            "light salmon" "snow2" "dark cyan" "orange red")))
 #+end_src
 * Org-mode
 ** Aspect
@@ -1688,8 +1660,9 @@ Change the aspect of the bullets used in headings
                            :flavor melpa
                            :host github
                            :repo "integral-dw/org-bullets")
-    :config
-    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+    ;; :after org
+    :hook
+    (org-mode . (lambda () (org-bullets-mode 1)))
     :custom
     ;; Other styles
     ;; (org-bullets-bullet-list '("◉" "●" "▷" "▶" "●" "✸"))
@@ -1707,7 +1680,7 @@ Change the aspect of the bullets used in headings
                              :flavor melpa
                              :host github
                              :repo "alf/ob-restclient.el")
-    :after org
+    ;; :after org
     :config
     (org-babel-do-load-languages
      'org-babel-load-languages
@@ -1747,7 +1720,7 @@ Change the aspect of the bullets used in headings
   (use-package org-tempo
     :ensure nil
     ;; :mode ("\\.org" . org-mode)
-    :after org
+    ;; :after org
     :init
     (add-to-list 'org-structure-template-alist '("lp" . "src emacs-lisp"))
     (add-to-list 'org-structure-template-alist '("py" . "src python"))
@@ -1862,7 +1835,7 @@ It is necessary to load [[https://superuser.com/questions/896741/how-do-i-config
     :after ox
     :config
     ;; Colored text for ox-hugo
-    (defun ssl/code ()
+    (defun my/code ()
       "Add a 'mark' macro to the current region (for Hugo)"
       (interactive)
       (if (region-active-p)
@@ -1872,7 +1845,7 @@ It is necessary to load [[https://superuser.com/questions/896741/how-do-i-config
             (goto-char (region-beginning))
             (insert "{{{code("))))
     ;; mark text for ox-hugo
-    (defun ssl/mark ()
+    (defun my/mark ()
       "Add a 'mark' macro to the current region (for Hugo)"
       (interactive)
       (if (region-active-p)
@@ -1896,8 +1869,9 @@ Take notes from =pdf= documents (books, papers) in org mode
                :files ("*.el" "modules" (:exclude "*-test-utils.el" "*-devel.el") "org-noter-pkg.el")
                :host github
                :repo "org-noter/org-noter")
+    :commands (org-noter)  ;; Load only when org-noter is called
     :config
-    '(org-noter-notes-search-path essl/org-noter-dir)
+    '(org-noter-notes-search-path my/org-noter-dir)
     )
 #+end_src
 :END:
@@ -1909,9 +1883,12 @@ Take notes from =pdf= documents (books, papers) in org mode
                          :flavor melpa
                          :host github
                          :repo "yjwen/org-reveal")
-  :init
-  (require 'ox-reveal)
-  )
+    ;; Load only when these commands are called
+    :commands (org-reveal-export-to-html
+               org-reveal-publish-to-reveal)
+    ;; :init
+    ;; (require 'ox-reveal)
+    )
 #+end_src
 :END:
 ** Org-ref
@@ -1924,44 +1901,43 @@ Take notes from =pdf= documents (books, papers) in org mode
                                :defaults "org-ref.org" "org-ref.bib" "citeproc" "org-ref-pkg.el")
                        :host github
                        :repo "jkitchin/org-ref")
-    ;; :after org
-    :init
-    ;;Configuration to allow use of org-ref with ox-hugo
-    (with-eval-after-load 'ox
-      (defun my/org-ref-process-buffer--html (backend)
-        ;;"Preprocess `org-ref' citations to HTML format.
-        ;;Do this only if the export backend is `html' or a derivative of that."
+  ;; :after org
+  :init
+  ;;Configuration to allow use of org-ref with ox-hugo
+  (with-eval-after-load 'ox
+    (defun my/org-ref-process-buffer--html (backend)
+      ;;"Preprocess org-ref' citations to HTML format.
+      ;;Do this only if the export backend is html' or a derivative of that."
 
-        (when (org-export-derived-backend-p backend 'html)
-          (org-ref-process-buffer 'html)))
-      (add-to-list 'org-export-before-parsing-hook #'my/org-ref-process-buffer--html))
+      (when (org-export-derived-backend-p backend 'html)
+        (org-ref-process-buffer 'html)))
+    (add-to-list 'org-export-before-parsing-hook #'my/org-ref-process-buffer--html))
 
-    :config
-    (setq
+  :config
+  (setq
+   bibtex-completion-notes-template-multiple-files "* ${author-or-editor}, ${title}, ${journal}, (${year}) :${=type=}: \n\nSee [[cite:&${=key=}]]\n"
 
-     bibtex-completion-notes-template-multiple-files "* ${author-or-editor}, ${title}, ${journal}, (${year}) :${=type=}: \n\nSee [[cite:&${=key=}]]\n"
+   bibtex-completion-additional-search-fields '(keywords)
+   bibtex-completion-pdf-field "File"
+   bibtex-completion-display-formats
+   '((article       . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} ${journal:40}")
+     (inbook        . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} Chapter ${chapter:32}")
+     (incollection  . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
+     (inproceedings . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
+     (t             . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*}"))
+   bibtex-completion-pdf-open-function
+   (lambda (fpath)
+     (call-process "open" nil 0 nil fpath))
+   )
+  (custom-set-faces
+   '(org-ref-cite-face ((t (:inherit link :foreground unspecified)))))
 
-     bibtex-completion-additional-search-fields '(keywords)
-     bibtex-completion-pdf-field "File"
-     bibtex-completion-display-formats
-     '((article       . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} ${journal:40}")
-       (inbook        . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} Chapter ${chapter:32}")
-       (incollection  . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
-       (inproceedings . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
-       (t             . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*}"))
-     bibtex-completion-pdf-open-function
-     (lambda (fpath)
-       (call-process "open" nil 0 nil fpath))
-     )
-    (custom-set-faces
-     '(org-ref-cite-face ((t (:inherit link :foreground nil)))))
-
-    ;;Keybindings for inserting reference
-    (define-key bibtex-mode-map (kbd "s-]") 'org-ref-bibtex-hydra/body)
-    (define-key org-mode-map (kbd "C-c ]") 'org-ref-insert-link)
-    (define-key org-mode-map (kbd "s-[") 'org-ref-insert-link-hydra/body)
-    (setq org-ref-open-pdf-function 'org-pdfview-open)
-    )
+  ;;Keybindings for inserting reference
+  (define-key bibtex-mode-map (kbd "s-]") 'org-ref-bibtex-hydra/body)
+  (define-key org-mode-map (kbd "C-c ]") 'org-ref-insert-link)
+  (define-key org-mode-map (kbd "s-[") 'org-ref-insert-link-hydra/body)
+  (setq org-ref-open-pdf-function 'org-pdfview-open)
+  )
 #+end_src
 :END:
 :org-ref-helm:
@@ -1987,7 +1963,7 @@ Take notes from =pdf= documents (books, papers) in org mode
                         :host github
                         :repo "org-roam/org-roam")
     :custom
-    (org-roam-directory essl/org-roam-dir)
+    (org-roam-directory my/org-roam-dir)
     (org-roam-capture-templates
      '(
        ;; Default template
@@ -2042,7 +2018,7 @@ Take notes from =pdf= documents (books, papers) in org mode
 #+end_src
 :END:
 ** Mermaid
-diagramming and charting tool that renders Markdown-inspired text definitions to create and modify diagrams dynamically.'
+Interface to [[https://github.com/mermaid-js/mermaid-cli][mermaid-cli]] for generating diagrams using org-mode. [[https://mermaid.js.org/][Mermaid]] is a 'JavaScript based diagramming and charting tool that renders Markdown-inspired text definitions to create and modify diagrams dynamically.'
 It requires the installation of =mermaid-cli= via node.js. =npm install -g @mermaid-js/mermaid-cli=.
 :mermaid:
 #+begin_src emacs-lisp
@@ -2171,44 +2147,32 @@ Vundo (visual undo) displays the undo history as a tree and lets you move in the
 :END:
 * Writing
 ** Spelling
-*** Hunspell
-Source: [[https://tex.stackexchange.com/questions/166681/changing-language-of-flyspell-emacs-with-a-shortcut][link]]
+*** Hunspell / Flyspell / Flyspell correct
+Source: [[https://tex.stackexchange.com/questions/166681/changing-language-of-flyspell-emacs-with-a-shortcut][Change spelling program]]
 See also this blog-post ([[http://blog.binchen.org/posts/what-s-the-best-spell-check-set-up-in-emacs/][link]]) for other form of configuration
+[[http://www.emacswiki.org/emacs/FlySpell][Flyspell]] [[http://emacs.stackexchange.com/questions/13361/how-do-i-disable-the-emacs-flyspell-middle-mouse-correction][Configure flyspell buttons]]
 #+begin_src emacs-lisp
-  (if (file-exists-p "/usr/bin/hunspell")
-      (progn
-        (setq ispell-program-name "hunspell")
-        (eval-after-load "ispell"
-          '(progn (defun ispell-get-coding-system () 'utf-8)))))
-#+end_src
-*** Flyspell
-[[http://www.emacswiki.org/emacs/FlySpell][Source]] [[http://emacs.stackexchange.com/questions/13361/how-do-i-disable-the-emacs-flyspell-middle-mouse-correction][Configure buttons]]
-:flyspell-flyspell-correct:
-#+begin_src emacs-lisp
-  ;; (use-package flyspell
-  ;;   :hook text-mode
-  ;;   :config
-  ;;   (setq flyspell-sort-corrections nil)
-  ;;   (setq flyspell-issue-message-flag nil)
-  ;;   )
+   ;; Use Hunspell if available
+  (when (executable-find "hunspell")
+    (setq ispell-program-name "hunspell")
+    ;; Ensure utf-8 encoding with Hunspell
+    (with-eval-after-load 'ispell
+      (defun ispell-get-coding-system () 'utf-8)))
 
-  (setq flyspell-sort-corrections nil)
-  (setq flyspell-issue-message-flag nil)
+  ;; Flyspell configuration
+  (use-package flyspell
+    :init
+    ;; Disable sorting corrections and suppress message flag for flyspell
+    (setq flyspell-sort-corrections nil
+          flyspell-issue-message-flag nil)
+    ;; Enable flyspell in specific modes
+    (dolist (hook '(text-mode-hook))
+      (add-hook hook #'flyspell-mode))
+    ;; Disable flyspell in specific modes
+    (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
+      (add-hook hook (lambda () (flyspell-mode -1)))))
 
-  ;; Enable for text files
-  (dolist (hook '(text-mode-hook))
-    (add-hook hook (lambda () (flyspell-mode 1))))
-  (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
-    (add-hook hook (lambda () (flyspell-mode -1))))
-
-  ;; Change the mouse button for corrections
-  ;; (eval-after-load "flyspell"
-  ;;   '(progn
-  ;;      (define-key flyspell-mouse-map [down-mouse-3] #'flyspell-correct-word)
-  ;;      (define-key flyspell-mouse-map [mouse-3] #'undefined)
-  ;;      (define-key flyspell-mouse-map [down-mouse-2] nil)
-  ;;      (define-key flyspell-mouse-map [mouse-2] nil)))
-
+  ;; Flyspell-correct configuration
   (use-package flyspell-correct
     :straight (flyspell-correct :type git
                                 :flavor melpa
@@ -2217,9 +2181,9 @@ See also this blog-post ([[http://blog.binchen.org/posts/what-s-the-best-spell-c
                                 :repo "d12frosted/flyspell-correct")
     :after flyspell
     :bind
-    (:map flyspell-mode-map ("C-;" . flyspell-correct-wrapper)))
+    (:map flyspell-mode-map
+          ("C-;" . flyspell-correct-wrapper)))
 #+end_src
-:END:
 ** Thesaurus
 For quick access to specific query types, use these commands:
 - =powerthesaurus-lookup-synonyms-dwim=
@@ -2242,33 +2206,8 @@ For quick access to specific query types, use these commands:
   :straight (lorem-ipsum :type git
                          :flavor melpa
                          :host github
-                         :repo "jschaf/emacs-lorem-ipsum")
-  )
+                         :repo "jschaf/emacs-lorem-ipsum"))
 #+end_src
-** ebib
-:ebib-config:
-#+begin_src emacs-lisp
-  (use-package ebib
-    :straight (ebib :type git
-                    :flavor melpa
-                    :host github
-                    :repo "joostkremers/ebib")
-    :init
-    (setq
-     ebib-bib-search-dirs essl/ebib-search-dir
-     ebib-bibtex-dialect 'biblatex
-     ebib-file-associations '(("pdf") ("ps" . "gv"))
-     ebib-index-columns
-     '(("Author/Editor" 30 t)
-       ("Title" 40 t)
-       ("timestamp" 30 t)
-       ("Entry Key" 20 t))
-     ebib-index-default-sort '("timestamp" . descend)
-     ebib-preload-bib-files essl/ebib-bibtex-files
-     ebib-timestamp-format "%Y-%m-%d"
-     ebib-use-timestamp t))
-#+end_src
-:END:
 * Remote
 ** Version control
 *** Git timemachine

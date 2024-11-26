@@ -82,8 +82,8 @@ The following packages require the user to specify the pathway where specific fi
             "~/.local/bin/miniconda3"
           "other")))
     
-    (defvar essl/anaconda-home conda-dir)
-    (defvar essl/anaconda-venv (concat conda-dir "/envs"))
+    (defvar my/anaconda-home conda-dir)
+    (defvar my/anaconda-venv (concat conda-dir "/envs"))
     ```
 
 3.  org-roam
@@ -91,7 +91,7 @@ The following packages require the user to specify the pathway where specific fi
     Allows the creation and management of interconnected notes using the Zettelkasten method (see its [homepage](https://www.orgroam.com/)). It requires to specify a directory where to store the notes. The following line creates a custom variable that is latter used in the org-roam configuration section.
     
     ```emacs-lisp
-    (setq essl/org-roam-dir "~/Documents/Org-files/Org-roam")
+    (setq my/org-roam-dir "~/Documents/Org-files/Org-roam")
     ```
 
 4.  org-noter
@@ -99,7 +99,7 @@ The following packages require the user to specify the pathway where specific fi
     Provides functions to simplify taking notes on documents particularly pdf files (see its [GitHub](https://github.com/org-noter/org-noter/tree/master) page). Examples include synchronizing the notes at specific points in the document or creating an overview of the document. It also requires to specify a directory where to store the notes.
     
     ```emacs-lisp
-    (setq essl/org-noter-dir "~/Documents/Org-files/Org_noter")
+    (setq my/org-noter-dir "~/Documents/Org-files/Org_noter")
     ```
 
 5.  org-ref
@@ -120,8 +120,8 @@ The following packages require the user to specify the pathway where specific fi
     
     ```emacs-lisp
     ;; ebib
-      (setq essl/ebib-search-dir (concat docs-dir "/Refs/Bibtex/"))
-      (setq essl/ebib-bibtex-files
+      (setq my/ebib-search-dir (concat docs-dir "/Refs/Bibtex/"))
+      (setq my/ebib-bibtex-files
           (list
            (concat docs-dir "/Refs/Bibtex/Articles_zotero.bib")
            (concat docs-dir "/Refs/Bibtex/Books_zotero.bib")))
@@ -154,7 +154,7 @@ The following packages require the user to specify the pathway where specific fi
           "other")))
     ;; Concatenate the base directory for anaconda and
     ;; that for mermaid-cli
-    (defvar essl/mmdc-path (concat conda-dir "/bin/mmdc"))
+    (defvar my/mmdc-path (concat conda-dir "/bin/mmdc"))
     ```
 
 
@@ -165,7 +165,7 @@ The following packages require the user to specify the pathway where specific fi
     
     ```emacs-lisp
     ;; Fonts
-    (defvar essl/mono-font "Courier-New")
-    (defvar essl/sans-font "Verdana")
-    (defvar essl/default-font "Courier-New")
+    (defvar my/mono-font "Courier-New")
+    (defvar my/sans-font "Verdana")
+    (defvar my/default-font "Courier-New")
     ```
