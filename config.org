@@ -138,13 +138,13 @@
         "other")))
 
   ;; mermaid-cli path
-  (setq ob-mermaid-cli-path  my/mmdc-path)
+  ;; (setq ob-mermaid-cli-path  my/mmdc-path)
 
   ;; org-roam directory
-  (setq my/org-roam-dir "~/Documents/Org-files/Org-roam")
+  (setq my/org-roam-dir (concat my/docs-dir "/Org-files/Org-roam"))
 
   ;; org-noter directory
-  (setq my/org-noter-dir "~/Documents/Org-files/Org_noter")
+  (setq my/org-noter-dir (concat my/docs-dir "/Apuntes/Org_noter"))
 
   ;; Bibtex files
   (setq
@@ -430,7 +430,7 @@
 
   (advice-add 'enable-theme :after #'run-after-enable-theme-hook)
 
-  (add-hook 'after-enable-theme-hook #'fontaine-apply-current-preset)
+  ;; (add-hook 'after-enable-theme-hook #'fontaine-apply-current-preset)
   (add-hook 'after-enable-theme-hook #'customize-org-faces)
 #+end_src
 :END:
@@ -1170,7 +1170,7 @@ For the [[help:consult-goto-line][consult-goto-line]] and ~consult-line~ command
    ("C-x C-r" . consult-recent-file)
    ("C-x C-o" . consult-outline)
    ("C-x b" . consult-buffer)
-   ("C-x C-h" . consult-history)
+   ("C-x M-h" . consult-history)
    ("C-c r" . consult-ripgrep)
    ("C-s" . my/consult-line)
    ("M-g g" . my/consult-goto-line)
@@ -1364,8 +1364,8 @@ Change the aspect of the bullets used in headings
        (lisp . t)
        (shell . t)
        (awk . t)
-       (mermaid . t)
-       (scheme . t)
+       ;; (mermaid . t)
+       ;; (scheme . t)
        ;; (yaml . t)
        ;; (restclient . t)
        ;;   (C . t)
@@ -1417,7 +1417,7 @@ Change the aspect of the bullets used in headings
     :after ox
     :config
     ;; Colored text for ox-hugo
-    (defun ssl/code ()
+    (defun my/code ()
       "Add a 'mark' macro to the current region (for Hugo)"
       (interactive)
       (if (region-active-p)
@@ -1427,7 +1427,7 @@ Change the aspect of the bullets used in headings
             (goto-char (region-beginning))
             (insert "{{{code("))))
     ;; mark text for ox-hugo
-    (defun ssl/mark ()
+    (defun my/mark ()
       "Add a 'mark' macro to the current region (for Hugo)"
       (interactive)
       (if (region-active-p)
@@ -1675,18 +1675,18 @@ Take notes from =pdf= documents (books, papers) in org mode
           org-roam-ui-open-on-start t))
 #+end_src
 :END:
-** Mermaid
+** Mermaid                                     :commented:
 Interface to [[https://github.com/mermaid-js/mermaid-cli][mermaid-cli]] for generating diagrams using org-mode. [[https://mermaid.js.org/][Mermaid]] is a 'JavaScript based diagramming and charting tool that renders Markdown-inspired text definitions to create and modify diagrams dynamically.'
 It requires the installation of =mermaid-cli= via node.js. =npm install -g @mermaid-js/mermaid-cli=.
 :mermaid:
 #+begin_src emacs-lisp
-  (use-package ob-mermaid
-    :straight (ob-mermaid :type git
-                          :flavor melpa
-                          :host github
-                          :repo "arnm/ob-mermaid")
-    ;; :after org
-    )
+  ;; (use-package ob-mermaid
+  ;;   :straight (ob-mermaid :type git
+  ;; 			:flavor melpa
+  ;; 			:host github
+  ;; 			:repo "arnm/ob-mermaid")
+  ;;   ;; :after org
+  ;;   )
 #+end_src
 :END:
 ** Commented
@@ -2083,6 +2083,8 @@ Setup terminal emulators, [[https://www.emacswiki.org/emacs/AnsiTermHints][ansi-
     :hook
     ((sh-mode python-mode
               ess-r-mode css-mode js-mode) . ts-fold-indicators-mode)
+    :bind
+    (("C-c ]" . ts-fold-toggle))
     )
 #+end_src
 * Editing
