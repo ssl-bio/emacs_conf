@@ -1110,6 +1110,31 @@ Allow completion based on space-separated tokens, out of order.
           completion-ignore-case t)
     )
 #+end_src
+** Hydra
+#+begin_src emacs-lisp
+    (use-package hydra
+      :straight  (hydra :type git
+                              :files (
+                                      :defaults (
+                                                 :exclude "lv.el") "hydra-pkg.el")
+                              :host github
+                              :repo "abo-abo/hydra")
+      :config
+      (defhydra hydra-diff-hl (:hint nil :exit nil)
+      "
+  Diff-HL:
+    _n_: Next hunk     _p_: Previous hunk
+    _s_: Stage hunk    _r_: Revert hunk
+    _q_: Quit
+  "
+      ("n" diff-hl-next-hunk "Next hunk")
+      ("p" diff-hl-previous-hunk "Previous hunk")
+      ("s" diff-hl-stage-current-hunk "Stage hunk")
+      ("r" diff-hl-revert-hunk "Revert hunk")
+      ("q" nil "Quit" :exit t))
+
+      )
+#+end_src
 ** Yasnippet
 :yasnippet:
 #+begin_src emacs-lisp
@@ -2262,6 +2287,19 @@ For quick access to specific query types, use these commands:
 #+end_src
 * Remote
 ** Version control
+*** diff-hl
+#+begin_src emacs-lisp
+  (use-package diff-hl
+    :straight (diff-hl :type git
+                       :host github
+                       :repo "dgutov/diff-hl")
+    :hook
+    ((prog-mode . diff-hl-mode)          ;; Enable diff-hl in programming modes
+     (magit-post-refresh . diff-hl-magit-post-refresh))  ;; Refresh diff-hl after Magit operations
+    :config
+    (setq diff-hl-draw-borders nil)
+    )
+#+end_src
 *** Git timemachine
 Step through historic versions of git controlled files. [[[https://codeberg.org/pidu/git-timemachine][Home]]]
 Use the following keys to navigate historic version of the file
