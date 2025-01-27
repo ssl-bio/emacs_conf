@@ -242,41 +242,38 @@
 :install-themes:
 #+begin_src emacs-lisp
   ;;modus-themes base16-theme doom-themes
-  (setq ithemes '(ef-themes
-                  modus-themes nord-theme
-                    darktooth-theme flatland-theme timu-spacegrey-theme
-                    almost-mono-themes monotropic-theme poet-theme
-                    majapahit-themes labburn-theme flucui-themes))
+  (setq ithemes '(ef-themes doom-themes modus-themes
+                            kaolin-themes material-theme
+                            almost-mono-themes monotropic-theme))
 
   ;; install themes
   (dolist (theme ithemes)
     (straight-use-package theme))
 #+end_src
 :END:
-*** Github only themes
+*** Github only themes                         :commented:
 :test:
 #+begin_src emacs-lisp
-  (straight-use-package
-   '(replace-colorthemes
-     :type git
-     :host github
-     :repo "emacs-jp/replace-colorthemes"
-     :files ("parus-theme.el" "snow-theme.el"
-             "gtk-ide-theme.el" "late-night-theme.el"))
-   )
+  ;; (straight-use-package
+  ;;  '(replace-colorthemes
+  ;;    :type git
+  ;;    :host github
+  ;;    :repo "emacs-jp/replace-colorthemes"
+  ;;    :files ("parus-theme.el" "snow-theme.el"
+  ;;            "late-night-theme.el" "resolve-theme.el"))
+  ;;  )
 #+end_src
 :END:
 *** Functions to cycle over preferred themes
 :cycle-through-themes:
 #+begin_src emacs-lisp
   ;; List of favorite themes
-  (setq my-dark-themes '("ef-cherie" "darktooth" "flatland"
-                       "ef-elea-dark" "labburn" "ef-owl" "flucui-dark" "parus"))
-  (setq my-light-themes '("dichromacy" "ef-trio-light" "gtk-ide"
-                          "modus-operandi-tritanopia" "ef-maris-light"
-                          "ef-day" "ef-cyprus"))
-  (setq my-write-themes '("almost-mono-cream" "monotropic" "nord" "poet"
-                          "majapahit-light" "ef-melissa-light" "almost-mono-gray" "late-night"))
+  (setq my-dark-themes '("doom-fairy-floss" "ef-maris-dark" "doom-gruvbox"
+                         "kaolin-eclipse" "kaolin-temple" "material"))
+  (setq my-light-themes '("ef-duo-light" "ef-arbutus" "doom-oksolar-light"
+                          "kaolin-mono-light" "ef-melissa-light" "ef-cyprus"))
+  (setq my-write-themes '("almost-mono-cream" "monotropic" "doom-homage-white"
+                           "almost-mono-gray" ))
   ;; Cycle through themes
   (defun rotate-dark-themes ()
     (interactive)
@@ -317,7 +314,7 @@
   (global-set-key (kbd "<f7>") 'rotate-write-themes)
 
   ;; Default theme
-  (load-theme 'ef-cherie t)
+  (load-theme 'ef-arbutus t)
 #+end_src
 :END:
 ** Window size
