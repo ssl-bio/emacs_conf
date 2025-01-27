@@ -769,8 +769,13 @@ A tree layout file explorer for Emacs
     ;;Jumps to the parent level
     :bind (("C-x C-j" . dired-jump))
     :config
+    (setq dired-recursive-copies 'always)
+    (setq dired-recursive-deletes 'always)
+    (setq delete-by-moving-to-trash t)
     (setq dired-dwim-target t) ;try to guess where to copy...
 
+    :hook
+    (dired-mode . dired-hide-details-mode)
     :custom
     ;; Sorting folders and files
     ((dired-listing-switches "-agho --group-directories-first"))
@@ -827,23 +832,35 @@ A tree layout file explorer for Emacs
     (define-key dired-mode-map "^" 'dired-single-up-directory)
     )
 
-  (use-package dired-open
-    :after dired
-    :straight (dired-open
-               :type git
-               :flavor melpa
-               :files ("dired-open.el" "dired-open-pkg.el")
-               :host github
-               :repo "Fuco1/dired-hacks")
-
-    :commands (dired dired-jump)
+  ;; dired-interface to trash bin
+  (use-package trashed
+    :straight (trashed :type git
+                       :host github
+                       :repo "shingo256/trashed")
+    :commands (trashed)
     :config
-    ;; Doesn't work as expected!
-    (add-to-list 'dired-open-functions #'dired-open-xdg t)
-    (setq dired-open-extensions '(("png" . "eom")
-                                  ("pdf" . "atril")
-                                  ))
+    (setq trashed-action-confirmer 'y-or-n-p)
+    (setq trashed-use-header-line t)
+    (setq trashed-sort-key '("Date deleted" . t))
+    (setq trashed-date-format "%Y-%m-%d %H:%M:%S")
     )
+  ;; (use-package dired-open
+  ;;   :after dired
+  ;;   :straight (dired-open
+  ;;     	     :type git
+  ;;     	     :flavor melpa
+  ;;     	     :files ("dired-open.el" "dired-open-pkg.el")
+  ;;     	     :host github
+  ;;     	     :repo "Fuco1/dired-hacks")
+
+  ;;   :commands (dired dired-jump)
+  ;;   :config
+  ;;   ;; Doesn't work as expected!
+  ;;   (add-to-list 'dired-open-functions #'dired-open-xdg t)
+  ;;   (setq dired-open-extensions '(("png" . "eom")
+  ;;                                 ("pdf" . "atril")
+  ;;                                 ))
+  ;;   )
 
   ;; (use-package dired-hide-dotfiles
   ;;   :ensure t
