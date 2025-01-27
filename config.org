@@ -1739,7 +1739,7 @@ It requires the installation of =mermaid-cli= via node.js. =npm install -g @merm
 ** Format code (Format-all)
 - [[[https://ianyepan.github.io/posts/format-all/][Home]]] [[[https://github.com/lassik/emacs-format-all-the-code][Github]]]
 /"Lets you auto-format source code in many languages using the same command for all languages"/
-- You have to make sure that you have the external formatter programs (See [[#sec:requirements-format-all][some external formaters]] [[https://github.com/lassik/emacs-format-all-the-code?tab=readme-ov-file#supported-languages][supported languages]])
+- You have to make sure that you have the external formatter programs (See [[* Some external formaters][some external formaters]] [[https://github.com/lassik/emacs-format-all-the-code?tab=readme-ov-file#supported-languages][supported languages]])
 - To format, =M-x format-all-region-or-buffer=
 - To auto-format on save use the minor mode, =mode format-all-mode=
 *** Some external formaters
@@ -1807,7 +1807,10 @@ Change the path for the anaconda (miniconda) installation accordingly
     :init
     (setq conda-anaconda-home my/anaconda-home
           conda-env-home-directory my/anaconda-venv)
-
+    ;; Activate the base environment
+    (setq conda-env-autoactivate-base t)
+    (with-eval-after-load 'conda
+      (conda-env-activate "base"))
     :config
     (conda-env-autoactivate-mode t)
     (conda-env-initialize-interactive-shells)
@@ -1833,11 +1836,17 @@ Change the path for the anaconda (miniconda) installation accordingly
           elpy-rpc-virtualenv-path  'current
           python-shell-virtualenv-root my/anaconda-venv
           elpy-rpc-virtualenv-path  my/anaconda-venv)
+    ;; (setq elpy-rpc-python-command "python")
     )
 #+end_src
 :END:
 *** R
 **** ESS
+- =ess-indent-level=: Sets the number of spaces for basic indentation.
+- =ess-continued-statement-offset=: Controls the offset for continued statements.
+- =ess-brace-offset=: Controls the indentation of braces.
+- =ess-arg-function-offset=: Adjusts indentation for arguments in function definitions.
+- =ess-expression-offset=: Handles indentation for multi-line expressions.
 :configuration:
 #+begin_src emacs-lisp
   (use-package ess
@@ -1846,10 +1855,21 @@ Change the path for the anaconda (miniconda) installation accordingly
                                                                                                       :exclude "etc/other") "ess-pkg.el")
                    :host github
                    :repo "emacs-ess/ESS")
+    :config
+    (defun ess-insert-pipe ()
+      "Insert the pipe operator |>."
+      (interactive)
+      (insert "|>"))
     :bind
     ("M--" . ess-insert-assign) ;; Arrow to when typing underscore
-    ;; :hook
-    ;; (ess-r-mode . hs-minor-mode)
+    ("C-|" . ess-insert-pipe)
+    :hook
+    (ess-r-mode . (lambda ()
+                    (setq ess-indent-level 2)
+                    (setq ess-continued-statement-offset 2)
+                    (setq ess-brace-offset 0)
+                    (setq ess-arg-function-offset 2)
+                    (setq ess-expression-offset 0)))
     )
 #+end_src
 :END:
