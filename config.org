@@ -1860,17 +1860,32 @@ Change the path for the anaconda (miniconda) installation accordingly
       "Insert the pipe operator |>."
       (interactive)
       (insert "|>"))
+    (defun my/ess-indent-setup ()
+      "Custom indentation setup for ESS."
+      (setq-local ess-indent-offset 2)               ;; Main indentation level
+      (setq-local ess-continued-statement-offset 2)  ;; Continuation lines
+      (setq-local ess-brace-offset 0)                ;; Braces
+      (setq-local ess-arg-function-offset 2)         ;; Function arguments
+      (setq-local ess-expression-offset 0))          ;; Other expressions
+    :hook
+    (ess-mode . my/ess-indent-setup)
+
     :bind
     ("M--" . ess-insert-assign) ;; Arrow to when typing underscore
     ("C-|" . ess-insert-pipe)
-    :hook
-    (ess-r-mode . (lambda ()
-                    (setq ess-indent-level 2)
-                    (setq ess-continued-statement-offset 2)
-                    (setq ess-brace-offset 0)
-                    (setq ess-arg-function-offset 2)
-                    (setq ess-expression-offset 0)))
     )
+#+end_src
+:END:
+**** ESS-plot
+[[[https://github.com/DennieTeMolder/ess-plot][GitHub]]] Display ESS/R plots in a dedicated Emacs window
+:ess-plot:
+#+begin_src emacs-lisp
+  (use-package ess-plot
+  :straight (ess-plot :type git
+                      :host github
+                      :repo "DennieTeMolder/ess-plot"
+                      :files ("*.el" "etc"))
+  :defer t)
 #+end_src
 :END:
 **** Rmd
