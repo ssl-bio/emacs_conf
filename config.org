@@ -588,7 +588,10 @@ Set a buffer for a defined purpose =C-c d= =purpose-toggle-window-purpose-dedica
                               :host github
                               :repo "bmag/emacs-purpose")
       :config
-      (add-to-list 'purpose-user-mode-purposes '(org-mode . org))
+      ;; (add-to-list 'purpose-user-mode-purposes '(org-mode . org))
+      ;; (add-to-list 'purpose-user-mode-purposes '(ess-mode . R))
+      ;; (purpose-compile-user-configuration)
+      (purpose-mode)
       )
 #+end_src
 :END:
@@ -1867,13 +1870,41 @@ Change the path for the anaconda (miniconda) installation accordingly
       (setq-local ess-brace-offset 0)                ;; Braces
       (setq-local ess-arg-function-offset 2)         ;; Function arguments
       (setq-local ess-expression-offset 0))          ;; Other expressions
+
+    ;; Add '## sec:' to the beginning of the current line
+    (defun my/r-tag ()
+      "Add '## sec:' to the beginning of the current line if not already present."
+      (interactive)
+      (beginning-of-line)  ;; Move to the beginning of the line
+      (unless (looking-at-p "## sec:")  ;; Check if the line already starts with '## sec:'
+        (insert "## sec: ")))  ;; Insert the string if not present
+
+    ;; Run bm-bookmark-regexp with '## sec:' as default
+    (defun my/bm-r ()
+      "Automatically bookmark lines matching '## sec:'."
+      (interactive)
+      (save-excursion
+        (goto-char (point-min))
+        (while (search-forward "## sec:" nil t)
+  	(bm-bookmark-add))))
+
+    ;; Customize bookmark face (bm)
+    (defun my/bm-face ()
+      "Customize `bm-persistent-face` in ESS mode."
+      (set-face-attribute 'bm-persistent-face nil
+    			:underline t
+    			:background nil
+    			:foreground nil))
     :hook
     (ess-mode . my/ess-indent-setup)
+    (ess-mode . my/bm-face)
 
     :bind
     ("M--" . ess-insert-assign) ;; Arrow to when typing underscore
     ("C-|" . ess-insert-pipe)
-    )
+    ("C-x ;" . my/r-tag)
+    ("C-x b r" . my/bm-r)
+    ) 
 #+end_src
 :END:
 **** ESS-plot
@@ -1888,6 +1919,51 @@ Change the path for the anaconda (miniconda) installation accordingly
   :defer t)
 #+end_src
 :END:
+**** ESS-view-data
+To do tidyverse-like view and manipulate data in ESS and R. [[[https://github.com/ShuguangSun/ess-view-data][GitHub]]]
+:ess-view-data:
+#+begin_src emacs-lisp
+  (use-package ess-view-data
+    :straight (ess-view-data :type git
+                               :host github
+                               :repo "ShuguangSun/ess-view-data")
+    :defer t
+    )
+#+end_src
+:END:
+**** Rstudio-like layout
+#+begin_src emacs-lisp
+  (defun my/start-r-session ()
+    "Start an R session in the same directory as the current R script, without prompting."
+    (interactive)
+    (when (and (buffer-file-name) (string-match "\\.R$" (buffer-file-name)))
+      (let ((default-directory (file-name-directory (buffer-file-name)))
+            (ess-ask-for-ess-directory nil))  ;; Disable directory prompt
+        (R))))
+
+  (defun my/maximize-frame ()
+    "Maximize the current Emacs frame."
+    (interactive)
+    (set-frame-parameter nil 'fullscreen 'maximized))
+
+  (defun my/r4plots ()
+    "Maximize the window, start R in the current directory, run `my/r4plots` to load a specific window layout."
+    (interactive)
+    (progn
+      ;; Maximize the window if not already maximized
+      (my/maximize-frame)
+
+      ;; Start R in the same directory as the opened .R file
+      (my/start-r-session)
+
+      ;; Toggle showing plots on emacs
+      (ess-plot-toggle)
+
+      ;; Load the specified window layout using `purpose-load-window-layout`
+      (purpose-load-window-layout "r4plots")
+      )
+    )
+#+end_src
 **** Rmd
 :Rmarkdown:
 #+begin_src emacs-lisp
