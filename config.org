@@ -707,8 +707,10 @@ Helps manage window configurations (Different number of divisions/dimensions).
                        :repo "jaypei/emacs-neotree")
     :bind
     (:map global-map
-          ([f8] . 'neotree-toggle)
-          )
+  	([f8] . 'neotree-toggle)
+  	)
+    :config
+    (setq neo-theme (if (display-graphic-p) 'icons 'nerd))
     )
 #+end_src
 :END:
