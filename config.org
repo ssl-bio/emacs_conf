@@ -457,7 +457,10 @@
                           :host github
                           :repo "rainstormstudio/nerd-icons.el")
 
-    )
+      )
+  (use-package nerd-icons-dired
+    :straight (nerd-icons-dired :type git :host github :repo "rainstormstudio/nerd-icons-dired")
+    :hook (dired-mode . nerd-icons-dired-mode))
 #+end_src
 :END:
 ** Modeline
@@ -710,7 +713,7 @@ Helps manage window configurations (Different number of divisions/dimensions).
   	([f8] . 'neotree-toggle)
   	)
     :config
-    (setq neo-theme (if (display-graphic-p) 'icons 'nerd))
+    (setq neo-theme (if (display-graphic-p) 'nerd-icons))
     )
 #+end_src
 :END:
@@ -787,14 +790,14 @@ A tree layout file explorer for Emacs
     )
 
   ;; Use icons for folders and files
-  (use-package all-the-icons-dired
-    :after dired
-    :straight (all-the-icons-dired :type git
-                                   :flavor melpa
-                                   :host github
-                                   :repo "wyuenho/all-the-icons-dired")
-    :hook (dired-mode . all-the-icons-dired-mode)
-    )
+  ;; (use-package all-the-icons-dired
+  ;;   :after dired
+  ;;   :straight (all-the-icons-dired :type git
+  ;;                         	 :flavor melpa
+  ;;                         	 :host github
+  ;;                         	 :repo "wyuenho/all-the-icons-dired")
+  ;;   :hook (dired-mode . all-the-icons-dired-mode)
+  ;;   )
 
   ;;Dired narrow allows filter by pattern, regex
   (use-package dired-narrow
