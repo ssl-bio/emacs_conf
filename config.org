@@ -268,10 +268,10 @@
 :cycle-through-themes:
 #+begin_src emacs-lisp
   ;; List of favorite themes
-  (setq my-dark-themes '("doom-fairy-floss" "ef-maris-dark" "doom-gruvbox"
-                         "kaolin-eclipse" "kaolin-temple" "material"))
-  (setq my-light-themes '("ef-duo-light" "ef-arbutus" "doom-oksolar-light"
-                          "kaolin-mono-light" "ef-melissa-light" "ef-cyprus"))
+  (setq my-dark-themes '("material" "doom-fairy-floss" "ef-maris-dark"
+                         "doom-gruvbox" "kaolin-eclipse" "kaolin-temple" ))
+  (setq my-light-themes '("doom-oksolar-light" "ef-duo-light" "ef-cyprus"
+                          "kaolin-mono-light" "ef-melissa-light" "ef-arbutus"))
   (setq my-write-themes '("almost-mono-cream" "monotropic" "doom-homage-white"
                            "almost-mono-gray" ))
   ;; Cycle through themes
