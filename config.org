@@ -1257,14 +1257,13 @@ Change the path for the anaconda (miniconda) installation accordingly
                      :repo "necaris/conda.el")
     :init
     (setq conda-anaconda-home my/anaconda-home
-          conda-env-home-directory my/anaconda-venv)
-
+          conda-env-home-directory my/anaconda-venv
+          conda-env-autoactivate-base t)
     :config
-    (conda-env-autoactivate-mode t)
+    ;; Activate the base environment and initialize conda features
+    (conda-env-activate "base")
     (conda-env-initialize-interactive-shells)
     (conda-env-initialize-eshell)
-    (conda-env-autoactivate-mode t)
-
     :hook
     (python-mode . anaconda-mode)
     (python-mode . anaconda-eldoc-mode)
