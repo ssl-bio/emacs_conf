@@ -2362,6 +2362,30 @@ Vundo (visual undo) displays the undo history as a tree and lets you move in the
     )
 #+end_src
 :END:
+** Move-text
+:move-text:
+#+begin_src emacs-lisp
+  (use-package move-text
+    :straight (move-text :type git
+                         :host github
+                         :repo "emacsfodder/move-text")
+    ;; :config
+    ;; (defun indent-region-advice (&rest ignored)
+    ;;   (let ((deactivate deactivate-mark))
+    ;;     (if (region-active-p)
+    ;; 	  (indent-region (region-beginning) (region-end))
+    ;; 	(indent-region (line-beginning-position) (line-end-position)))
+    ;;     (setq deactivate-mark deactivate)))
+
+    ;; (advice-add 'move-text-up :after 'indent-region-advice)
+    ;; (advice-add 'move-text-down :after 'indent-region-advice)
+    :bind
+    (:map ess-r-mode-map
+          ("M-<up>" . move-text-up)
+          ("M-<down>" . move-text-down))
+    )
+#+end_src
+:END:
 * Writing
 ** Spelling
 *** Hunspell / Flyspell / Flyspell correct
