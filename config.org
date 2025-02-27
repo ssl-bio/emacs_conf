@@ -120,13 +120,13 @@
             "~/Documentos"
           "other")))
   ;; mermaid-cli path
-  (setq ob-mermaid-cli-path  my/mmdc-path)
+  ;; (setq ob-mermaid-cli-path  my/mmdc-path)
 
   ;; org-roam directory
-  (setq my/org-roam-dir "~/Documents/Org-files/Org-roam")
+  (setq my/org-roam-dir (concat my/docs-dir "/Org-files/Org-roam"))
 
-    ;; org-noter directory
-    (setq my/org-noter-dir "~/Documents/Org-files/Org_noter")
+  ;; org-noter directory
+  (setq my/org-noter-dir (concat my/docs-dir "/Apuntes/Org_noter"))
 
     ;; Bibtex files
     (setq
@@ -412,7 +412,7 @@
 
   (advice-add 'enable-theme :after #'run-after-enable-theme-hook)
 
-  (add-hook 'after-enable-theme-hook #'fontaine-apply-current-preset)
+  ;; (add-hook 'after-enable-theme-hook #'fontaine-apply-current-preset)
   (add-hook 'after-enable-theme-hook #'customize-org-faces)
 #+end_src
 :END:
@@ -573,7 +573,10 @@ Set a buffer for a defined purpose =C-c d= =purpose-toggle-window-purpose-dedica
                               :host github
                               :repo "bmag/emacs-purpose")
       :config
-      (add-to-list 'purpose-user-mode-purposes '(org-mode . org))
+      ;; (add-to-list 'purpose-user-mode-purposes '(org-mode . org))
+      ;; (add-to-list 'purpose-user-mode-purposes '(ess-mode . R))
+      ;; (purpose-compile-user-configuration)
+      (purpose-mode)
       )
 #+end_src
 :END:
@@ -1180,8 +1183,7 @@ Convenient package to create *scratch* buffers that are based on the current buf
 *** Configuration
 #+begin_src emacs-lisp
   (use-package format-all
-      :straight (format-all :type git
-                          :flavor melpa
+    :straight (format-all :type git
                           :host github
                           :repo "lassik/emacs-format-all-the-code")
       :commands format-all-mode
@@ -1528,7 +1530,6 @@ Setup terminal emulators, [[https://www.emacswiki.org/emacs/AnsiTermHints][ansi-
              "]"
              (if (= (user-uid) 0) "# " "$ "))))
     (add-hook 'eshell-mode-hook (lambda () (setenv "TERM" "xterm-256color")))
-    ;;
     (global-set-key (kbd "<s-return>") 'eshell)
 
     ;; https://karthinks.com/software/jumping-directories-in-eshell/
@@ -1601,6 +1602,8 @@ Setup terminal emulators, [[https://www.emacswiki.org/emacs/AnsiTermHints][ansi-
     :hook
     ((sh-mode python-mode
               ess-r-mode css-mode js-mode) . ts-fold-indicators-mode)
+    :bind
+    (("C-c ]" . ts-fold-toggle))
     )
 #+end_src
 * Pdf
