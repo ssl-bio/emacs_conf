@@ -1923,10 +1923,11 @@ Change the path for the anaconda (miniconda) installation accordingly
 :ess-plot:
 #+begin_src emacs-lisp
   (use-package ess-plot
-    :straight (ess-plot :type git
-  		      :host github
-  		      :repo "DennieTeMolder/ess-plot")
-    :defer t)
+  :straight (ess-plot :type git
+                      :host github
+                      :repo "DennieTeMolder/ess-plot"
+                      :files ("*.el" "etc"))
+  :defer t)
 #+end_src
 :END:
 **** ESS-view-data
