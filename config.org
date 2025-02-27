@@ -439,7 +439,10 @@
                           :host github
                           :repo "rainstormstudio/nerd-icons.el")
 
-    )
+      )
+  (use-package nerd-icons-dired
+    :straight (nerd-icons-dired :type git :host github :repo "rainstormstudio/nerd-icons-dired")
+    :hook (dired-mode . nerd-icons-dired-mode))
 #+end_src
 :END:
 ** Modeline
@@ -676,6 +679,8 @@ Helps manage window configurations (Different number of divisions/dimensions).
     (:map global-map
           ([f8] . 'neotree-toggle)
           )
+    :config
+    (setq neo-theme (if (display-graphic-p) 'nerd-icons))
     )
 #+end_src
 :END:
@@ -739,8 +744,13 @@ A tree layout file explorer for Emacs
     ;;Jumps to the parent level
     :bind (("C-x C-j" . dired-jump))
     :config
+    (setq dired-recursive-copies 'always)
+    (setq dired-recursive-deletes 'always)
+    (setq delete-by-moving-to-trash t)
     (setq dired-dwim-target t) ;try to guess where to copy...
 
+    :hook
+    (dired-mode . dired-hide-details-mode)
     :custom
     ;; Sorting folders and files
     ((dired-listing-switches "-agho --group-directories-first"))
@@ -748,14 +758,14 @@ A tree layout file explorer for Emacs
     )
 
   ;; Use icons for folders and files
-  (use-package all-the-icons-dired
-    :after dired
-    :straight (all-the-icons-dired :type git
-                                   :flavor melpa
-                                   :host github
-                                   :repo "wyuenho/all-the-icons-dired")
-    :hook (dired-mode . all-the-icons-dired-mode)
-    )
+  ;; (use-package all-the-icons-dired
+  ;;   :after dired
+  ;;   :straight (all-the-icons-dired :type git
+  ;;                         	 :flavor melpa
+  ;;                         	 :host github
+  ;;                         	 :repo "wyuenho/all-the-icons-dired")
+  ;;   :hook (dired-mode . all-the-icons-dired-mode)
+  ;;   )
 
   ;;Dired narrow allows filter by pattern, regex
   (use-package dired-narrow
@@ -798,23 +808,35 @@ A tree layout file explorer for Emacs
     (define-key dired-mode-map "^" 'dired-single-up-directory)
     )
 
-  (use-package dired-open
-    :after dired
-    :straight (dired-open
-               :type git
-               :flavor melpa
-               :files ("dired-open.el" "dired-open-pkg.el")
-               :host github
-               :repo "Fuco1/dired-hacks")
-
-    :commands (dired dired-jump)
+  (use-package trashed
+    :straight (trashed :type git
+                       :host github
+                       :repo "shingo256/trashed")
+    :commands (trashed)
     :config
-    ;; Doesn't work as expected!
-    (add-to-list 'dired-open-functions #'dired-open-xdg t)
-    (setq dired-open-extensions '(("png" . "eom")
-                                  ("pdf" . "atril")
-                                  ))
+    (setq trashed-action-confirmer 'y-or-n-p)
+    (setq trashed-use-header-line t)
+    (setq trashed-sort-key '("Date deleted" . t))
+    (setq trashed-date-format "%Y-%m-%d %H:%M:%S")
     )
+
+  ;; (use-package dired-open
+  ;;     :after dired
+  ;;     :straight (dired-open
+  ;;   	     :type git
+  ;;   	     :flavor melpa
+  ;;   	     :files ("dired-open.el" "dired-open-pkg.el")
+  ;;   	     :host github
+  ;;   	     :repo "Fuco1/dired-hacks")
+
+  ;;   :commands (dired dired-jump)
+  ;;   :config
+  ;;   ;; Doesn't work as expected!
+  ;;   (add-to-list 'dired-open-functions #'dired-open-xdg t)
+  ;;   (setq dired-open-extensions '(("png" . "eom")
+  ;;                                 ("pdf" . "atril")
+  ;;                                 ))
+  ;;   )
 
   ;; (use-package dired-hide-dotfiles
   ;;   :ensure t
