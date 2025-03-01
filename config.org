@@ -323,7 +323,7 @@
   ;; Window height
   (add-to-list 'default-frame-alist '(height . 45))
   ;; Window Width
-  (add-to-list 'default-frame-alist '(width . 90)) 
+  (add-to-list 'default-frame-alist '(width . 90))
 #+end_src
 :END:
 ** Fonts
@@ -1607,9 +1607,9 @@ Take notes from =pdf= documents (books, papers) in org mode
 :org-reveal:
 #+begin_src emacs-lisp
   (use-package ox-reveal
-    :straight (ox-reveal :type git 
-                         :flavor melpa 
-                         :host github 
+    :straight (ox-reveal :type git
+                         :flavor melpa
+                         :host github
                          :repo "yjwen/org-reveal")
     ;; Load only when these commands are called
     :commands (org-reveal-export-to-html
@@ -1846,11 +1846,17 @@ Change the path for the anaconda (miniconda) installation accordingly
     :init
     (elpy-enable)
     (setq python-shell-interpreter "python"
-          elpy-rpc-completion-backend "corfu"
-          elpy-rpc-virtualenv-path  'current
-          python-shell-virtualenv-root my/anaconda-venv
-          elpy-rpc-virtualenv-path  my/anaconda-venv)
+          elpy-rpc-backend "jedi"               ;; Use jedi as the backend
+          elpy-rpc-virtualenv-path 'current
+          python-shell-virtualenv-root my/anaconda-venv)
+
+    ;; If you want to use a specific Python command
     ;; (setq elpy-rpc-python-command "python")
+
+    ;; Use company instead of corfu
+    (setq elpy-company-backend 'elpy-company-backend)
+    :hook
+    (python-mode . (lambda () (corfu-mode -1)))
     )
 #+end_src
 :END:
@@ -1906,16 +1912,23 @@ Change the path for the anaconda (miniconda) installation accordingly
     			:underline t
     			:background nil
     			:foreground nil))
+
+    ;; Define keybindings
+    (with-eval-after-load 'ess-r-mode
+      ;; For editing R files
+      (define-key ess-r-mode-map (kbd "M--") 'ess-insert-assign)
+      (define-key ess-r-mode-map (kbd "C-|") 'ess-insert-pipe)
+      (define-key ess-r-mode-map (kbd "C-x ;") 'my/r-tag)
+      (define-key ess-r-mode-map (kbd "C-x .") 'my/bm-r)
+
+      ;; For R terminal/REPL
+      (define-key inferior-ess-r-mode-map (kbd "M--") 'ess-insert-assign)
+      (define-key inferior-ess-r-mode-map (kbd "C-|") 'ess-insert-pipe))
+
     :hook
     (ess-mode . my/ess-indent-setup)
     (ess-mode . my/bm-face)
-
-    :bind
-    ("M--" . ess-insert-assign) ;; Arrow to when typing underscore
-    ("C-|" . ess-insert-pipe)
-    ("C-x ;" . my/r-tag)
-    ("C-x b r" . my/bm-r)
-    ) 
+    )
 #+end_src
 :END:
 **** ESS-plot
@@ -1925,8 +1938,7 @@ Change the path for the anaconda (miniconda) installation accordingly
   (use-package ess-plot
   :straight (ess-plot :type git
                       :host github
-                      :repo "DennieTeMolder/ess-plot"
-                      :files ("*.el" "etc"))
+                      :repo "DennieTeMolder/ess-plot")
   :defer t)
 #+end_src
 :END:

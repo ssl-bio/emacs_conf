@@ -11,6 +11,23 @@ Configuration files to customize the aspect of emacs and extend its default capa
 
 ### Dependencies
 
+-   **Nerd fonts symbols:** [\*Required\*] Needed for using icons on the `modeline`, `dired mode`, `treemacs`, and `neotree`. The code below will download and install `NerdFontsSymbols` on a Linux system. It will download the fonts from <https://github.com/ryanoasis/nerd-fonts/releases> using version 3.3.0. *The code should be run as a super user. Modify it accordingly.*
+    
+    ```bash
+    # Check: https://github.com/ryanoasis/nerd-fonts/releases
+    # Preview: https://www.nerdfonts.com/font-downloads
+    nerd_url='https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/NerdFontsSymbolsOnly.tar.xz'
+    font_dir="/usr/share/fonts/truetype"
+    if [ ! -f NerdFontsSymbolsOnly.tar.xz ]; then
+        wget --tries=2 --retry-connrefused --waitretry=10 "$nerd_url"
+    fi
+    mkdir SymbolsNerdFont
+    tar -xf NerdFontsSymbolsOnly.tar.xz -C "SymbolsNerdFont"
+    mv SymbolsNerdFont "$font_dir"
+    
+    # Rebuild font cache
+    fc-cache -f -v
+    ```
 -   **Pandoc:** [\*Recommended\*] Required for exporting (converting) org files to other formats (*e.g.* HTML, markdown, etc). See pandoc's official website for [installation instructions](https://pandoc.org/installing.html).
 -   **Git**: [\*Recommended\*] Distributed version control system.
 -   **Zoxide**: [\*Optional\*] Provides a better way to navigate directories [[homepage](https://github.com/ajeetdsouza/zoxide?tab=readme-ov-file)]. The emacs package, [zoxide.el](https://gitlab.com/Vonfry/zoxide.el), allows a similar functionality using dired.
