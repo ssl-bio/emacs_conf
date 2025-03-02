@@ -1390,14 +1390,23 @@ Change the path for the anaconda (miniconda) installation accordingly
                           :underline t
                           :background nil
                           :foreground nil))
+
+    ;; Define keybindings
+    (with-eval-after-load 'ess-r-mode
+      ;; For editing R files
+      (define-key ess-r-mode-map (kbd "M--") 'ess-insert-assign)
+      (define-key ess-r-mode-map (kbd "C-|") 'ess-insert-pipe)
+      (define-key ess-r-mode-map (kbd "C-x ;") 'my/r-tag)
+      (define-key ess-r-mode-map (kbd "C-x .") 'my/bm-r)
+
+      ;; For R terminal/REPL
+      (define-key inferior-ess-r-mode-map (kbd "M--") 'ess-insert-assign)
+      (define-key inferior-ess-r-mode-map (kbd "C-|") 'ess-insert-pipe))
+
     :hook
     (ess-mode . my/ess-indent-setup)
     (ess-mode . my/ess-bm-face-settings)
     (ess-r-mode . my-ess-hook)
-    :bind
-    ("M--" . ess-insert-assign) ;; Arrow to when typing underscore("C-|" . ess-insert-pipe)
-    ("C-x ;" . my/r-tag)
-    ("C-x b r" . my/bm-r)
     )
 #+end_src
 :END:
