@@ -576,6 +576,7 @@ Set a buffer for a defined purpose =C-c d= =purpose-toggle-window-purpose-dedica
       ;; (add-to-list 'purpose-user-mode-purposes '(org-mode . org))
       ;; (add-to-list 'purpose-user-mode-purposes '(ess-mode . R))
       ;; (purpose-compile-user-configuration)
+      (add-to-list 'purpose-disabled-commands 'find-file)
       (purpose-mode)
       )
 #+end_src
@@ -808,6 +809,7 @@ A tree layout file explorer for Emacs
     (define-key dired-mode-map "^" 'dired-single-up-directory)
     )
 
+  ;; dired-interface to trash bin
   (use-package trashed
     :straight (trashed :type git
                        :host github
@@ -1967,7 +1969,7 @@ It is necessary to load [[https://superuser.com/questions/896741/how-do-i-config
     (dolist (class-def class-definitions)
       (let ((class (car class-def))
             (commands (cdr class-def)))
-        (unless (cl-find class org-latex-classes :key 'car :test 'equal)
+        (unless (cl-find class org-latex-classes :key #'car :test #'equal)
           (setq org-latex-classes
                 (append org-latex-classes
                         (list (cons class commands))))))))
