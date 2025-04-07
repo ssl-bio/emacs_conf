@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: html_attribute
+# key: ,html_attr
+# contributor: ssl
+# --
+#+ATTR_HTML: :class $1
+$0

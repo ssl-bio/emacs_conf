@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: table
+# key: ,tbl
+# contributor: ssl
+# --
+#+caption: ${1: caption of the table}
+#+label: tab:$2
+#+name: tab:$2
+$0

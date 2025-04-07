@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: reveal_header
+# key: ,r-header
+# contributor: https://ssl-blog.netlify.app/posts/posts/emacs/revealjs-emacs-2/part-2_snippets
+# --
+#+Title: ${1:Presentation title}
+#+Author: ${2:Author}
+#+Date: ${3:Date}
+
+#+OPTIONS: timestamp:nil ^:{} num:nil toc:nil
+$0

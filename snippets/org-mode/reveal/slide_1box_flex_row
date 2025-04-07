@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: slide_1box_flex_row
+# key: ,sl1boxflex-row
+# --
+** ${1:Title}
+:PROPERTIES:
+:REVEAL_EXTRA_ATTR: class="h-slide bg-color iborder-2x ${2:title-sm}"
+:END:
+#+ATTR_HTML: :class flex flex-row flex-wrap max-w-full justify-evenly items-center bg-gray iborder-3x ${3:text-body}
+#+begin_h-content
+${0:Slide content}
+#+end_h-content

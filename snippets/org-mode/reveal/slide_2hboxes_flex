@@ -1,0 +1,21 @@
+# -*- mode: snippet -*-
+# name: slide_2hboxes_flex
+# key: ,sl2hboxes_flex
+# contributor: https://ssl-blog.netlify.app/posts/posts/emacs/revealjs-emacs-2/part-2_snippets
+# --
+** ${1:Title}
+:PROPERTIES:
+:REVEAL_EXTRA_ATTR: class="h-slide bg-color iborder-2x ${2:title-sm}"
+:END:
+#+ATTR_HTML: :class flex justify-evenly flex-wrap gap-4 ${3:text-body}
+#+begin_flex-row
+#+ATTR_HTML: :class grow ${4:max-w-slide-045} h-content iborder-3x
+#+begin_bg-gray
+${0:Right box}
+#+end_bg-gray
+
+#+ATTR_HTML: :class grow ${5:max-w-slide-045} h-content iborder-3x
+#+begin_bg-gray
+
+#+end_bg-gray
+#+end_flex-row

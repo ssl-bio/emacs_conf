@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: reveal_html_inline
+# key: ,r-htmlinline
+# contributor: https://ssl-blog.netlify.app/posts/posts/emacs/revealjs-emacs-2/part-2_snippets
+# --
+#+REVEAL_HTML: <${1: div} ${2: Key}="${3: Value}">$0</$1>

@@ -1,0 +1,21 @@
+# -*- mode: snippet -*-
+# name: slide_2vboxes_grid
+# key: ,sl2vboxes_grid
+# contributor: https://ssl-blog.netlify.app/posts/posts/emacs/revealjs-emacs-2/part-2_snippets
+# --
+** ${1:Title}
+:PROPERTIES:
+:REVEAL_EXTRA_ATTR: class="h-slide bg-color iborder-2x ${2:title-sm}"
+:END:
+#+ATTR_HTML: :class grid grid-rows-2 gap-4 ${3:text-body}
+#+begin_h-content
+#+ATTR_HTML: :class iborder-3x
+#+begin_bg-gray
+${0:Top box}
+#+end_bg-gray
+
+#+ATTR_HTML: :class iborder-3x
+#+begin_bg-gray
+
+#+end_bg-gray
+#+end_h-content

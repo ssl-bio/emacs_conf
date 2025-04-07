@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: slide_1box_flex_col
+# key: ,sl1boxflex-col
+# contributor: https://ssl-blog.netlify.app/posts/posts/emacs/revealjs-emacs-2/part-2_snippets
+# --
+** ${1:Title}
+:PROPERTIES:
+:REVEAL_EXTRA_ATTR: class="h-slide bg-color iborder-2x ${2:title-sm}"
+:END:
+#+ATTR_HTML: :class flex flex-col justify-evenly bg-gray iborder-3x ${3:text-body}
+#+begin_h-content
+${0:Slide content}
+#+end_h-content

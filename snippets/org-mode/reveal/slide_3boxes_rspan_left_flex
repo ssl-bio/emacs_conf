@@ -1,0 +1,26 @@
+# -*- mode: snippet -*-
+# name: slide_3boxes_rspan_left_flex
+# key: ,sl3boxes_rspan_left_flex
+# contributor: https://ssl-blog.netlify.app/posts/posts/emacs/revealjs-emacs-2/part-2_snippets
+# --
+** ${1:Title}
+:PROPERTIES:
+:REVEAL_EXTRA_ATTR: class="h-slide bg-color iborder-2x ${2:title-sm}"
+:END:
+#+ATTR_HTML: :class flex flex-col content-center justify-evenly content-center flex-wrap gap-4 ${3:text-body}
+#+begin_h-content
+#+ATTR_HTML: :class grow ${4:max-w-slide-045} h-content iborder-3x 
+#+begin_bg-gray
+${0:Top left box}
+#+end_bg-gray
+
+#+ATTR_HTML: :class grow ${5:max-w-slide-045} max-h-content-05 iborder-3x
+#+begin_bg-gray
+
+#+end_bg-gray
+
+#+ATTR_HTML: :class grow $5 max-h-content-05 iborder-3x
+#+begin_bg-gray
+
+#+end_bg-gray
+#+end_h-content

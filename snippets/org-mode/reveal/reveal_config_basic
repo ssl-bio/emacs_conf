@@ -1,0 +1,20 @@
+# -*- mode: snippet -*-
+# name: reveal_config_basic
+# key: ,r-conf-basic
+# contributor: https://ssl-blog.netlify.app/posts/posts/emacs/revealjs-emacs-2/part-2_snippets
+# --
+:Configuration:
+#+REVEAL_ROOT: ${1:https://cdn.jsdelivr.net/npm/reveal.js@5.1.0}
+#+REVEAL_INIT_OPTIONS: width:1200, height:800, margin: 0.1, minScale:0.2, maxScale:2.5, transition: '${2:$$(yas-choose-value '("none" "fade" "slide" "convex" "concave" "zoom"))}', progress:true, history:true, center:true, mouseWheel:false, menu:{themes:true, themesPath:'${3:https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/}', transitions:true, markers:true, custom: false, hideMissingTitles:true}
+
+#+REVEAL_HLEVEL: ${4:1}
+#+REVEAL_THEME: ${5:$$(yas-choose-value '("beige" "black-contrast" "black" "blood" "dracula" "league" "moon" "night" "serif" "simple" "sky" "solarized" "white_contrast_compact_verbatim_headers" "white-contrast" "white"))}
+
+#+REVEAL_HEAD_PREAMBLE: <meta name="description" content="${6:Title}">
+#+REVEAL_POSTAMBLE: <p>Created by ${7:Author}</p>
+
+#+REVEAL_PLUGINS: (${8:notes})
+
+#+REVEAL_EXTRA_CSS: ${9:./personal/css/custom_tailwind.css}
+:END:
+$0
