@@ -2319,11 +2319,11 @@ Setup terminal emulators, [[https://www.emacswiki.org/emacs/AnsiTermHints][ansi-
     (org-mode . wrap-region-mode)
 
     :config
-    (wrap-region-add-wrapper "=" "=" nil 'org-mode) ; select region, hit = then region -> =region= in org-mode
-    (wrap-region-add-wrapper "*" "*" nil 'org-mode) ; select region, hit * then region -> *region* in org-mode
-    (wrap-region-add-wrapper "/" "/" nil 'org-mode) ; select region, hit / then region -> /region/ in org-mode
-    (wrap-region-add-wrapper "_" "_" nil 'org-mode) ; select region, hit _ then region -> _region_ in org-mode
-    (wrap-region-add-wrapper "+" "+" nil 'org-mode) ; select region, hit + then region -> +region+ in org-mode
+    (wrap-region-add-wrapper "=" "=" nil 'org-mode)
+    (wrap-region-add-wrapper "*" "*" nil 'org-mode)
+    (wrap-region-add-wrapper "/" "/" nil 'org-mode)
+    (wrap-region-add-wrapper "_" "_" nil 'org-mode)
+    (wrap-region-add-wrapper "+" "+" nil 'org-mode)
     )
 #+end_src
 :END:
