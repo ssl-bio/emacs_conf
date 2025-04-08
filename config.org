@@ -1845,19 +1845,46 @@ Change the path for the anaconda (miniconda) installation accordingly
                     :repo "jorgenschaefer/elpy")
     :init
     (elpy-enable)
-    (setq python-shell-interpreter "python"
-          elpy-rpc-backend "jedi"               ;; Use jedi as the backend
-          elpy-rpc-virtualenv-path 'current
-          python-shell-virtualenv-root my/anaconda-venv)
-
-    ;; If you want to use a specific Python command
-    ;; (setq elpy-rpc-python-command "python")
 
     ;; Use company instead of corfu
     (setq elpy-company-backend 'elpy-company-backend)
+
+    :config
+    (define-key elpy-mode-map (kbd "C-c C-e") nil)
+    (define-key elpy-mode-map (kbd "C-c C-y C-e") nil)
+
     :hook
     (python-mode . (lambda () (corfu-mode -1)))
+    (elpy-mode . (lambda ()
+                   (local-set-key (kbd "C-c C-;") 'elpy-multiedit-python-symbol-at-point)
+                   (local-set-key (kbd "M-<return>") 'elpy-shell-send-statement-and-step)))
     )
+#+end_src
+:END:
+**** Jupyter notebooks
+:ein:
+#+begin_src emacs-lisp
+  (use-package ein
+    :straight (ein :type git
+                   :host github
+                   :repo "millejoh/emacs-ipython-notebook")
+    :config
+    ;; (setq jupyter-server-use-subcommand server)
+    )
+#+end_src
+:END:
+*** Python (venv)
+:venv:
+#+begin_src emacs-lisp
+  (use-package pyvenv
+    :straight (pyvenv :type git
+                      :host github
+                        :repo "jorgenschaefer/pyvenv")
+    :config
+    (add-hook 'python-mode-hook
+          (lambda ()
+            (when (file-exists-p "./venv/bin/activate")
+              (pyvenv-activate (expand-file-name "./venv"))))))
 #+end_src
 :END:
 *** R
