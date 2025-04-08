@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: reveal_config_custom
+# key: ,r-conf-custom
+# contributor: https://ssl-blog.netlify.app/posts/posts/emacs/revealjs-emacs-2/part-2_snippets
+# --
+${1:#+REVEAL_EXTRA_SCRIPT_SRC: ./personal/js/icustom.js}
+$0

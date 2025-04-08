@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: properties
+# key: ,prop
+# contributor: ssl
+# --
+:PROPERTIES:
+:${1:Key}: ${2:Value}
+:END:
+$0

@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: reveal_properties
+# key: ,r-prop
+# contributor: https://ssl-blog.netlify.app/posts/posts/emacs/revealjs-emacs-2/part-2_snippets
+# --
+
+:PROPERTIES:
+:REVEAL_EXTRA_ATTR: class="${1:h-slide bg-color iborder-2x}"
+:END:
+$0

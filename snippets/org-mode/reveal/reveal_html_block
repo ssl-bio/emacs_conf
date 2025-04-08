@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: reveal_html_block
+# key: ,r-htmlblock
+# contributor: https://ssl-blog.netlify.app/posts/posts/emacs/revealjs-emacs-2/part-2_snippets
+# --
+#+REVEAL_HTML: <div class="$1">
+$0
+#+REVEAL_HTML: </div>

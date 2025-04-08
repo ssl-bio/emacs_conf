@@ -1180,6 +1180,8 @@ Allow completion based on space-separated tokens, out of order.
     (yas-reload-all)
     :hook
     ((org-mode LaTeX-mode web-mode python-mode ess-r-mode c++-mode cc-mode sh-mode) . yas-minor-mode)
+    :bind (:map yas-minor-mode-map
+         ("C-x y i" . 'yas-insert-snippet))
     )
 #+end_src
 :END:
@@ -1612,11 +1614,71 @@ Take notes from =pdf= documents (books, papers) in org mode
                          :host github
                          :repo "yjwen/org-reveal")
     ;; Load only when these commands are called
-    :commands (org-reveal-export-to-html
-               org-reveal-publish-to-reveal)
-    ;; :init
-    ;; (require 'ox-reveal)
+    ;; :commands (org-reveal-export-to-html
+    ;;            org-reveal-publish-to-reveal)
+    :init
+    (require 'ox-reveal)
     )
+#+end_src
+:END:
+:custom-functions1:
+#+begin_src emacs-lisp
+  (defun my/dim-block ()
+        "Dim lines starting with '#+begin_' or '#+end_' using the 'org-block-end-line' face."
+        (interactive)
+        (let ((block-pattern "^ *#\\+\\(?:begin\\|end\\)_.*$"))
+          (highlight-regexp block-pattern 'org-block-end-line)))
+
+      (defun my/dim-meta ()
+        "Dim lines starting with '#+ATTR' using the 'org-meta-line' face."
+        (interactive)
+        (let ((attr-pattern "^ *#\\+ATTR.*$"))
+          (unhighlight-regexp attr-pattern)
+          (highlight-regexp attr-pattern 'org-meta-line)))
+
+      (defun my/hide-meta ()
+        "Dim lines starting with '#+ATTR' using the 'org-hide' face."
+        (interactive)
+        (let ((my-pattern "^ *#\\+ATTR.*$"))
+          (unhighlight-regexp my-pattern)
+          (highlight-regexp my-pattern 'org-hide)))
+
+      (defun my/show-meta ()
+        "Dim lines starting with '#+ATTR;; ' using the 'org-hide' face."
+        (interactive)
+        (let ((pattern "^ *#\\+ATTR.*$"))
+          (unhighlight-regexp pattern)))
+#+end_src
+:END:
+:custom-functions2:
+#+begin_src emacs-lisp
+  (defun my/generate-custom-ids ()
+        "Generate hierarchical CUSTOM_ID properties for Org headings with numbering reset within parents.
+    The first top-level heading starts at 2, and second-level headings start at 2 instead of 1."
+
+        (interactive)  ;; Level 1 starts here
+
+        (let ((header-ids (make-hash-table :test 'equal))) ;; Level 2 starts here (let binding)
+
+          (org-map-entries  ;; Level 3 starts here
+           (lambda ()
+
+           (let* ((level (org-current-level))
+                  (parent-id (when (> level 1)
+                                 (save-excursion
+                                   (org-up-heading-safe)
+                                   (org-entry-get nil "CUSTOM_ID"))))
+                  (parent-key (or parent-id "ROOT"))  ;; Use "ROOT" as a default key for top-level headings
+                  (initial-value (if (= level 2) 1 0)) ;; Start second-level headings at 2
+                  (siblings (gethash parent-key header-ids
+                                       (if (equal parent-key "ROOT") 1 initial-value)))
+                  (current-number (1+ siblings))
+                  (custom-id (if parent-id
+                                   (format "%s-%d" parent-id current-number)  ;; Child inherits parent numbering
+                                 (number-to-string current-number))))  ;; Level 1 numbers independently
+
+               (puthash parent-key current-number header-ids)
+               (org-set-property "CUSTOM_ID" custom-id))))))
 #+end_src
 :END:
 ** Org-ref

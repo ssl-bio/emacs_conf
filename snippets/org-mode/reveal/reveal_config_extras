@@ -1,0 +1,19 @@
+# -*- mode: snippet -*-
+# name: reveal_config_extras
+# key: ,r-conf-extras
+# contributor: https://ssl-blog.netlify.app/posts/posts/emacs/revealjs-emacs-2/part-2_snippets
+# --
+#+REVEAL_PLUGINS: (${1:notes RevealMenu RevealCustomControls RevealPointer RevealDrawer})
+
+#+REVEAL_EXTRA_CSS: ./plugin_extra/customcontrols/style.css
+#+REVEAL_EXTRA_CSS: ./plugin_extra/drawer/drawer.css
+#+REVEAL_EXTRA_CSS: ./plugin_extra/pointer/pointer.css
+${2:#+REVEAL_EXTRA_CSS: https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css}
+${3:#+REVEAL_EXTRA_CSS: https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap}
+#+REVEAL_EXTRA_CSS: ${4:./personal/css/custom_tailwind.css}
+
+#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./plugin_extra/menu/menu.js
+#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./plugin_extra/customcontrols/plugin.js
+#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./plugin_extra/drawer/drawer.js
+#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./plugin_extra/pointer/pointer.js
+$0

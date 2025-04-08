@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: reveal_box
+# key: ,rbox
+# contributor: https://ssl-blog.netlify.app/posts/posts/emacs/revealjs-emacs-2/part-2_snippets
+# --
+#+ATTR_HTML: :class iborder-2x h-content-${1:$$(yas-choose-value '("09" "085" "08" "075" "07" "065" "06" "055" "05" "045" "04" "035" "03" "025" "02" "015" "0125" "01"))} flex flex-col justify-center
+#+begin_bg-color
+$0
+#+end_bg-color

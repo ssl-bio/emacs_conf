@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: html_tag
+# key: ,httag
+# contributor: ssl
+# --
+<${1:tag} ${2:optional property}>$3</$1>$0
