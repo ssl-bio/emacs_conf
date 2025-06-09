@@ -109,7 +109,7 @@
           "other")))
 
     (defvar my/anaconda-home conda-dir)
-    (defvar my/anaconda-venv (concat conda-dir "/envs"))
+    ;; (defvar my/anaconda-venv (concat conda-dir "/envs"))
     (defvar my/mmdc-path (concat conda-dir "/bin/mmdc"))
 
     ;; Bibtex paths and files
@@ -1287,17 +1287,44 @@ Change the path for the anaconda (miniconda) installation accordingly
                      :repo "necaris/conda.el")
     :init
     (setq conda-anaconda-home my/anaconda-home
-          conda-env-home-directory my/anaconda-venv
+          ;; conda-env-home-directory my/anaconda-venv
           conda-env-autoactivate-base t)
-    :config
-    ;; Activate the base environment and initialize conda features
+    ;; Optional: activate base env by default
     (conda-env-activate "base")
+
+    :config
     (conda-env-initialize-interactive-shells)
     (conda-env-initialize-eshell)
+    (conda-env-autoactivate-mode t)
+
+    ;; Function to sync python-shell-interpreter with current Conda env:
+    (defun my/conda-update-python-interpreter ()
+      "Update `python-shell-interpreter` to match active conda env.
+  If no suitable python executable is found in the env, fallback to /bin/python3."
+      (if (and (boundp 'conda-env-current-path) conda-env-current-path)
+          (let ((python-path (concat conda-env-current-path "bin/python"))
+                (python3-path (concat conda-env-current-path "bin/python3")))
+            (cond
+             ((file-executable-p python-path)
+              (setq python-shell-interpreter python-path))
+             ((file-executable-p python3-path)
+              (setq python-shell-interpreter python3-path))
+             (t
+              (setq python-shell-interpreter "/bin/python3"))))
+        ;; If no conda env is active, fallback to system python3
+        (setq python-shell-interpreter "/bin/python3")))
+
+    ;; Hooks to update interpreter on env activation/deactivation:
+    (add-hook 'conda-postactivate-hook #'my/conda-update-python-interpreter)
+    (add-hook 'conda-postdeactivate-hook
+              (lambda () (setq python-shell-interpreter "python3")))
+
+
+
     :hook
-    (python-mode . anaconda-mode)
-    (python-mode . anaconda-eldoc-mode)
-    )
+    ((python-mode . anaconda-mode)
+     (eshell-mode . anaconda-mode)
+     (python-mode . anaconda-eldoc-mode)))
 
   ;; (use-package yafolding
   ;;   :straight (yafolding :type git
@@ -1333,6 +1360,29 @@ Change the path for the anaconda (miniconda) installation accordingly
   ;;         python-shell-virtualenv-root my/anaconda-venv
   ;;         elpy-rpc-virtualenv-path  my/anaconda-venv)
   ;;   )
+#+end_src
+:END:
+**** Jupyter notebooks
+:ein:
+#+begin_src emacs-lisp
+  ;; (use-package ein
+  ;;   :straight (ein :type git
+  ;;   		 :host github
+  ;;   		 :repo "millejoh/emacs-ipython-notebook")
+  ;;   :config
+  ;;   ;; (setq jupyter-server-use-subcommand server)
+  ;;   (add-to-list 'org-src-lang-modes '("ein:ipynb" . python))
+  ;;   )
+#+end_src
+:END:
+:jupyter-el:
+#+begin_src emacs-lisp
+  (use-package jupyter
+    :straight (jupyter :type git
+                       :files (:defaults "Makefile" "widget.html" "js" "jupyter-pkg.el")
+                       :host github
+                       :repo "emacs-jupyter/jupyter")
+    )
 #+end_src
 :END:
 *** R
