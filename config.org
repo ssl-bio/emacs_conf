@@ -60,12 +60,12 @@
   (setq warning-minimum-level :emergency)
 
   ;; revert buffer Keybinding
-  (defun my-revert-buffer-no-confirm ()
+  (defun my/revert-buffer-no-confirm ()
     "Revert the current buffer without confirmation."
     (interactive)
     (revert-buffer :ignore-auto :noconfirm))
 
-  (global-set-key (kbd "<f5>") 'my-revert-buffer-no-confirm)
+  (global-set-key (kbd "<f5>") 'my/revert-buffer-no-confirm)
 
   ;; Line numbers
   (add-hook 'prog-mode-hook #'display-line-numbers-mode)
@@ -216,6 +216,7 @@
 - modus-themes: modus-operandi
 - ef-themes: ef-day ef-deuteranopia-light ef-elea-light ef-kassio ef-melissa-light ef-tritanopia-light
 - cloud-theme majapahit andreas gtk-ide vim-colors
+- Doom: doom-solarized-light, doom-tomorrow-day
 **** Write
 - base16-themes: base16-grayscale-light base16-gruvbox-material-light-soft base16-rose-pine-dawn base16-tokyo-city-terminal-light
 - almost-mono-themes: almost-mono-cream almost-mono-gray eink-theme
@@ -1360,7 +1361,8 @@ Change the path for the anaconda (miniconda) installation accordingly
     (defun ess-insert-pipe ()
       "Insert the pipe operator |>."
       (interactive)
-      (insert "|>"))
+      (insert " |>" ?\n)
+      (ess-indent-command))
 
     (defun my/ess-indent-setup ()
       "Custom indentation setup for ESS."
@@ -1398,6 +1400,7 @@ Change the path for the anaconda (miniconda) installation accordingly
     ;; Define keybindings
     (with-eval-after-load 'ess-r-mode
       ;; For editing R files
+      (define-key ess-r-mode-map (kbd "C-S-<return>") 'ess-eval-paragraph-and-step)
       (define-key ess-r-mode-map (kbd "M--") 'ess-insert-assign)
       (define-key ess-r-mode-map (kbd "C-|") 'ess-insert-pipe)
       (define-key ess-r-mode-map (kbd "C-x ;") 'my/r-tag)
@@ -1682,11 +1685,13 @@ Setup terminal emulators, [[https://www.emacswiki.org/emacs/AnsiTermHints][ansi-
           eshell-prompt-function
           (lambda nil
             (concat
-             "[" (user-login-name) "@" (system-name) " "
+             ;; "[" (user-login-name) "@" (system-name) " "
+             "[🗂️ "
              (if (string= (eshell/pwd) (getenv "HOME"))
                  "~" (eshell/basename (eshell/pwd)))
-             "]"
-             (if (= (user-uid) 0) "# " "$ "))))
+             "][" (when (bound-and-true-p conda-env-current-name)
+                    (concat "🅒 " conda-env-current-name)) "]"
+             (if (= (user-uid) 0) "\n#❯ " "\n❯ "))))
     (add-hook 'eshell-mode-hook (lambda () (setenv "TERM" "xterm-256color")))
     (global-set-key (kbd "<s-return>") 'eshell)
 
@@ -1811,6 +1816,39 @@ Use pdf-tools as default pdf viewer in emacs. Customize navigation and highlight
             "light salmon" "snow2" "dark cyan" "orange red")))
 #+end_src
 * Org-mode
+** Custom functions
+#+begin_src emacs-lisp
+  (defun my/wrap-macro (macro arg)
+    "Wrap the active region in an Org macro call of the form {{{macro(arg,content)}}}."
+    (interactive
+     (list
+      (read-string "Macro name: ")
+      (read-string "First argument: ")))
+    (unless (use-region-p)
+      (error "No region selected"))
+    (let* ((beg (region-beginning))
+           (end (region-end))
+           (content (buffer-substring-no-properties beg end))
+           (wrapped (format "{{{%s(%s,%s)}}}" macro arg content)))
+      (delete-region beg end)
+      (insert wrapped)))
+
+  (defun my/unwrap-macro ()
+  "Unwrap an Org macro of the form {{{macro(arg,text)}}} to just 'text' in the region."
+  (interactive)
+  (unless (use-region-p)
+    (error "No region selected"))
+  (let* ((beg (region-beginning))
+         (end (region-end))
+         (content (buffer-substring-no-properties beg end))
+         ;; Match {{{macro(arg,text)}}}
+         (match (string-match "{{{[a-zA-Z0-9_-]+([^,]+,\\(.*\\))}}}" content)))
+    (if match
+        (let ((text (match-string 1 content)))
+          (delete-region beg end)
+          (insert text))
+      (error "Selected region is not a valid Org macro call"))))
+#+end_src
 ** Aspect
 *** Org-bullets
 Change the aspect of the bullets used in headings
@@ -1851,8 +1889,8 @@ Change the aspect of the bullets used in headings
        (lisp . t)
        (shell . t)
        (awk . t)
-       (mermaid . t)
-       (scheme . t)
+       ;; (mermaid . t)
+       ;; (scheme . t)
        ;; (yaml . t)
        ;; (restclient . t)
        ;;   (C . t)
@@ -1899,17 +1937,13 @@ Pandoc converts between a huge number of different file formats.
 #+begin_src emacs-lisp
   (use-package ox-pandoc
     :no-require t
-    :defer 10
+    ;; :defer 10
     :straight (ox-pandoc :type git
                          :flavor melpa
                          :host github
                          :repo "emacsorphanage/ox-pandoc"))
 #+end_src
 *** Latex exporting
-I’ve had issues with getting BiBTeX to work correctly with the
-LaTeX exporter for PDF exporting. By changing the command to
-`latexmk` references appear in the PDF output like they
-should. Source: http://tex.stackexchange.com/a/161619.
 #+begin_src emacs-lisp
   (setq org-latex-pdf-process (list "latexmk -xelatex %f"))
   ;; (setq org-latex-listings 'minted
@@ -2250,17 +2284,17 @@ Take notes from =pdf= documents (books, papers) in org mode
           org-roam-ui-open-on-start t))
 #+end_src
 :END:
-** Mermaid
+** Mermaid                                    :commented:
 Interface to [[https://github.com/mermaid-js/mermaid-cli][mermaid-cli]] for generating diagrams using org-mode. [[https://mermaid.js.org/][Mermaid]] is a 'JavaScript based diagramming and charting tool that renders Markdown-inspired text definitions to create and modify diagrams dynamically.'
 It requires the installation of =mermaid-cli= via node.js. =npm install -g @mermaid-js/mermaid-cli=.
 :mermaid:
 #+begin_src emacs-lisp
-  (use-package ob-mermaid
-    :straight (ob-mermaid :type git
-                          :flavor melpa
-                          :host github
-                          :repo "arnm/ob-mermaid")
-    )
+  ;; (use-package ob-mermaid
+  ;;   :straight (ob-mermaid :type git
+  ;;                         :flavor melpa
+  ;;                         :host github
+  ;;                         :repo "arnm/ob-mermaid")
+  ;;   )
 #+end_src
 :END:
 ** Commented
@@ -2323,11 +2357,11 @@ It requires the installation of =mermaid-cli= via node.js. =npm install -g @merm
     (org-mode . wrap-region-mode)
 
     :config
-    (wrap-region-add-wrapper "=" "=" nil 'org-mode) ; select region, hit = then region -> =region= in org-mode
-    (wrap-region-add-wrapper "*" "*" nil 'org-mode) ; select region, hit * then region -> *region* in org-mode
-    (wrap-region-add-wrapper "/" "/" nil 'org-mode) ; select region, hit / then region -> /region/ in org-mode
-    (wrap-region-add-wrapper "_" "_" nil 'org-mode) ; select region, hit _ then region -> _region_ in org-mode
-    (wrap-region-add-wrapper "+" "+" nil 'org-mode) ; select region, hit + then region -> +region+ in org-mode
+    (wrap-region-add-wrapper "=" "=" nil 'org-mode)
+    (wrap-region-add-wrapper "*" "*" nil 'org-mode)
+    (wrap-region-add-wrapper "/" "/" nil 'org-mode)
+    (wrap-region-add-wrapper "_" "_" nil 'org-mode)
+    (wrap-region-add-wrapper "+" "+" nil 'org-mode)
     )
 #+end_src
 :END:
