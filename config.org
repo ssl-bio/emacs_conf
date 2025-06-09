@@ -67,12 +67,12 @@
   (setq warning-minimum-level :emergency)
 
   ;; revert buffer Keybinding
-  (defun my-revert-buffer-no-confirm ()
+  (defun my/revert-buffer-no-confirm ()
     "Revert the current buffer without confirmation."
     (interactive)
     (revert-buffer :ignore-auto :noconfirm))
 
-  (global-set-key (kbd "<f5>") 'my-revert-buffer-no-confirm)
+  (global-set-key (kbd "<f5>") 'my/revert-buffer-no-confirm)
 
   ;; Line numbers
   (add-hook 'prog-mode-hook #'display-line-numbers-mode)
@@ -1373,6 +1373,39 @@ Use pdf-tools as default pdf viewer in emacs. Customize navigation and highlight
             "light salmon" "snow2" "dark cyan" "orange red")))
 #+end_src
 * Org-mode
+** Custom functions
+#+begin_src emacs-lisp
+  (defun my/wrap-macro (macro arg)
+    "Wrap the active region in an Org macro call of the form {{{macro(arg,content)}}}."
+    (interactive
+     (list
+      (read-string "Macro name: ")
+      (read-string "First argument: ")))
+    (unless (use-region-p)
+      (error "No region selected"))
+    (let* ((beg (region-beginning))
+           (end (region-end))
+           (content (buffer-substring-no-properties beg end))
+           (wrapped (format "{{{%s(%s,%s)}}}" macro arg content)))
+      (delete-region beg end)
+      (insert wrapped)))
+
+  (defun my/unwrap-macro ()
+  "Unwrap an Org macro of the form {{{macro(arg,text)}}} to just 'text' in the region."
+  (interactive)
+  (unless (use-region-p)
+    (error "No region selected"))
+  (let* ((beg (region-beginning))
+         (end (region-end))
+         (content (buffer-substring-no-properties beg end))
+         ;; Match {{{macro(arg,text)}}}
+         (match (string-match "{{{[a-zA-Z0-9_-]+([^,]+,\\(.*\\))}}}" content)))
+    (if match
+        (let ((text (match-string 1 content)))
+          (delete-region beg end)
+          (insert text))
+      (error "Selected region is not a valid Org macro call"))))
+#+end_src
 ** Aspect
 *** Org-bullets
 Change the aspect of the bullets used in headings
@@ -1968,7 +2001,9 @@ Change the path for the anaconda (miniconda) installation accordingly
     (defun ess-insert-pipe ()
       "Insert the pipe operator |>."
       (interactive)
-      (insert "|>"))
+      (insert " |>" ?\n)
+      (ess-indent-command))
+
     (defun my/ess-indent-setup ()
       "Custom indentation setup for ESS."
       (setq-local ess-indent-offset 2)               ;; Main indentation level
@@ -2005,6 +2040,7 @@ Change the path for the anaconda (miniconda) installation accordingly
     ;; Define keybindings
     (with-eval-after-load 'ess-r-mode
       ;; For editing R files
+      (define-key ess-r-mode-map (kbd "C-S-<return>") 'ess-eval-paragraph-and-step)
       (define-key ess-r-mode-map (kbd "M--") 'ess-insert-assign)
       (define-key ess-r-mode-map (kbd "C-|") 'ess-insert-pipe)
       (define-key ess-r-mode-map (kbd "C-x ;") 'my/r-tag)
