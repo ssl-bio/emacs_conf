@@ -2303,11 +2303,13 @@ Setup terminal emulators, [[https://www.emacswiki.org/emacs/AnsiTermHints][ansi-
         eshell-prompt-function
         (lambda nil
           (concat
-           "[" (user-login-name) "@" (system-name) " "
+           ;; "[" (user-login-name) "@" (system-name) " "
+           "[🗂️ "
            (if (string= (eshell/pwd) (getenv "HOME"))
                "~" (eshell/basename (eshell/pwd)))
-           "]"
-           (if (= (user-uid) 0) "# " "$ "))))
+           "][" (when (bound-and-true-p conda-env-current-name)
+                  (concat "🅒 " conda-env-current-name)) "]"
+           (if (= (user-uid) 0) "\n#❯ " "\n❯ "))))
   (add-hook 'eshell-mode-hook (lambda () (setenv "TERM" "xterm-256color")))
   (global-set-key (kbd "<s-return>") 'eshell)
 
