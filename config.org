@@ -1430,6 +1430,12 @@ Change the aspect of the bullets used in headings
     )
 #+end_src
 :END:
+*** Working with source code
+:config:
+#+begin_src emacs-lisp
+  (setq org-src-window-setup 'other-frame)
+#+end_src
+:END:
 ** Org babel languages
 :load-languages:
 #+begin_src emacs-lisp
@@ -1445,9 +1451,9 @@ Change the aspect of the bullets used in headings
      '((python . t)
        (latex . t)
        (R . t)
-       (lisp . t)
+       ;; (lisp . t)
        (shell . t)
-       (awk . t)
+       ;; (awk . t)
        ;; (mermaid . t)
        ;; (scheme . t)
        ;; (yaml . t)
