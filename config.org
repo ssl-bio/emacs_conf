@@ -234,6 +234,7 @@
 - modus-themes: modus-operandi
 - ef-themes: ef-day ef-deuteranopia-light ef-elea-light ef-kassio ef-melissa-light ef-tritanopia-light
 - cloud-theme majapahit andreas gtk-ide vim-colors
+- Doom: doom-solarized-light, doom-tomorrow-day doom-acario-light
 **** Write
 - base16-themes: base16-grayscale-light base16-gruvbox-material-light-soft base16-rose-pine-dawn base16-tokyo-city-terminal-light
 - almost-mono-themes: almost-mono-cream almost-mono-gray eink-theme
@@ -244,6 +245,7 @@
   ;;modus-themes base16-theme doom-themes
   (setq ithemes '(ef-themes doom-themes modus-themes
                             kaolin-themes material-theme
+                            timu-spacegrey-theme flatland-theme
                             almost-mono-themes monotropic-theme))
 
   ;; install themes
