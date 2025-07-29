@@ -1240,10 +1240,11 @@ Convenient package to create *scratch* buffers that are based on the current buf
       :hook
       ((ess-mode python-mode LaTeX-mode
                Shell-script-mode sh-mode) . format-all-mode)
-      ;; :config
-      ;; (setq-default format-all-formatters
-      ;;               '(("formatR" format-all-r-format-buffer)))
-      )
+    :config
+    (setq format-all-mode-format-on-save nil)
+    ;; (setq-default format-all-formatters
+    ;;               '(("formatR" format-all-r-format-buffer)))
+    )
 #+end_src
 ** Check code (Flycheck)
 [[[https://www.flycheck.org/en/latest/][Home]]]
@@ -1297,6 +1298,7 @@ Change the path for the anaconda (miniconda) installation accordingly
     (conda-env-initialize-interactive-shells)
     (conda-env-initialize-eshell)
     (conda-env-autoactivate-mode t)
+    (conda-mode-line-setup)
 
     ;; Function to sync python-shell-interpreter with current Conda env:
     (defun my/conda-update-python-interpreter ()
@@ -1922,6 +1924,12 @@ Change the aspect of the bullets used in headings
     )
 #+end_src
 :END:
+*** Working with source code
+:config:
+#+begin_src emacs-lisp
+  (setq org-src-window-setup 'other-frame)
+#+end_src
+:END:
 ** Org babel languages
 :load-languages:
 #+begin_src emacs-lisp
@@ -1937,9 +1945,9 @@ Change the aspect of the bullets used in headings
      '((python . t)
        (latex . t)
        (R . t)
-       (lisp . t)
+       ;; (lisp . t)
        (shell . t)
-       (awk . t)
+       ;; (awk . t)
        ;; (mermaid . t)
        ;; (scheme . t)
        ;; (yaml . t)
@@ -2038,6 +2046,20 @@ It is necessary to load [[https://superuser.com/questions/896741/how-do-i-config
   [NO-DEFAULT-PACKAGES]
   [EXTRA]
   "
+       ("\\chapter{%s}" . "\\chapter{%s}")
+       ("\\section{%s}" . "\\section*{%s}")
+       ("\\subsection{%s}" . "\\subsection*{%s}")
+       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+       ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+
+      (
+       "custom-book"
+       "\\documentclass{book}
+    \\usepackage{custom_packages}
+    [NO-DEFAULT-PACKAGES]
+    [EXTRA]
+    "
        ("\\chapter{%s}" . "\\chapter{%s}")
        ("\\section{%s}" . "\\section*{%s}")
        ("\\subsection{%s}" . "\\subsection*{%s}")
@@ -2413,6 +2435,7 @@ It requires the installation of =mermaid-cli= via node.js. =npm install -g @merm
     (wrap-region-add-wrapper "/" "/" nil 'org-mode)
     (wrap-region-add-wrapper "_" "_" nil 'org-mode)
     (wrap-region-add-wrapper "+" "+" nil 'org-mode)
+    (wrap-region-add-wrapper "~" "~" nil 'org-mode)
     )
 #+end_src
 :END:
