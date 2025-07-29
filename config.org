@@ -1441,11 +1441,10 @@ Use pdf-tools as default pdf viewer in emacs. Customize navigation and highlight
     (interactive)
     ;; Disable nice-org-html-mode if it's active
     (when (and (boundp 'nice-org-html-mode) nice-org-html-mode)
+      (setq org-html-head-extra "")
+      (remove-hook 'org-export-before-processing-functions #'nice-org-html--inject)
       (nice-org-html-mode -1)
-      (message "nice-org-html-mode disabled"))
-    ;; Reset the variable to include default styles
-    (setq org-html-head-include-default-style t)
-    (message "org-html-head-include-default-style reset to t"))
+      (message "nice-org-html-mode disabled")))
 
   (defun my/toggle-org-html-default-style ()
     "Toggle org-html-head-include-default-style between t and nil."
