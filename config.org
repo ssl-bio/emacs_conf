@@ -128,35 +128,39 @@
   ;; org-noter directory
   (setq my/org-noter-dir (concat my/docs-dir "/Apuntes/Org_noter"))
 
-    ;; Bibtex files
-    (setq
-     bibtex-completion-bibliography (concat my/docs-dir "/Refs/Bibtex/Working.bib")
-     bibtex-completion-library-path (concat my/docs-dir "/Papers_Books/")
-     bibtex-completion-notes-path (concat my/docs-dir "/Papers_Books/Summaries"))
+  ;; Bibtex files
+  (setq
+   bibtex-completion-bibliography (concat my/docs-dir "/Refs/Bibtex/Working.bib")
+   bibtex-completion-library-path (concat my/docs-dir "/Papers_Books/")
+   bibtex-completion-notes-path (concat my/docs-dir "/Papers_Books/Summaries"))
 
-    ;; ebib
-    (setq my/ebib-search-dir (concat my/docs-dir "/Refs/Bibtex/"))
-    (setq my/ebib-bibtex-files
+  ;; ebib
+  (setq my/ebib-search-dir (concat my/docs-dir "/Refs/Bibtex/"))
+  (setq my/ebib-bibtex-files
         (list
          (concat my/docs-dir "/Refs/Bibtex/Articles_zotero.bib")
          (concat my/docs-dir "/Refs/Bibtex/Books_zotero.bib")))
 
-    ;; org-reveal-path
-    (defvar my/reveal-path
-      (if (file-directory-p "/media/discs/shared/Cloned/reveal.js")
-          "file:///media/discs/shared/Cloned/reveal.js"
-        (if (file-directory-p "/media/particiones/Cloned/reveal.js")
-            "file:///media/particiones/Cloned/reveal.js"
-          "other")))
-    (setq org-reveal-root my/reveal-path)
+  ;; org-reveal-path
+  (defvar my/reveal-path
+    (if (file-directory-p "/media/discs/shared/Cloned/reveal.js")
+        "file:///media/discs/shared/Cloned/reveal.js"
+      (if (file-directory-p "/media/particiones/Cloned/reveal.js")
+          "file:///media/particiones/Cloned/reveal.js"
+        "other")))
+  (setq org-reveal-root my/reveal-path)
 
-    ;; Path to bash (ansi term)
-    (defvar my/my-term "/bin/bash")
+  ;; Path to bash (ansi term)
+  (defvar my/my-term "/bin/bash")
 
-    ;; Fonts
-    (defvar my/mono-font "Courier-New")
-    (defvar my/sans-font "Verdana")
-    (defvar my/default-font "Courier-New")
+  ;; Fonts
+  (defvar my/mono-font "Courier-New")
+  (defvar my/sans-font "Verdana")
+  (defvar my/default-font "Courier-New")
+
+  ;; Settings for pygments
+  (defvar-local my/css-path "pygments.css")
+  (defvar-local my/pygments-style "default")
 #+end_src
 :END:
 ** Startup time
@@ -1871,6 +1875,35 @@ Use pdf-tools as default pdf viewer in emacs. Customize navigation and highlight
 * Org-mode
 ** Custom functions
 #+begin_src emacs-lisp
+  (defun my/disable-nice-org-html ()
+    "Disable nice-org-html-mode and reset org-html-include-default-style to t."
+    (interactive)
+    ;; Disable nice-org-html-mode if it's active
+    (when (and (boundp 'nice-org-html-mode) nice-org-html-mode)
+      (setq org-html-head-extra "")
+      (remove-hook 'org-export-before-processing-functions #'nice-org-html--inject)
+      (nice-org-html-mode -1)
+      (message "nice-org-html-mode disabled")))
+
+  (defun my/toggle-org-html-default-style ()
+    "Toggle org-html-head-include-default-style between t and nil."
+    (interactive)
+    (setq org-html-head-include-default-style (not org-html-head-include-default-style))
+    (message "org-html-head-include-default-style is now %s"
+             (if org-html-head-include-default-style "enabled" "disabled")))
+
+  (defun my/set-org-html-htmlize-output-type ()
+    "Interactively select org-html-htmlize-output-type from available options."
+    (interactive)
+    (let* ((options '(("nil (no syntax highlighting)" . nil)
+                      ("css (external CSS classes)" . css)
+                      ("inline-css (inline styles)" . inline-css)))
+           (choice (completing-read "Choose htmlize output type: "
+                                    (mapcar 'car options) nil t)))
+      (setq org-html-htmlize-output-type (cdr (assoc choice options)))
+      (message "org-html-htmlize-output-type set to: %s"
+               org-html-htmlize-output-type)))
+
   (defun my/wrap-macro (macro arg)
     "Wrap the active region in an Org macro call of the form {{{macro(arg,content)}}}."
     (interactive
@@ -1887,22 +1920,63 @@ Use pdf-tools as default pdf viewer in emacs. Customize navigation and highlight
       (insert wrapped)))
 
   (defun my/unwrap-macro ()
-  "Unwrap an Org macro of the form {{{macro(arg,text)}}} to just 'text' in the region."
-  (interactive)
-  (unless (use-region-p)
-    (error "No region selected"))
-  (let* ((beg (region-beginning))
-         (end (region-end))
-         (content (buffer-substring-no-properties beg end))
-         ;; Match {{{macro(arg,text)}}}
-         (match (string-match "{{{[a-zA-Z0-9_-]+([^,]+,\\(.*\\))}}}" content)))
-    (if match
-        (let ((text (match-string 1 content)))
-          (delete-region beg end)
-          (insert text))
-      (error "Selected region is not a valid Org macro call"))))
+    "Unwrap an Org macro of the form {{{macro(arg,text)}}} to just 'text' in the region."
+    (interactive)
+    (unless (use-region-p)
+      (error "No region selected"))
+    (let* ((beg (region-beginning))
+           (end (region-end))
+           (content (buffer-substring-no-properties beg end))
+           ;; Match {{{macro(arg,text)}}}
+           (match (string-match "{{{[a-zA-Z0-9_-]+([^,]+,\\(.*\\))}}}" content)))
+      (if match
+          (let ((text (match-string 1 content)))
+            (delete-region beg end)
+            (insert text))
+        (error "Selected region is not a valid Org macro call"))))
+
+  (defun my/org-toggle-inline-images ()
+    "Interactive version of `org-display-inline-images`."
+    (interactive)
+    (org-toggle-inline-images))
+
+  (defun my/org-latex-replace-listing-env (output backend info)
+    "Replace LaTeX 'listing' environments with 'code' environments in final LaTeX output."
+    (when (org-export-derived-backend-p backend 'latex)
+      (replace-regexp-in-string
+       "\\\\begin{listing}\\(\\[[^]]*\\]\\)?\\(\\(?:.\\|\n\\)*?\\)\\\\end{listing}"
+       "\\\\begin{code}\\2\\\\end{code}"
+       output)))
+
+  (add-hook 'org-export-filter-final-output-functions
+            #'my/org-latex-replace-listing-env)
+
+  (defun my/toggle-org-latex-listing-filter ()
+    "Toggle `my/org-latex-replace-listing-env` in `org-export-filter-final-output-functions`."
+    (interactive)
+    (if (member #'my/org-latex-replace-listing-env org-export-filter-final-output-functions)
+        (progn
+          (remove-hook 'org-export-filter-final-output-functions
+                       #'my/org-latex-replace-listing-env)
+          (message "Disabled my/org-latex-replace-listing-env hook."))
+      (add-hook 'org-export-filter-final-output-functions
+                #'my/org-latex-replace-listing-env)
+      (message "Enabled my/org-latex-replace-listing-env hook.")))
 #+end_src
 ** Aspect
+*** Org modern indent
+:org-modern-indent:
+#+begin_src emacs-lisp
+  (use-package org-modern-indent
+    :straight (org-modern-indent :type git
+                                 :host github
+                                 :repo "jdtsmith/org-modern-indent")
+    ;; :config ; add late to hook
+    ;; (add-hook 'org-mode-hook #'org-modern-indent-mode 90)
+
+    )
+#+end_src
+:END:
 *** Org-bullets
 Change the aspect of the bullets used in headings
 :bullets:
@@ -2357,19 +2431,99 @@ Take notes from =pdf= documents (books, papers) in org mode
           org-roam-ui-open-on-start t))
 #+end_src
 :END:
-** Mermaid                                    :commented:
-Interface to [[https://github.com/mermaid-js/mermaid-cli][mermaid-cli]] for generating diagrams using org-mode. [[https://mermaid.js.org/][Mermaid]] is a 'JavaScript based diagramming and charting tool that renders Markdown-inspired text definitions to create and modify diagrams dynamically.'
-It requires the installation of =mermaid-cli= via node.js. =npm install -g @mermaid-js/mermaid-cli=.
-:mermaid:
+** Html export
+*** Nice org-html
+:config:
 #+begin_src emacs-lisp
-  ;; (use-package ob-mermaid
-  ;;   :straight (ob-mermaid :type git
-  ;;                         :flavor melpa
-  ;;                         :host github
-  ;;                         :repo "arnm/ob-mermaid")
-  ;;   )
+  (use-package nice-org-html
+    :straight (nice-org-html :type git
+                             :files (:defaults "code/*.el" "code/*.css" "code/*.js" "nice-org-html-pkg.el")
+                             :host github
+                             :repo "ewantown/nice-org-html")
+    :config
+    (setq nice-org-html-theme-alist
+          '((light . kaolin-valley-light)
+            (dark  . kaolin-valley-dark)))
+    (setq nice-org-html-default-mode 'dark)
+    (setq nice-org-html-headline-bullets nil)
+    (setq nice-org-html-options '(:layout "compact" :collapsing t :src-lang t))
+    (org-export-define-derived-backend 'nice-html 'html
+      :translate-alist
+      '((src-block . nice-org-html--src-block)
+        (special-block . nice-org-html--special-block))
+      :menu-entry
+      '(?N "Export to Nice HTML"
+           ((?h "As HTML file" nice-org-html-export-to-html)
+            (?H "As specified file" nice-org-html-export-to-html-file)
+            (?o "As HTML file and open"
+                (lambda (a s v b)
+                  (if a (nice-org-html-export-to-html t s v b)
+                    (org-open-file (nice-org-html-export-to-html nil s v b))))))))
+    ;; :hook (org-mode . nice-org-html-mode)
+    )
 #+end_src
 :END:
+*** Custom backend with pygments
+The following defines a custom backend for exporting using pygments. It is described in https://linevi.ch/en/org-pygments.html
+#+begin_src emacs-lisp
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Settings for pygments ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; path to executable
+  (defvar pygments-path "pygmentize")
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Function to create a CSS file and point to it ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (defun my/ensure-pygments-css ()
+      "Ensure pygments.css exists in the current directory and set org-html-head."
+        (message "Creating pygments.css...")
+        (shell-command (format "%s -S %s -f html -a .highlight > %s" pygments-path my/pygments-style my/css-path))
+      ;; Always set org-html-head to use the CSS file
+      (setq-local org-html-head (format "<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\" />" my/css-path))
+      (message "Using pygments.css for syntax highlighting"))
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Function to process codeblocks with Pygments ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (defun my/pygments-org-html-code (code contents info)
+    "Process code blocks with Pygments."
+    (message "DEBUG: my/pygments-org-html-code called!")
+    ;; Generating tmp file path using current time hash
+    (let* ((temp-source-file (format "/tmp/pygmentize-%s.txt" (md5 (current-time-string))))
+           (lang (org-element-property :language code))
+           (code-content (org-element-property :value code)))
+      (message "DEBUG: Processing %s code block" lang)
+      ;; Writing block contents to the file
+      (with-temp-file temp-source-file 
+        (insert code-content))
+      ;; Executing the shell-command and reading output
+      (let ((highlighted-output (shell-command-to-string 
+                                (format "%s -l \"%s\" -f html  %s"
+                                        pygments-path
+                                        (or lang "")
+                                        temp-source-file))))
+        (message "DEBUG: Highlighted output length: %d" (length highlighted-output))
+        highlighted-output)))
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Define a new export function ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (defun my/org-export-to-html-pygments (&optional async subtreep visible-only body-only ext-plist)
+    (interactive)
+    (my/ensure-pygments-css)
+    (org-export-to-file 'pygments-html (org-export-output-file-name ".html" subtreep)
+      async subtreep visible-only body-only ext-plist))
+
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Define new backend ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;
+  (org-export-define-derived-backend 'pygments-html 'html
+    :translate-alist '((src-block . my/pygments-org-html-code))
+    :menu-entry '(?Y "Export to HTML with Pygments"
+                     ((?h "As HTML file" my/org-export-to-html-pygments))))
+#+end_src
 ** Commented
 * Editing
 ** Smart-Hungry delete
