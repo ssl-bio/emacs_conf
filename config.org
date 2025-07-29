@@ -100,25 +100,25 @@
 *Modify these accordingly*
 :custom-vars:
 #+begin_src emacs-lisp
-    ;; Path to anaconda installation
-    (defvar conda-dir
-      (if (file-directory-p "/media/discs/shared/miniconda3")
-          "/media/discs/shared/miniconda3"
-        (if (file-directory-p "~/.local/bin/miniconda3")
-            "~/.local/bin/miniconda3"
-          "other")))
+  ;; Path to anaconda installation
+  (defvar conda-dir
+    (if (file-directory-p "/media/discs/shared/miniconda3")
+        "/media/discs/shared/miniconda3"
+      (if (file-directory-p "~/.local/bin/miniconda3")
+          "~/.local/bin/miniconda3"
+        "other")))
 
-    (defvar my/anaconda-home conda-dir)
-    ;; (defvar my/anaconda-venv (concat conda-dir "/envs"))
-    (defvar my/mmdc-path (concat conda-dir "/bin/mmdc"))
+  (defvar my/anaconda-home conda-dir)
+  ;; (defvar my/anaconda-venv (concat conda-dir "/envs"))
+  (defvar my/mmdc-path (concat conda-dir "/bin/mmdc"))
 
-    ;; Bibtex paths and files
-    (defvar my/docs-dir
-      (if (file-directory-p "~/Documents")
-          "~/Documents"
-        (if (file-directory-p "~/Documentos")
-            "~/Documentos"
-          "other")))
+  ;; Bibtex paths and files
+  (defvar my/docs-dir
+    (if (file-directory-p "~/Documents")
+        "~/Documents"
+      (if (file-directory-p "~/Documentos")
+          "~/Documentos"
+        "other")))
   ;; mermaid-cli path
   ;; (setq ob-mermaid-cli-path  my/mmdc-path)
 
@@ -216,7 +216,7 @@
 - modus-themes: modus-operandi
 - ef-themes: ef-day ef-deuteranopia-light ef-elea-light ef-kassio ef-melissa-light ef-tritanopia-light
 - cloud-theme majapahit andreas gtk-ide vim-colors
-- Doom: doom-solarized-light, doom-tomorrow-day
+- Doom: doom-solarized-light, doom-tomorrow-day doom-acario-light
 **** Write
 - base16-themes: base16-grayscale-light base16-gruvbox-material-light-soft base16-rose-pine-dawn base16-tokyo-city-terminal-light
 - almost-mono-themes: almost-mono-cream almost-mono-gray eink-theme
@@ -227,6 +227,7 @@
   ;;modus-themes base16-theme doom-themes
   (setq ithemes '(ef-themes doom-themes modus-themes
                             kaolin-themes material-theme
+                            timu-spacegrey-theme flatland-theme
                             almost-mono-themes monotropic-theme))
 
   ;; install themes
@@ -1444,8 +1445,8 @@ Change the path for the anaconda (miniconda) installation accordingly
       "Customize `bm-persistent-face` in ESS mode."
       (set-face-attribute 'bm-persistent-face nil
                           :underline t
-                          :background nil
-                          :foreground nil))
+                          :background 'unspecified
+                          :foreground 'unspecified))
 
     ;; Define keybindings
     (with-eval-after-load 'ess-r-mode
