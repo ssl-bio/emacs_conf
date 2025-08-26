@@ -1,0 +1,16 @@
+# -*- mode: snippet -*-
+# name: code-image-link
+# key: ,code-image-link
+# --
+<<l_code:${1: name}>>
+#+name: code:$1
+#+begin_src ${2: language} :results file graphics :output-dir ${3: output dir} :file ${4: filename}
+$0
+#+end_src
+
+#+name: fig:$1
+#+caption: ${5: caption}
+#+attr_latex: :width 0.85\textwidth :placement [!h]
+#+attr_html: :width 100%
+#+RESULTS: code:$1
+[[file:$3/$4]]

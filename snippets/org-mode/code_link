@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: code-link
+# key: ,code-link
+# --
+<<l_code:${1: name}>>
+#+name: code:$1
+#+begin_src ${2: language}
+$0
+#+end_src
