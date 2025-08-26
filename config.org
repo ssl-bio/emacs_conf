@@ -889,17 +889,10 @@ around so much.
     :config
     (smooth-scrolling-mode))
 #+end_src
-** Ace-jump-mode
-Allows you to quickly jump to any visible point in the buffer by typing a few characters. When activated, it displays letters next to each word or character, and you can jump to a specific location by pressing the corresponding letter.
+** Helm-occur
+Helm native replacement for ace jump mode
 #+begin_src emacs-lisp
-  (use-package ace-jump-mode
-    :straight (ace-jump-mode :type git
-                              :flavor melpa
-                              :host github
-                              :repo "winterTTr/ace-jump-mode")
-    :bind
-    ("C-c SPC" . ace-jump-mode)
-    )
+  (global-set-key (kbd "C-c SPC") 'helm-occur)
 #+end_src
 * Buffers
 ** List buffers (Ibuffer)
