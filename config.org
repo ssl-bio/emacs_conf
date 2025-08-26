@@ -2058,6 +2058,51 @@ Change the aspect of the bullets used in headings
 #+end_src
 :END:
 ** Org exporting
+*** Custom functions for exporting
+#+begin_src emacs-lisp
+    (defun my/exclude-from-export-hook (backend)
+      ;; Remove both tags first to avoid duplicates
+      (setq org-export-exclude-tags
+            (remove "nolatex" (remove "nohtml" org-export-exclude-tags)))
+      ;; Add appropriate tag depending on backend
+      (cond
+       ((eq backend 'latex)
+        (push "nolatex" org-export-exclude-tags))
+       ((or (eq backend 'html)
+            (eq backend 'nice-html))
+        (push "nohtml" org-export-exclude-tags))))
+      (add-hook 'org-export-before-processing-hook
+                #'my/exclude-from-export-hook)
+
+  (defun my/rm-latex-heading (data backend info)
+    "Remove the LaTeX heading if the Org headline has property :HEADING: no,
+  but keep its contents."
+    (let* ((beg (next-property-change 0 data))
+           (headline (if beg (get-text-property beg :parent data))))
+      (if (and (eq backend 'latex)
+               (string= (org-element-property :HEADING headline) "no"))
+          ;; Export only the contents of the headline (no \section etc.)
+          (mapconcat
+           (lambda (element)
+             (org-export-data element info))
+           (org-element-contents headline)
+           "")
+        data)))
+
+    (setq org-export-filter-headline-functions '(my/rm-latex-heading))
+
+    ;; (defun my/org-latex-ignore-headlines (headline backend info)
+    ;;   "Remove headlines tagged :latexignore: in LaTeX export, but keep contents."
+    ;;   (when (and (org-export-derived-backend-p backend 'latex)
+    ;;              (string-match-p ":latexignore:" (org-element-property :tags headline)))
+    ;;     ;; Return only the contents, skipping the headline itself
+    ;;     (mapconcat #'identity
+    ;;                (org-element-map (org-element-contents headline) 'paragraph
+    ;;                  (lambda (p) (org-export-data p info)))
+    ;;                "\n")))
+
+    ;; (add-to-list 'org-export-filter-headline-functions #'my/org-latex-ignore-headlines)
+#+end_src
 *** Pandoc exporter
 Pandoc converts between a huge number of different file formats.
 #+begin_src emacs-lisp
