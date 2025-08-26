@@ -32,7 +32,9 @@
 ;; Load org
 (use-package org
   :straight (org :type git
-		 :repo "https://git.savannah.gnu.org/git/emacs/org-mode.git"
+		 :host github
+		 :protocol https
+		 :repo "emacs-straight/org-mode"
 		 :local-repo "org"
 		 :depth full
 		 :pre-build (straight-recipes-org-elpa--build)
@@ -65,6 +67,5 @@
 ;;; Load the config
 (require 'org)
 (setq config-file (concat user-emacs-directory "config.org"))
-(defalias 'org-file-name-concat #'file-name-concat)
+;; (defalias 'org-file-name-concat #'file-name-concat)
 (org-babel-load-file config-file)
-
