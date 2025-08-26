@@ -1927,7 +1927,7 @@ Take notes from =pdf= documents (books, papers) in org mode
     (setq nice-org-html-theme-alist
           '((light . kaolin-valley-light)
             (dark  . kaolin-valley-dark)))
-    (setq nice-org-html-default-mode 'dark)
+    (setq nice-org-html-default-mode 'light)
     (setq nice-org-html-headline-bullets nil)
     (setq nice-org-html-options '(:layout "compact" :collapsing t :src-lang t))
     (org-export-define-derived-backend 'nice-html 'html
