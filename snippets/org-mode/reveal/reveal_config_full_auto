@@ -4,8 +4,8 @@
 # contributor: https://ssl-blog.netlify.app/posts/posts/emacs/revealjs-emacs-2/part-2_snippets
 # --
 :Configuration:
-#+REVEAL_ROOT: https://cdn.jsdelivr.net/npm/reveal.js@5.1.0
-#+REVEAL_INIT_OPTIONS: width:1200, height:800, margin: 0.1, minScale:0.2, maxScale:2.5, transition: 'fade', progress:true, history:true, center:true, mouseWheel:false, menu:{themes:true, themesPath:'https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/', transitions:true, markers:true, custom: false, hideMissingTitles:true}, customcontrols:{controls:[{id:'toggle-overview', title:'Toggleoverview(O)', icon:'<i class="fa fa-th"></i>', action:'Reveal.toggleOverview();'}]}, pointer: {key: "q", color: "red", pointerSize: 16, alwaysVisible: false, tailLength: 10}
+#+REVEAL_ROOT: https://cdn.jsdelivr.net/npm/reveal.js@5.2.1
+#+REVEAL_INIT_OPTIONS: width:1200, height:800, margin: 0.1, minScale:0.2, maxScale:2.5, transition: 'fade', progress:true, history:true, center:true, mouseWheel:false, menu:{themes:true, themesPath:'https://cdn.jsdelivr.net/npm/reveal.js@5.2.1/dist/theme/', transitions:true, markers:true, custom: false, hideMissingTitles:true}, customcontrols:{controls:[{id:'toggle-overview', title:'Toggleoverview(O)', icon:'<i class="fa fa-th"></i>', action:'Reveal.toggleOverview();'}]}, pointer: {key: "q", color: "red", pointerSize: 16, alwaysVisible: false, tailLength: 10}
 
 #+REVEAL_HLEVEL: ${1:1}
 #+REVEAL_THEME: blood
@@ -15,18 +15,20 @@
 
 #+REVEAL_PLUGINS: (notes RevealMenu RevealCustomControls RevealPointer RevealDrawer)
 
-#+REVEAL_EXTRA_CSS: ./plugin_extra/customcontrols/style.css
-#+REVEAL_EXTRA_CSS: ./plugin_extra/drawer/drawer.css
-#+REVEAL_EXTRA_CSS: ./plugin_extra/pointer/pointer.css
-#+REVEAL_EXTRA_CSS: https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css
+#+REVEAL_EXTRA_CSS: ./src/plugin_extra/customcontrols/style.css
+#+REVEAL_EXTRA_CSS: ./src/plugin_extra/drawer/drawer.css
+#+REVEAL_EXTRA_CSS: ./src/plugin_extra/pointer/pointer.css
+#+REVEAL_EXTRA_CSS: https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css
 #+REVEAL_EXTRA_CSS: https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap
-#+REVEAL_EXTRA_CSS: ./personal/css/custom_tailwind.css
+#+REVEAL_EXTRA_CSS: ./src/css/custom_tailwind.css
 
-#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./plugin_extra/menu/menu.js
-#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./plugin_extra/customcontrols/plugin.js
-#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./plugin_extra/drawer/drawer.js
-#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./plugin_extra/pointer/pointer.js
+#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./src/plugin_extra/menu/menu.js
+#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./src/plugin_extra/customcontrols/plugin.js
+#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./src/plugin_extra/drawer/drawer.js
+#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./src/plugin_extra/pointer/pointer.js
 
-#+REVEAL_EXTRA_SCRIPT_SRC: ./personal/js/icustom.js
+#+REVEAL_EXTRA_SCRIPT_SRC: https://cdn.jsdelivr.net/npm/chroma-js@2.4.2/chroma.min.js
+#+REVEAL_EXTRA_SCRIPT_SRC: ./src/js/ifunctions.js
+#+REVEAL_EXTRA_SCRIPT_SRC: ./src/js/icustom.js
 :END:
 $0

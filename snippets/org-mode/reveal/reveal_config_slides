@@ -3,7 +3,7 @@
 # key: ,r-conf-slides
 # contributor: https://ssl-blog.netlify.app/posts/posts/emacs/revealjs-emacs-2/part-2_snippets
 # --
-#+REVEAL_INIT_OPTIONS: width:1200, height:800, margin: 0.1, minScale:0.2, maxScale:2.5, transition: '${1:$$(yas-choose-value '("none" "fade" "slide" "convex" "concave" "zoom"))}', progress:true, history:true, center:true, mouseWheel:false, menu:{themes:true, themesPath:'${2:https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/}', transitions:true, markers:true, custom: false, hideMissingTitles:true}, customcontrols:{controls:[{id:'toggle-overview', title:'Toggleoverview(O)', icon:'<i class="fa fa-th"></i>', action:'Reveal.toggleOverview();'}]}, pointer: {key: "q", color: "red", pointerSize: 16, alwaysVisible: false, tailLength: 10}
+#+REVEAL_INIT_OPTIONS: width:1200, height:800, margin: 0.1, minScale:0.2, maxScale:2.5, transition: '${1:$$(yas-choose-value '("none" "fade" "slide" "convex" "concave" "zoom"))}', progress:true, history:true, center:true, mouseWheel:false, menu:{themes:true, themesPath:'${2:https://cdn.jsdelivr.net/npm/reveal.js@5.2.1/dist/theme/}', transitions:true, markers:true, custom: false, hideMissingTitles:true}, customcontrols:{controls:[{id:'toggle-overview', title:'Toggleoverview(O)', icon:'<i class="fa fa-th"></i>', action:'Reveal.toggleOverview();'}]}, pointer: {key: "q", color: "red", pointerSize: 16, alwaysVisible: false, tailLength: 10}
 
 #+REVEAL_HLEVEL: ${3:1}
 #+REVEAL_THEME: ${4:$$(yas-choose-value '("beige" "black-contrast" "black" "blood" "dracula" "league" "moon" "night" "serif" "simple" "sky" "solarized" "white_contrast_compact_verbatim_headers" "white-contrast" "white"))}

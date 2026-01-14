@@ -5,6 +5,6 @@
 # --
 
 :PROPERTIES:
-:REVEAL_EXTRA_ATTR: class="${1:h-slide bg-color iborder-2x}"
+:REVEAL_EXTRA_ATTR: class="${1:h-slide bg-outer-box iborder-2x}"
 :END:
 $0

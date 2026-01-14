@@ -3,6 +3,6 @@
 # key: ,rlist
 # contributor: https://ssl-blog.netlify.app/posts/posts/emacs/revealjs-emacs-2/part-2_snippets
 # --
-#+ATTR_HTML: :class flex-list grow justify-${1:$$(yas-choose-value '("start" "end" "center" "between" "around" "evenly" "stretch" "baseline" "normal"))}
+#+ATTR_HTML: :class flex-list h-content-${1:$$(yas-choose-value '("09" "085" "08" "075" "07" "065" "06" "055" "05" "045" "04" "035" "03" "025" "02" "015" "0125" "01"))} justify-${2:$$(yas-choose-value '("start" "end" "center" "between" "around" "evenly" "stretch" "baseline" "normal"))} 
 - ${0:First item}
 	

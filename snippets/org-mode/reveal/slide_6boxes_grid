@@ -5,37 +5,44 @@
 # --
 ** ${1:Title}
 :PROPERTIES:
-:REVEAL_EXTRA_ATTR: class="h-slide bg-color iborder-2x ${2:title-sm}"
+:REVEAL_EXTRA_ATTR: class="h-slide bg-outer-box iborder-2x ${2:title-sm}"
 :END:
-#+ATTR_HTML: :class grid grid-rows-2 gap-2 grid-flow-col max-w-full ${3:text-body}
+#+ATTR_HTML: :class grid grid-cols-3 gap-2 text-body
 #+begin_h-content
-#+ATTR_HTML: :class iborder-3x
-#+begin_bg-gray
+# ----- [Top left box] -----
+#+ATTR_HTML: :class h-content-${3:05} iborder-3x content-${4:$$(yas-choose-value '("start" "end" "center" "stretch" "between" "around" "evenly"))}
+#+begin_bg-inner-box
 ${0:Top left box}
-#+end_bg-gray
+#+end_bg-inner-box
 
-#+ATTR_HTML: :class iborder-3x
-#+begin_bg-gray
+# ----- [Top center box] -----
+#+ATTR_HTML: :class iborder-3x content-$4
+#+begin_bg-inner-box
 
-#+end_bg-gray
+#+end_bg-inner-box
 
-#+ATTR_HTML: :class iborder-3x
-#+begin_bg-gray
+# ----- [Top right box] -----
+#+ATTR_HTML: :class iborder-3x content-$4
+#+begin_bg-inner-box
 
-#+end_bg-gray
+#+end_bg-inner-box
 
-#+ATTR_HTML: :class iborder-3x
-#+begin_bg-gray
+# ----- [Bottom left box] -----
+#+ATTR_HTML: :class h-content-${5:05} iborder-3x content-$4
+#+begin_bg-inner-box
 
-#+end_bg-gray
+#+end_bg-inner-box
 
-#+ATTR_HTML: :class iborder-3x
-#+begin_bg-gray
+# ----- [Bottom center box] -----
+#+ATTR_HTML: :class iborder-3x content-$4
+#+begin_bg-inner-box
 
-#+end_bg-gray
+#+end_bg-inner-box
 
-#+ATTR_HTML: :class iborder-3x
-#+begin_bg-gray
+# ----- [Bottom right box] -----
+#+ATTR_HTML: :class iborder-3x content-$4
+#+begin_bg-inner-box
 
-#+end_bg-gray
+#+end_bg-inner-box
+# ----- [End of slide] -----
 #+end_h-content

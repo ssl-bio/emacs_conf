@@ -5,9 +5,9 @@
 # --
 ** ${1:Title}
 :PROPERTIES:
-:REVEAL_EXTRA_ATTR: class="h-slide bg-color iborder-2x ${2:title-sm}"
+:REVEAL_EXTRA_ATTR: class="h-slide bg-outer-box iborder-2x ${2:title-sm}"
 :END:
-#+ATTR_HTML: :class grid justify-start bg-gray iborder-3x ${3:text-body}
+#+ATTR_HTML: :class grid bg-inner-box iborder-3x content-${3:$$(yas-choose-value '("start" "end" "center" "stretch" "between" "around" "evenly"))} text-body
 #+begin_h-content
 ${0:Slide content}
 #+end_h-content

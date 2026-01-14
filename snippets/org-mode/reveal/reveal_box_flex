@@ -4,6 +4,6 @@
 # contributor: https://ssl-blog.netlify.app/posts/posts/emacs/revealjs-emacs-2/part-2_snippets
 # --
 #+ATTR_HTML: :class h-content-${1:$$(yas-choose-value '("09" "085" "08" "075" "07" "065" "06" "055" "05" "045" "04" "035" "03" "025" "02" "015" "0125" "01"))} w-slide-${2:$$(yas-choose-value '("085" "08" "075" "07" "065" "06" "055" "05" "045" "04" "0375" "035" "0325" "03" "0275" "025" "02" "015" "01"))} ${3:border rounded-2xl} flex flex-wrap items-center justify-center
-#+begin_bg-color
+#+begin_bg-outer-box
 $0
-#+end_bg-color
+#+end_bg-outer-box

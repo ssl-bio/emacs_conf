@@ -5,22 +5,26 @@
 # --
 ** ${1:Title}
 :PROPERTIES:
-:REVEAL_EXTRA_ATTR: class="h-slide bg-color iborder-2x ${2:title-sm}"
+:REVEAL_EXTRA_ATTR: class="h-slide bg-outer-box iborder-2x ${2:title-sm}"
 :END:
-#+ATTR_HTML: :class flex flex-row justify-evenly flex-wrap gap-4 ${3:text-body}
+#+ATTR_HTML: :class flex flex-row flex-wrap gap-4 text-body
 #+begin_h-content
-#+ATTR_HTML: :class grow max-h-content-05 iborder-3x p-2
-#+begin_bg-gray
+# ----- [Top box] -----
+#+ATTR_HTML: :class w-slide iborder-3x content-${3:$$(yas-choose-value '("start" "end" "center" "stretch" "between" "around" "evenly"))}
+#+begin_bg-inner-box
 ${0:Top box}
-#+end_bg-gray
+#+end_bg-inner-box
 
-#+ATTR_HTML: :class iborder-3x max-w-slide-05
-#+begin_bg-gray
+# ----- [Bottom left box] -----
+#+ATTR_HTML: :class grow iborder-3x w-slide-${4:049} content-$3
+#+begin_bg-inner-box
 
-#+end_bg-gray
+#+end_bg-inner-box
 
-#+ATTR_HTML: :class iborder-3x max-w-slide-05
-#+begin_bg-gray
+# ----- [Bottom right box] -----
+#+ATTR_HTML: :class grow iborder-3x w-slide-$4  content-$3
+#+begin_bg-inner-box
 
-#+end_bg-gray
+#+end_bg-inner-box
+# ----- [End of slide] -----
 #+end_h-content

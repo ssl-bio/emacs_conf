@@ -3,5 +3,5 @@
 # key: ,r-conf-root
 # contributor: https://ssl-blog.netlify.app/posts/posts/emacs/revealjs-emacs-2/part-2_snippets
 # --
-#+REVEAL_ROOT: ${1:https://cdn.jsdelivr.net/npm/reveal.js@5.1.0}
+#+REVEAL_ROOT: ${1:https://cdn.jsdelivr.net/npm/reveal.js@5.2.1}
 $0

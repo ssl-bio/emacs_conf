@@ -4,8 +4,8 @@
 # contributor: https://ssl-blog.netlify.app/posts/posts/emacs/revealjs-emacs-2/part-2_snippets
 # --
 :Configuration:
-#+REVEAL_ROOT: ${1:https://cdn.jsdelivr.net/npm/reveal.js@5.1.0}
-#+REVEAL_INIT_OPTIONS: width:1200, height:800, margin: 0.1, minScale:0.2, maxScale:2.5, transition: '${2:$$(yas-choose-value '("none" "fade" "slide" "convex" "concave" "zoom"))}', progress:true, history:true, center:true, mouseWheel:false, menu:{themes:true, themesPath:'${3:https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/}', transitions:true, markers:true, custom: false, hideMissingTitles:true}, customcontrols:{controls:[{id:'toggle-overview', title:'Toggleoverview(O)', icon:'<i class="fa fa-th"></i>', action:'Reveal.toggleOverview();'}]}, pointer: {key: "q", color: "red", pointerSize: 16, alwaysVisible: false, tailLength: 10}
+#+REVEAL_ROOT: ${1:https://cdn.jsdelivr.net/npm/reveal.js@5.2.1}
+#+REVEAL_INIT_OPTIONS: width:1200, height:800, margin: 0.1, minScale:0.2, maxScale:2.5, transition: '${2:$$(yas-choose-value '("none" "fade" "slide" "convex" "concave" "zoom"))}', progress:true, history:true, center:true, mouseWheel:false, menu:{themes:true, themesPath:'${3:https://cdn.jsdelivr.net/npm/reveal.js@5.2.1/dist/theme/}', transitions:true, markers:true, custom: false, hideMissingTitles:true}, customcontrols:{controls:[{id:'toggle-overview', title:'Toggleoverview(O)', icon:'<i class="fa fa-th"></i>', action:'Reveal.toggleOverview();'}]}, pointer: {key: "q", color: "red", pointerSize: 16, alwaysVisible: false, tailLength: 10}
 
 #+REVEAL_HLEVEL: ${4:1}
 #+REVEAL_THEME: ${5:$$(yas-choose-value '("beige" "black-contrast" "black" "blood" "dracula" "league" "moon" "night" "serif" "simple" "sky" "solarized" "white_contrast_compact_verbatim_headers" "white-contrast" "white"))}
@@ -15,18 +15,20 @@
 
 #+REVEAL_PLUGINS: (${8:notes RevealMenu RevealCustomControls RevealPointer RevealDrawer})
 
-#+REVEAL_EXTRA_CSS: ./plugin_extra/customcontrols/style.css
-#+REVEAL_EXTRA_CSS: ./plugin_extra/drawer/drawer.css
-#+REVEAL_EXTRA_CSS: ./plugin_extra/pointer/pointer.css
-${9:#+REVEAL_EXTRA_CSS: https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css}
+#+REVEAL_EXTRA_CSS: ./src/plugin_extra/customcontrols/style.css
+#+REVEAL_EXTRA_CSS: ./src/plugin_extra/drawer/drawer.css
+#+REVEAL_EXTRA_CSS: ./src/plugin_extra/pointer/pointer.css
+${9:#+REVEAL_EXTRA_CSS: https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css}
 ${10:#+REVEAL_EXTRA_CSS: https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap}
-#+REVEAL_EXTRA_CSS: ${11:./personal/css/custom_tailwind.css}
+#+REVEAL_EXTRA_CSS: ${11:./src/css/custom_tailwind.css}
 
-#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./plugin_extra/menu/menu.js
-#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./plugin_extra/customcontrols/plugin.js
-#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./plugin_extra/drawer/drawer.js
-#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./plugin_extra/pointer/pointer.js
+#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./src/plugin_extra/menu/menu.js
+#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./src/plugin_extra/customcontrols/plugin.js
+#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./src/plugin_extra/drawer/drawer.js
+#+REVEAL_EXTRA_SCRIPT_BEFORE_SRC: ./src/plugin_extra/pointer/pointer.js
 
-#+REVEAL_EXTRA_SCRIPT_SRC: ${12:./personal/js/icustom.js}
+#+REVEAL_EXTRA_SCRIPT_SRC: ${12:https://cdn.jsdelivr.net/npm/chroma-js@2.4.2/chroma.min.js}
+#+REVEAL_EXTRA_SCRIPT_SRC: ${13:./src/js/ifunctions.js}
+#+REVEAL_EXTRA_SCRIPT_SRC: ${14:./src/js/icustom.js}
 :END:
 $0

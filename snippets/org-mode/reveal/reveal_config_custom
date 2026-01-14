@@ -3,5 +3,7 @@
 # key: ,r-conf-custom
 # contributor: https://ssl-blog.netlify.app/posts/posts/emacs/revealjs-emacs-2/part-2_snippets
 # --
-${1:#+REVEAL_EXTRA_SCRIPT_SRC: ./personal/js/icustom.js}
+#+REVEAL_EXTRA_SCRIPT_SRC: ${1:https://cdn.jsdelivr.net/npm/chroma-js@2.4.2/chroma.min.js}
+#+REVEAL_EXTRA_SCRIPT_SRC: ${2:./src/js/ifunctions.js}
+#+REVEAL_EXTRA_SCRIPT_SRC: ${3:./src/js/icustom.js}
 $0
